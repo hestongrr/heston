@@ -153,25 +153,55 @@ function edgeList(kind){
   return e;
 }
 
-let pad;
 function buildPad(){
-  // pick a spot with moderate slope in the visible front-left
-  const pi=44, pj=86, K=9;
-  let sum=0,cnt=0;
-  for(let dj=-K;dj<=K;dj++)for(let di=-K;di<=K;di++){
-    const i=pi+di,j=pj+dj; if(i<0||i>=N||j<0||j>=N)continue; sum+=hAt(i,j);cnt++;
+  const K=7, margin=16;
+  // grade the site properly: find the FLATTEST footprint (least earthwork)
+  let best=null;
+  for(let j=margin;j<N-margin;j+=2)for(let i=margin;i<N-margin;i+=2){
+    let mn=1e9,mx=-1e9;
+    for(let dj=-K;dj<=K;dj++)for(let di=-K;di<=K;di++){const h=hAt(i+di,j+dj);if(h<mn)mn=h;if(h>mx)mx=h;}
+    const relief=mx-mn;
+    if(!best||relief<best.relief)best={i,j,relief};
   }
-  const padH=(sum/cnt)*HREL*exag;
-  const w=(2*K/(N-1))*E;
+  const pi=best.i, pj=best.j;
+  let sum=0,cnt=0;
+  for(let dj=-K;dj<=K;dj++)for(let di=-K;di<=K;di++){sum+=hAt(pi+di,pj+dj);cnt++;}
+  const padY=(sum/cnt)*HREL*exag;                       // design finished grade
+  const i0=pi-K,i1=pi+K,j0=pj-K,j1=pj+K;
   const grp=new THREE.Group();
-  const slab=new THREE.Mesh(new THREE.BoxGeometry(w,1.4,w),
-     new THREE.MeshStandardMaterial({color:0xe9edf0,roughness:.85}));
-  slab.position.set(wx(pi),padH+0.7,wz(pj));
-  const bh=9;
-  const bld=new THREE.Mesh(new THREE.BoxGeometry(w*0.5,bh,w*0.34),
+
+  // ---- engineered fill: skirt from pad grade DOWN to natural terrain (no floating foundation) ----
+  const peri=[];
+  for(let i=i0;i<=i1;i++)peri.push({i,j:j0});
+  for(let j=j0+1;j<=j1;j++)peri.push({i:i1,j});
+  for(let i=i1-1;i>=i0;i--)peri.push({i,j:j1});
+  for(let j=j1-1;j>=j0+1;j--)peri.push({i:i0,j});
+  const g=new THREE.BufferGeometry(),pos=[],col=[],idx=[];
+  const fill=[0.80,0.71,0.52];
+  for(const {i,j} of peri){
+    const x=wx(i),z=wz(j), by=Math.min(padY,wy(i,j))-0.3;
+    pos.push(x,padY,z); col.push(fill[0],fill[1],fill[2]);
+    pos.push(x,by,z);   col.push(fill[0]*0.78,fill[1]*0.78,fill[2]*0.78);
+  }
+  const P=peri.length;
+  for(let k=0;k<P;k++){
+    const a=(k*2), b=a+1, c=((k+1)%P)*2, d=c+1;
+    idx.push(a,b,c, c,b,d);
+  }
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  grp.add(new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98,side:THREE.DoubleSide})));
+
+  // ---- concrete pad cap + building sitting ON it ----
+  const w=((i1-i0)/(N-1))*E, d=((j1-j0)/(N-1))*E;
+  const cap=new THREE.Mesh(new THREE.BoxGeometry(w,1.1,d),
+     new THREE.MeshStandardMaterial({color:0xe3e8ec,roughness:.9}));
+  cap.position.set(wx(pi),padY+0.55,wz(pj)); grp.add(cap);
+  const bh=7;
+  const bld=new THREE.Mesh(new THREE.BoxGeometry(w*0.5,bh,d*0.34),
      new THREE.MeshStandardMaterial({color:0xcfd6db,roughness:.7,metalness:.05}));
-  bld.position.set(wx(pi),padH+1.4+bh/2,wz(pj));
-  grp.add(slab,bld);
+  bld.position.set(wx(pi),padY+1.1+bh/2,wz(pj)); grp.add(bld);
   return grp;
 }
 
