@@ -1,0 +1,222 @@
+<title>Red Rock Site &mdash; 3D Civil Model</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interactive 3D site model built from real USGS elevation data of Red Rock Canyon, Nevada — terrain, subsurface geology, and a graded building pad. Built by Heston Norcott.">
+<style>
+  :root{
+    --bg:#0b1016; --panel:rgba(14,20,27,.86); --line:#26313c; --ink:#e8eef2; --muted:#8598a5;
+    --accent:#4fd0d8; --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:linear-gradient(#141d27 0%,#0b1016 55%,#080c11 100%);color:var(--ink);
+    font-family:var(--sans);overflow:hidden}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:fixed;z-index:5;font-family:var(--mono)}
+  .title{top:16px;left:18px}
+  .title .brand{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.01em}
+  .title .brand b{color:var(--accent)}
+  .title .sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .title a{color:var(--muted);text-decoration:none}
+  .title a:hover{color:var(--accent)}
+  .legend{top:16px;right:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:13px 15px;backdrop-filter:blur(8px);max-width:240px}
+  .legend h4{margin:0 0 9px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .legend .row{display:flex;align-items:center;gap:8px;font-size:11.5px;margin-bottom:5px;color:var(--ink)}
+  .legend .sw{width:16px;height:11px;border-radius:2px;flex:none;border:1px solid rgba(255,255,255,.12)}
+  .legend .grad{width:16px;height:34px;border-radius:2px;flex:none;
+    background:linear-gradient(#a5452b,#cdb27f)}
+  .legend .note{font-size:10px;color:var(--muted);margin-top:9px;line-height:1.45}
+  .panel{bottom:16px;left:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px);display:flex;gap:16px;
+    align-items:center;flex-wrap:wrap}
+  .panel .ctl{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+  input[type=range]{accent-color:var(--accent);width:90px}
+  .panel label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink);cursor:pointer}
+  .panel input[type=checkbox]{accent-color:var(--accent)}
+  .hint{bottom:18px;right:16px;font-size:10.5px;color:var(--muted)}
+  @media (max-width:640px){.legend{display:none}.hint{display:none}}
+  #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;color:var(--muted);z-index:9}
+</style>
+
+<canvas id="c"></canvas>
+<div id="load">building terrain from USGS data&hellip;</div>
+
+<div class="hud title">
+  <div class="brand">Red Rock Site &middot; <b>3D Civil Model</b></div>
+  <div class="sub">real USGS elevation &middot; Red Rock Canyon, NV &middot; <a href="/">thebigpicture.tech</a></div>
+</div>
+
+<div class="hud legend">
+  <h4>Terrain elevation</h4>
+  <div class="row"><span class="grad"></span><span>high &rarr; low<br>(Aztec sandstone &rarr; desert floor)</span></div>
+  <h4 style="margin-top:12px">Subsurface geology</h4>
+  <div class="row"><span class="sw" style="background:#c9b189"></span>Alluvium</div>
+  <div class="row"><span class="sw" style="background:#d8d2c4"></span>Caliche</div>
+  <div class="row"><span class="sw" style="background:#b06038"></span>Weathered sandstone</div>
+  <div class="row"><span class="sw" style="background:#7c4630"></span>Bedrock</div>
+  <div class="row" style="margin-top:8px"><span class="sw" style="background:#e9edf0"></span>Graded building pad</div>
+  <div class="note">~2.5 km site &middot; ~672 m relief<br>vertical exaggeration for clarity</div>
+</div>
+
+<div class="hud panel">
+  <div class="ctl">vertical exag. <input type="range" id="exag" min="1" max="3" step="0.1" value="1.6"></div>
+  <label><input type="checkbox" id="spin" checked> auto-rotate</label>
+</div>
+<div class="hud hint">drag to orbit &middot; scroll to zoom</div>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script>
+"use strict";
+const NS="/lib"; // (three + OrbitControls already loaded)
+let renderer, scene, camera, controls, group, terrainMesh, exag=1.6;
+
+// ---- geometry helpers ----
+function lerpC(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}
+const TAN=[205,178,127], RED=[165,69,43];               // terrain low->high
+const LAY={allu:[201,177,137],cal:[216,210,196],weath:[176,96,56],bed:[124,70,48]};
+function undByPos(x,z){return Math.sin(x*0.11)*1.4+Math.cos(z*0.09+1.3)*1.2;} // layer wobble
+function layerColor(depth,x,z){
+  const w=undByPos(x,z);
+  const a=7+w, b=11+w, c=24+w*1.4;
+  let col = depth<a?LAY.allu : depth<b?LAY.cal : depth<c?LAY.weath : LAY.bed;
+  const j=((Math.sin(x*2.1+z*1.7)+1)*6)-3;               // per-vertex grit
+  return [(col[0]+j)/255,(col[1]+j)/255,(col[2]+j)/255];
+}
+
+let H, N, E=180, HREL=58, BASE=-46;                       // world scaling
+function hAt(i,j){return H[j*N+i];}
+function wx(i){return (i/(N-1)-0.5)*E;}
+function wz(j){return (j/(N-1)-0.5)*E;}
+function wy(i,j){return hAt(i,j)*HREL*exag;}
+
+function buildTerrain(){
+  const g=new THREE.BufferGeometry();
+  const pos=[],col=[],idx=[];
+  for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+    pos.push(wx(i),wy(i,j),wz(j));
+    const c=lerpC(TAN,RED,hAt(i,j)); const jn=((i*7+j*13)%9)-4;
+    col.push((c[0]+jn)/255,(c[1]+jn)/255,(c[2]+jn)/255);
+  }
+  for(let j=0;j<N-1;j++)for(let i=0;i<N-1;i++){
+    const a=j*N+i,b=j*N+i+1,c2=(j+1)*N+i,d=(j+1)*N+i+1;
+    idx.push(a,c2,b, b,c2,d);
+  }
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+
+// one stratified vertical wall along an edge polyline of surface points
+function buildWall(edge){                 // edge: [{i,j}]
+  const ROWS=44, g=new THREE.BufferGeometry(), pos=[],col=[],idx=[];
+  const M=edge.length;
+  for(let c=0;c<M;c++){
+    const {i,j}=edge[c], x=wx(i), z=wz(j), top=wy(i,j);
+    for(let r=0;r<=ROWS;r++){
+      const t=r/ROWS, y=top*(1-t)+BASE*t;
+      pos.push(x,y,z);
+      const cc=layerColor(top-y,x,z); col.push(cc[0],cc[1],cc[2]);
+    }
+  }
+  const rc=ROWS+1;
+  for(let c=0;c<M-1;c++)for(let r=0;r<ROWS;r++){
+    const a=c*rc+r,b=(c+1)*rc+r,d=a+1,e=b+1;
+    idx.push(a,b,d, d,b,e);
+  }
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+
+function buildBottom(){
+  const g=new THREE.BufferGeometry();
+  const x0=wx(0),x1=wx(N-1),z0=wz(0),z1=wz(N-1);
+  const pos=[x0,BASE,z0, x1,BASE,z0, x1,BASE,z1, x0,BASE,z1];
+  const col=[]; for(let k=0;k<4;k++)col.push(LAY.bed[0]/255,LAY.bed[1]/255,LAY.bed[2]/255);
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex([0,2,1, 0,3,2]); g.computeVertexNormals();
+  return g;
+}
+
+function edgeList(kind){
+  const e=[];
+  if(kind==="front")for(let i=0;i<N;i++)e.push({i,j:N-1});
+  if(kind==="back") for(let i=0;i<N;i++)e.push({i,j:0});
+  if(kind==="left") for(let j=0;j<N;j++)e.push({i:0,j});
+  if(kind==="right")for(let j=0;j<N;j++)e.push({i:N-1,j});
+  return e;
+}
+
+let pad;
+function buildPad(){
+  // pick a spot with moderate slope in the visible front-left
+  const pi=44, pj=86, K=9;
+  let sum=0,cnt=0;
+  for(let dj=-K;dj<=K;dj++)for(let di=-K;di<=K;di++){
+    const i=pi+di,j=pj+dj; if(i<0||i>=N||j<0||j>=N)continue; sum+=hAt(i,j);cnt++;
+  }
+  const padH=(sum/cnt)*HREL*exag;
+  const w=(2*K/(N-1))*E;
+  const grp=new THREE.Group();
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(w,1.4,w),
+     new THREE.MeshStandardMaterial({color:0xe9edf0,roughness:.85}));
+  slab.position.set(wx(pi),padH+0.7,wz(pj));
+  const bh=9;
+  const bld=new THREE.Mesh(new THREE.BoxGeometry(w*0.5,bh,w*0.34),
+     new THREE.MeshStandardMaterial({color:0xcfd6db,roughness:.7,metalness:.05}));
+  bld.position.set(wx(pi),padH+1.4+bh/2,wz(pj));
+  grp.add(slab,bld);
+  return grp;
+}
+
+function rebuild(){
+  if(group){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
+  group=new THREE.Group();
+  const wallMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,flatShading:false});
+  const terrMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide});
+  terrainMesh=new THREE.Mesh(buildTerrain(),terrMat);
+  group.add(terrainMesh);
+  ["front","back","left","right"].forEach(k=>group.add(new THREE.Mesh(buildWall(edgeList(k)),wallMat)));
+  group.add(new THREE.Mesh(buildBottom(),wallMat));
+  group.add(buildPad());
+  scene.add(group);
+}
+
+function init(data){
+  H=data.h; N=data.n;
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,2000);
+  camera.position.set(150,120,175);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08;
+  controls.target.set(0,-4,0); controls.maxPolarAngle=Math.PI*0.49;
+  controls.minDistance=70; controls.maxDistance=520;
+  controls.autoRotate=true; controls.autoRotateSpeed=0.5;
+  // lights
+  scene.add(new THREE.HemisphereLight(0xbfd4e6,0x4a3b30,0.85));
+  const sun=new THREE.DirectionalLight(0xfff2df,1.15);
+  sun.position.set(120,180,60); scene.add(sun);
+  scene.add(new THREE.AmbientLight(0x404850,0.35));
+  rebuild();
+  resize(); window.addEventListener("resize",resize);
+  document.getElementById("load").style.display="none";
+  document.getElementById("exag").addEventListener("input",e=>{exag=+e.target.value;rebuild();});
+  document.getElementById("spin").addEventListener("change",e=>controls.autoRotate=e.target.checked);
+  loop();
+}
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);}
+
+fetch("/data/redrock_site.json").then(r=>r.json()).then(init).catch(e=>{
+  document.getElementById("load").textContent="Could not load terrain data.";
+  console.error(e);
+});
+</script>
