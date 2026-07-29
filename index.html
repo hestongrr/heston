@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heston Norcott &mdash; Geotechnical Engineer &amp; AI Builder</title>
+  <meta name="description" content="Geotechnical engineer (E.I., PE 2026) specializing in slope stability, deep foundations, and construction materials testing across Nevada. Also builds custom engineering automation and applied-AI systems — the rare practitioner who speaks dirt, code, and AI.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://thebigpicture.tech/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Heston Norcott &mdash; Geotechnical Engineer &amp; AI Builder">
+  <meta property="og:description" content="Geotechnical engineer (E.I., PE 2026) &amp; automation builder serving Nevada — slope stability, deep foundations, materials testing, custom engineering software, and applied AI for AEC.">
+  <meta property="og:url" content="https://thebigpicture.tech/">
+  <meta property="og:site_name" content="Heston Norcott">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Heston Norcott &mdash; Geotechnical Engineer &amp; AI Builder">
+  <meta name="twitter:description" content="Geotechnical engineer (E.I., PE 2026) &amp; automation builder — slope stability, deep foundations, custom engineering software, and applied AI for AEC.">
+  <meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:image" content="https://thebigpicture.tech/og-image.png">
+  <meta name="theme-color" content="#0c1a1c">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* nav */
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  /* hero */
+  .hero{background:
+      radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+      var(--hero);
+    color:var(--hero-ink);border-bottom:1px solid #16302f;overflow:hidden}
+  .hero .wrap{padding:74px 22px 66px;position:relative}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 20px}
+  .hero h1{font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero .sub{max-width:60ch;font-size:clamp(16px,2.1vw,20px);color:#b9cbc9;margin:22px 0 0;
+    line-height:1.5}
+  .hero .sub b{color:var(--hero-ink);font-weight:600}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+  .btn{font-family:var(--mono);font-size:13px;letter-spacing:.02em;cursor:pointer;
+    border-radius:8px;padding:11px 18px;border:1px solid #2a4a49;background:transparent;
+    color:var(--hero-ink);transition:.15s;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{border-color:var(--hero-accent);color:var(--hero-accent)}
+  .btn.solid{background:var(--hero-accent);color:#04211f;border-color:var(--hero-accent);font-weight:700}
+  .btn.solid:hover{filter:brightness(1.08);color:#04211f}
+  .hero .wave{position:absolute;right:-40px;bottom:-30px;width:min(46%,420px);opacity:.5;
+    pointer-events:none}
+
+  section{padding:64px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(24px,3.4vw,32px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:64ch;margin:0 0 34px;font-size:15.5px}
+
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:760px){.pillars{grid-template-columns:1fr}}
+  .pillar{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px}
+  .pillar .n{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em}
+  .pillar h3{font-size:18px;margin:10px 0 8px;letter-spacing:-.01em}
+  .pillar p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+  .pillar .tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+  .pillar .tags span{font-family:var(--mono);font-size:10.5px;color:var(--ink);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.tools{grid-template-columns:1fr}}
+  .tool{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+    border-radius:13px;padding:22px;transition:.15s}
+  .tool:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tool .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent)}
+  .tool h3{font-size:20px;margin:9px 0 8px;letter-spacing:-.01em}
+  .tool p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55;flex:1}
+  .tool .go{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
+
+  .about{display:grid;grid-template-columns:1.3fr 1fr;gap:36px;align-items:start}
+  @media (max-width:760px){.about{grid-template-columns:1fr;gap:22px}}
+  .about p{color:var(--ink);font-size:15.5px;line-height:1.62;margin:0 0 14px}
+  .about p.q{color:var(--muted)}
+  .facts{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:6px 20px}
+  .facts .row{display:flex;justify-content:space-between;gap:14px;padding:13px 0;
+    border-bottom:1px solid var(--line);font-size:13.5px}
+  .facts .row:last-child{border-bottom:0}
+  .facts .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted)}
+  .facts .v{text-align:right;font-weight:600}
+
+  .contact{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:38px;text-align:center}
+  .contact h2{font-size:clamp(22px,3vw,28px);margin:0 0 10px;letter-spacing:-.02em}
+  .contact p{color:var(--muted);max-width:52ch;margin:0 auto 24px;font-size:15px}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;margin-top:20px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  /* products shelf */
+  .prodgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.prodgrid{grid-template-columns:1fr}}
+  .prod{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px;
+    display:flex;flex-direction:column}
+  .prod .price{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.04em;
+    text-transform:uppercase}
+  .prod h3{font-size:19px;margin:9px 0 8px;letter-spacing:-.01em}
+  .prod p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55;flex:1}
+  .prod .buy{align-self:flex-start;font-family:var(--mono);font-size:12.5px;cursor:pointer;
+    border-radius:8px;padding:9px 15px;border:1px solid var(--accent);background:var(--accent);
+    color:var(--accent-ink);font-weight:600}
+  .prod .buy:hover{filter:brightness(1.08)}
+
+  /* lead form */
+  .leadform{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:26px auto 0;
+    text-align:left}
+  .leadform .full{grid-column:1/-1}
+  .leadform label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .leadform input,.leadform select,.leadform textarea{width:100%;font-family:var(--sans);
+    font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line-2);
+    border-radius:8px;padding:10px 11px}
+  .leadform textarea{min-height:112px;resize:vertical}
+  .leadform :focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .leadform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .leadform button{grid-column:1/-1;justify-self:center;font-family:var(--mono);font-size:13px;
+    font-weight:700;cursor:pointer;border:1px solid var(--accent);background:var(--accent);
+    color:var(--accent-ink);border-radius:9px;padding:12px 30px}
+  .leadform button:hover{filter:brightness(1.08)}
+  .leadform button:disabled{opacity:.6;cursor:default}
+  .formmsg{grid-column:1/-1;text-align:center;font-size:14px;margin:4px 0 0}
+  .formmsg.ok{color:#2e8b57}
+  .formmsg.err{color:#c0392b}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "Heston Norcott — Geotechnical Engineer & AI Builder",
+      "url": "https://thebigpicture.tech/"
+    },
+    {
+      "@type": "Person",
+      "name": "Heston Norcott",
+      "jobTitle": "Geotechnical Engineer",
+      "url": "https://thebigpicture.tech",
+      "sameAs": ["https://www.linkedin.com/in/hestonnorcott/"],
+      "knowsAbout": [
+        "Geotechnical Engineering",
+        "Civil Engineering",
+        "Software Development",
+        "Artificial Intelligence",
+        "Finite-Difference Modeling",
+        "Slope Stability",
+        "Deep Foundations"
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <span class="name">Heston <b>Norcott</b></span>
+    <span class="links">
+      <a href="#tools">Work</a>
+      <a href="#services">Services</a>
+      <a href="#about" class="hideS">About</a>
+      <a href="#contact">Hire me</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Geotechnical Engineering &middot; Software &middot; Applied AI</p>
+    <h1>Engineer who speaks<br>dirt, code, and AI.</h1>
+    <p class="sub">I'm <b>Heston Norcott</b> &mdash; a geotechnical &amp; civil engineer (E.I., PE&nbsp;2026)
+      with 10+ years of Nevada ground under my boots. I take on <b>geotechnical consulting, engineering
+      automation, and applied-AI work</b> &mdash; on contract. The rare part isn't any one of those; it's
+      getting all three from the same engineer.</p>
+    <div class="cta">
+      <a class="btn solid" href="#contact">Work with me</a>
+      <a class="btn" href="#tools">See what I build</a>
+      <a class="btn" href="resume.html">Resume</a>
+      <a class="btn" href="blog/">Blog</a>
+      <a class="btn" href="https://www.linkedin.com/in/hestonnorcott/" target="_blank" rel="noopener">LinkedIn &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="work">
+    <div class="wrap">
+      <p class="sec-label">What I do</p>
+      <h2 class="sec">Three fields most people never combine</h2>
+      <p class="sec-intro">A physical-engineering domain, the software to automate it, and the applied
+        AI to push it further &mdash; run end to end by one practitioner.</p>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="n">01</span>
+          <h3>Geotechnical engineering</h3>
+          <p>Slope stability, deep foundations, settlement, site investigation, and construction
+            materials testing across Nevada &mdash; from utility-scale solar to Tier-1 developments.</p>
+          <div class="tags"><span>Slope stability</span><span>Deep foundations</span><span>Oasys</span><span>PE-Geotech 2026</span></div>
+        </div>
+        <div class="pillar">
+          <span class="n">02</span>
+          <h3>Software &amp; automation</h3>
+          <p>Custom Python tools and data pipelines that replace the manual, spreadsheet-bound
+            workflows engineering offices run on &mdash; plus CAD / Civil&nbsp;3D automation.</p>
+          <div class="tags"><span>Python</span><span>Civil 3D</span><span>Data pipelines</span><span>Automation</span></div>
+        </div>
+        <div class="pillar">
+          <span class="n">03</span>
+          <h3>Applied AI</h3>
+          <p>Self-hosted LLMs, retrieval-augmented generation, agentic / MCP workflows, and
+            generative pipelines &mdash; built and operated on my own hardware, applied to real AEC work.</p>
+          <div class="tags"><span>LLMs</span><span>RAG</span><span>Agents / MCP</span><span>AI for AEC</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tools" style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">What I build</p>
+      <h2 class="sec">A sample of the custom work &mdash; live, not screenshots</h2>
+      <p class="sec-intro">Working demos I built to show capability: the kind of custom engineering
+        software and modeling I deliver for clients. Your problem, purpose-built &mdash; for pay.</p>
+      <div class="tools">
+        <a class="tool" href="./boring-log-generator.html">
+          <span class="kind">Geotechnical &middot; drafting</span>
+          <h3>Boring Log Generator</h3>
+          <p>Enter soil strata, SPT values, and groundwater; get a clean, professional USCS boring
+            log with hatch patterns and an SPT plot, exportable to PNG. Live in the browser.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./cavity-detection-sim.html">
+          <span class="kind">Geophysics &middot; from my thesis</span>
+          <h3>Surface-Wave Cavity Detection</h3>
+          <p>A 2-D elastic finite-difference seismic simulator &mdash; the core method of my MS thesis.
+            Fire a shot, watch P, S, and Rayleigh waves scatter off a buried cavity, read the gather.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap about">
+      <div>
+        <p class="sec-label">Background</p>
+        <h2 class="sec" style="margin-bottom:18px">A builder, not just a user</h2>
+        <p>I hold an M.S. in Civil &amp; Environmental Engineering from UNLV, where my thesis applied
+          finite-difference seismic modeling to detect shallow buried cavities from surface waves.
+          Since then I've led field programs and lab testing on projects across Nevada &mdash; drilling
+          crews, statewide exploration, materials testing to ICC / ACI / NAQTC standards.</p>
+        <p>Somewhere along the way I started writing my own software to fix the workflows the
+          industry tools got wrong &mdash; and more recently, running a full applied-AI stack on my own
+          hardware. That combination gives me a practitioner's view of where engineering and AI
+          software actually deliver, and where it's hype.</p>
+        <p class="q">A good engineer solves the problem. A good lead makes the next person able to
+          solve it too. That's the standard I build to.</p>
+      </div>
+      <div class="facts">
+        <div class="row"><span class="k">Discipline</span><span class="v">Geotechnical / Civil</span></div>
+        <div class="row"><span class="k">License</span><span class="v">E.I. &middot; PE-Geotech 2026</span></div>
+        <div class="row"><span class="k">Education</span><span class="v">M.S. Civil Eng., UNLV</span></div>
+        <div class="row"><span class="k">Experience</span><span class="v">10+ years, Nevada</span></div>
+        <div class="row"><span class="k">Certifications</span><span class="v">RSO &middot; ICC Soils &middot; NAQTC &middot; ACI</span></div>
+        <div class="row"><span class="k">Also</span><span class="v">Python &middot; LLMs &middot; RAG &middot; FD modeling</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">Work with me</p>
+      <h2 class="sec">Paid engagements &mdash; three ways</h2>
+      <p class="sec-intro">Contract, expert-network, and advisory work. Same rigor a stamped report
+        demands &mdash; whether the deliverable is a report, a tool, or a model.</p>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="n">&#8250;</span>
+          <h3>Geotechnical consulting</h3>
+          <p>Slope stability, foundations, settlement, and materials-testing review &mdash; project
+            support and expert / diligence calls. Stamped review unlocks with PE&nbsp;2026.</p>
+        </div>
+        <div class="pillar">
+          <span class="n">&#8250;</span>
+          <h3>Engineering automation builds</h3>
+          <p>Fixed-scope Python and CAD tools that replace manual, spreadsheet-bound workflows and
+            save your team hours &mdash; built, documented, and handed off.</p>
+        </div>
+        <div class="pillar">
+          <span class="n">&#8250;</span>
+          <h3>Applied-AI advisory</h3>
+          <p>Where AI actually helps in AEC &mdash; LLM / RAG / agent systems, evaluated and built by
+            someone who has shipped them, not just read about them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="products">
+    <div class="wrap">
+      <p class="sec-label">Off the shelf</p>
+      <h2 class="sec">Tools you can put to work</h2>
+      <p class="sec-intro">Want the tools above for your own team, or one built for your exact
+        workflow? Two ways to buy.</p>
+      <div class="prodgrid">
+        <div class="prod">
+          <span class="price">License &middot; custom quote</span>
+          <h3>License a tool for your firm</h3>
+          <p>The boring-log generator, the seismic simulator, or another demo here &mdash; branded for
+            your company, hosted or handed off. Useful for training, proposals, and client-facing work.</p>
+          <a class="buy" href="#contact" data-interest="License a tool">Inquire &rarr;</a>
+        </div>
+        <div class="prod">
+          <span class="price">Custom build &middot; fixed scope</span>
+          <h3>A tool built to your spec</h3>
+          <p>Have a manual, spreadsheet-bound workflow eating your team's hours? I build a purpose-made
+            tool for it &mdash; scoped and priced up front, documented, and yours to keep.</p>
+          <a class="buy" href="#contact" data-interest="Custom tool build">Get a quote &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact">
+        <h2>Let's talk about your project</h2>
+        <p>Available now for paid contract, consulting, and expert engagements in geotechnical
+          engineering, automation, and applied AI. Tell me the problem &mdash; I'll tell you if I'm the
+          right person to solve it.</p>
+        <form class="leadform" id="leadform" autocomplete="on">
+          <div><label for="lf-name">Name</label><input id="lf-name" name="name" required></div>
+          <div><label for="lf-email">Email</label><input id="lf-email" name="email" type="email" required></div>
+          <div><label for="lf-company">Company (optional)</label><input id="lf-company" name="company"></div>
+          <div><label for="lf-interest">Interested in</label>
+            <select id="lf-interest" name="interest">
+              <option>Geotechnical consulting</option>
+              <option>Engineering automation build</option>
+              <option>Applied-AI advisory</option>
+              <option>License a tool</option>
+              <option>Custom tool build</option>
+              <option>Something else</option>
+            </select></div>
+          <div class="full"><label for="lf-message">What do you need?</label><textarea id="lf-message" name="message" required></textarea></div>
+          <input class="hp" tabindex="-1" autocomplete="off" name="website" aria-hidden="true">
+          <button type="submit" id="lf-submit">Send &rarr;</button>
+          <p class="formmsg" id="lf-msg" hidden></p>
+        </form>
+        <p style="margin-top:18px;font-size:12.5px;color:var(--muted)">
+          <a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a>
+          &middot; <a href="tel:+17022040407">702-204-0407</a>
+          &middot; <a href="https://discord.com/users/848024964015063041" target="_blank" rel="noopener">Discord: heston_norcott &#8599;</a>
+          &middot; <a href="https://www.linkedin.com/in/hestonnorcott/" target="_blank" rel="noopener">LinkedIn &#8599;</a>
+          &middot; <a href="https://doi.org/10.34917/5836146" target="_blank" rel="noopener">Thesis &#8599;</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.)</span>
+    <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> &middot; <a href="tel:+17022040407">702-204-0407</a> &middot; Discord: heston_norcott</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // product "buy" buttons preset the interest dropdown
+  document.querySelectorAll('.buy[data-interest]').forEach(function(a){
+    a.addEventListener('click',function(){
+      var sel=document.getElementById('lf-interest');
+      if(sel){ sel.value=a.getAttribute('data-interest'); }
+    });
+  });
+  var f=document.getElementById('leadform');
+  if(!f) return;
+  var msg=document.getElementById('lf-msg'), btn=document.getElementById('lf-submit');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    msg.hidden=true; btn.disabled=true; btn.textContent='Sending\u2026';
+    var body={name:f.name.value,email:f.email.value,company:f.company.value,
+              interest:f.interest.value,message:f.message.value,website:f.website.value};
+    fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},
+                       body:JSON.stringify(body)})
+      .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+      .then(function(res){
+        if(res.ok && res.j && res.j.ok){
+          f.reset(); msg.className='formmsg ok';
+          msg.textContent="Thanks \u2014 your message is on its way. I'll get back to you soon.";
+        } else {
+          msg.className='formmsg err';
+          msg.textContent=(res.j && res.j.error) || 'Something went wrong \u2014 please email me directly.';
+        }
+        msg.hidden=false; btn.disabled=false; btn.textContent='Send \u2192';
+      })
+      .catch(function(){
+        msg.className='formmsg err';
+        msg.textContent='Network error \u2014 please try again, or reach me on LinkedIn.';
+        msg.hidden=false; btn.disabled=false; btn.textContent='Send \u2192';
+      });
+  });
+})();
+</script>
+</body>
+</html>

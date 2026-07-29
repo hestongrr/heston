@@ -1,0 +1,10 @@
+# thebigpicture.tech — local robots.txt
+# Note: Cloudflare edge serves its own managed robots.txt
+# which takes precedence. If you update Cloudflare's managed copy,
+# add this line there:
+#   Sitemap: https://thebigpicture.tech/sitemap.xml
+
+User-agent: *
+Allow: /
+
+Sitemap: https://thebigpicture.tech/sitemap.xml

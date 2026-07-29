@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boring Log Generator</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/boring-log-generator.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Boring Log Generator — USCS Soil Boring Log with SPT Plot">
+<meta property="og:description" content="Enter soil strata, SPT values, and groundwater; get a clean, professional USCS boring log with hatch patterns and an SPT plot, exportable to PNG.">
+<meta property="og:url" content="https://thebigpicture.tech/boring-log-generator.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boring Log Generator — USCS Soil Boring Log with SPT Plot">
+<meta name="twitter:description" content="Enter soil strata, SPT values, and groundwater; get a clean, professional USCS boring log with hatch patterns and an SPT plot, exportable to PNG.">
+<meta name="twitter:image" content="https://thebigpicture.tech/og-image.png">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#E7EAE7; --panel:#F6F7F4; --panel-2:#EEF0EC; --ink:#1A1E1B; --muted:#586360;
+    --line:#D2D8D2; --line-strong:#BEC5BE; --accent:#0E6C77; --accent-ink:#ffffff;
+    --signal:#B23A2E; --field:#FFFFFF; --field-line:#C7CEC7;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --radius:9px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#101312; --panel:#191D1B; --panel-2:#1F2421; --ink:#E7EAE6; --muted:#9AA39D;
+      --line:#2A302C; --line-strong:#39413B; --accent:#39B2BA; --accent-ink:#052220;
+      --signal:#E26A5C; --field:#12100E; --field-line:#343B36;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#E7EAE7; --panel:#F6F7F4; --panel-2:#EEF0EC; --ink:#1A1E1B; --muted:#586360;
+    --line:#D2D8D2; --line-strong:#BEC5BE; --accent:#0E6C77; --accent-ink:#ffffff;
+    --signal:#B23A2E; --field:#FFFFFF; --field-line:#C7CEC7;
+  }
+  :root[data-theme="dark"]{
+    --bg:#101312; --panel:#191D1B; --panel-2:#1F2421; --ink:#E7EAE6; --muted:#9AA39D;
+    --line:#2A302C; --line-strong:#39413B; --accent:#39B2BA; --accent-ink:#052220;
+    --signal:#E26A5C; --field:#12100E; --field-line:#343B36;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.45}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 22px 60px}
+  header.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:22px}
+  .brand b{color:var(--accent)}
+  .tagline{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.02em}
+  .byline{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .byline b{color:var(--ink);font-weight:600}
+  .app{display:grid;grid-template-columns:370px 1fr;gap:22px;align-items:start}
+  @media (max-width:900px){.app{grid-template-columns:1fr}}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px 18px}
+  .panel + .panel{margin-top:16px}
+  .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+  .sec-h h2{font-size:12px;text-transform:uppercase;letter-spacing:.13em;margin:0;
+    color:var(--muted);font-weight:700}
+  .sec-h .rule{flex:1;height:1px;background:var(--line)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld.wide{grid-column:1/-1}
+  label{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--muted)}
+  input,select,textarea{font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--field);border:1px solid var(--field-line);border-radius:6px;
+    padding:7px 8px;width:100%}
+  textarea{resize:vertical;min-height:38px;line-height:1.35}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);
+    outline-offset:1px;border-color:var(--accent)}
+  input[type=number]{font-variant-numeric:tabular-nums}
+
+  table.editor{width:100%;border-collapse:collapse}
+  table.editor th{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;
+    padding:0 6px 6px}
+  table.editor td{padding:3px 4px;vertical-align:top}
+  table.editor td:first-child{padding-left:0}
+  .row-del{border:1px solid var(--field-line);background:transparent;color:var(--muted);
+    border-radius:6px;cursor:pointer;width:28px;height:32px;font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .row-del:hover{border-color:var(--signal);color:var(--signal)}
+  .chk{display:flex;align-items:center;justify-content:center;height:32px}
+  .chk input{width:16px;height:16px;accent-color:var(--accent)}
+
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.03em;cursor:pointer;
+    border-radius:7px;padding:8px 12px;border:1px solid var(--field-line);
+    background:var(--panel-2);color:var(--ink);transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.add{width:100%;margin-top:8px;border-style:dashed}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+    font-weight:600}
+  .btn.primary:hover{filter:brightness(1.08);color:var(--accent-ink)}
+  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:2px}
+
+  .stage{position:sticky;top:18px}
+  .stage-inner{background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/22px 22px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/22px 22px,
+      var(--panel);
+    background-blend-mode:normal;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;overflow:auto}
+  .stage-inner svg{display:block;width:100%;height:auto;
+    filter:drop-shadow(0 6px 20px rgba(0,0,0,.16))}
+  .hint{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;
+    display:flex;gap:8px;align-items:center}
+  .hint .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    header.top,.controls,.hint{display:none}
+    .app{display:block}
+    .stage-inner{border:0;background:#fff;padding:0}
+    .stage-inner svg{filter:none;width:100%}
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="brand">Boring&nbsp;Log <b>Generator</b></div>
+    </div>
+    <div class="tagline">Geotechnical field-log drafting &middot; USCS &middot; SPT</div>
+    <div class="byline">built by <b>Heston Norcott</b> &middot; Geotechnical Engineer (E.I.)</div>
+  </header>
+
+  <div class="app">
+    <div class="controls">
+      <div class="panel">
+        <div class="sec-h"><h2>Project</h2><span class="rule"></span></div>
+        <div class="grid2" id="metaGrid"></div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>Strata &middot; top &rarr; bottom</h2><span class="rule"></span></div>
+        <table class="editor">
+          <thead><tr>
+            <th style="width:74px">Base depth</th><th style="width:82px">USCS</th>
+            <th>Description</th><th style="width:30px"></th>
+          </tr></thead>
+          <tbody id="strataBody"></tbody>
+        </table>
+        <button class="btn add" id="addLayer">+ Add stratum</button>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>SPT samples</h2><span class="rule"></span></div>
+        <table class="editor">
+          <thead><tr>
+            <th style="width:80px">Depth</th><th style="width:70px">N-value</th>
+            <th style="width:70px">Refusal</th><th style="width:30px"></th>
+          </tr></thead>
+          <tbody id="sptBody"></tbody>
+        </table>
+        <button class="btn add" id="addSpt">+ Add sample</button>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>Export</h2><span class="rule"></span></div>
+        <div class="actions">
+          <button class="btn primary" id="dlPng">Download PNG</button>
+          <button class="btn" id="printBtn">Print</button>
+          <button class="btn" id="resetBtn">Reset to demo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-inner">
+        <div id="log"></div>
+      </div>
+      <div class="hint"><span class="dot"></span> Edit any field on the left &mdash; the log redraws live. Export a crisp PNG for your portfolio or a report appendix.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------- soil catalog: USCS symbol \u2192 name, fill colour, hatch group ---------- */
+const SOIL = {
+  FILL:{name:"Fill",                    fill:"#AFA792", pat:"fill"},
+  OL:{name:"Organic silt / clay",       fill:"#6E5334", pat:"organic"},
+  OH:{name:"Organic clay",              fill:"#5C4830", pat:"organic"},
+  PT:{name:"Peat",                      fill:"#463724", pat:"organic"},
+  ML:{name:"Silt",                      fill:"#C6B37E", pat:"silt"},
+  MH:{name:"Elastic silt",              fill:"#BCA974", pat:"silt"},
+  CL:{name:"Lean clay",                 fill:"#8B6B4B", pat:"clay"},
+  CH:{name:"Fat clay (high plasticity)",fill:"#795A3D", pat:"clay"},
+  SP:{name:"Poorly graded sand",        fill:"#E9C24B", pat:"sand"},
+  SW:{name:"Well graded sand",          fill:"#E5BD43", pat:"sand"},
+  SM:{name:"Silty sand",                fill:"#E4C868", pat:"sand"},
+  SC:{name:"Clayey sand",               fill:"#D9B85A", pat:"sand"},
+  GP:{name:"Poorly graded gravel",      fill:"#CBC5B3", pat:"gravel"},
+  GW:{name:"Well graded gravel",        fill:"#C2BBA6", pat:"gravel"},
+  GM:{name:"Silty gravel",              fill:"#C8C2AF", pat:"gravel"},
+  GC:{name:"Clayey gravel",             fill:"#BDB7A2", pat:"gravel"},
+  R:{name:"Bedrock",                    fill:"#8C99A8", pat:"rock"}
+};
+const USCS_ORDER=["FILL","OL","OH","PT","ML","MH","CL","CH","SP","SW","SM","SC","GP","GW","GM","GC","R"];
+
+/* ---------- initial state (echoes a real Las Vegas-basin profile) ---------- */
+function demo(){return{
+  meta:{project:"Boring Log Generator \u2014 Demo",location:"Las Vegas, NV",
+    elev:"1240.5",boring:"BH-01",date:"2026-07-29",method:"Hollow-Stem Auger",
+    logged:"H. Norcott, E.I.",gwt:"11.5",units:"ft"},
+  layers:[
+    {to:3, uscs:"OL", desc:"Dark brown organic silt, moist, loose, with fine root fibers."},
+    {to:10,uscs:"SP", desc:"Light brown fine to medium sand, dry, medium dense, poorly graded."},
+    {to:16,uscs:"SM", desc:"Yellowish-brown silty sand, wet below GWT, medium dense, non-plastic."},
+    {to:24,uscs:"CH", desc:"Gray high-plasticity clay, very stiff, moist, contains trace gravel."},
+    {to:28,uscs:"GP", desc:"Coarse gravel with sand, dense, wet, subrounded particles."},
+    {to:32,uscs:"R",  desc:"Highly weathered, fractured sandstone bedrock, very dense, gray."}
+  ],
+  spt:[
+    {d:2,n:4},{d:5,n:9},{d:7.5,n:14},{d:10,n:22},{d:12.5,n:19},
+    {d:15,n:26},{d:20,n:38},{d:25,n:44},{d:30,n:50,ref:true}
+  ]
+};}
+let S = demo();
+
+/* ---------- text measuring for SVG word-wrap ---------- */
+const _mc = document.createElement("canvas").getContext("2d");
+function wrap(text,maxW,font){
+  _mc.font=font; const words=(text||"").split(/\s+/); const lines=[]; let line="";
+  for(const w of words){
+    const t=line?line+" "+w:w;
+    if(_mc.measureText(t).width>maxW && line){lines.push(line);line=w;}
+    else line=t;
+  }
+  if(line)lines.push(line); return lines.length?lines:[""];
+}
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- the boring-log SVG ---------- */
+function buildSVG(){
+  const m=S.meta, unit=m.units==="m"?"m":"ft";
+  const layers=[...S.layers].filter(l=>isFinite(+l.to)).sort((a,b)=>a.to-b.to);
+  const maxD=Math.max( layers.length?+layers[layers.length-1].to:10,
+                       ...S.spt.map(s=>+s.d||0), 1 );
+  /* geometry */
+  const W=780, padX=26;
+  const xDepth=padX, wDepth=48;
+  const xLog=xDepth+wDepth, wLog=104;
+  const xDesc=xLog+wLog+14, wDesc=250;
+  const xSpt=xDesc+wDesc+26, wSpt=W-padX-xSpt;     // SPT plot area
+  const headTop=22, headH=92, colHdrH=28;
+  const bodyTop=headTop+headH+colHdrH;
+  const pxU=Math.min(40,Math.max(13,560/maxD));
+  const bodyH=maxD*pxU;
+  const footH=40, H=bodyTop+bodyH+footH;
+  const yOf=d=>bodyTop+d*pxU;
+  const tick = maxD>60?10:maxD>24?5:maxD>10?2:1;
+
+  const P=[]; // svg pieces
+  const paper="#FBF9F4", band="#F1ECE0", inkP="#23262A", lineP="#C8C1B1",
+        mutedP="#6B6456", red="#B23A2E", blue="#2E6FB0";
+  const FS='font-family:ui-monospace,Menlo,Consolas,monospace';
+
+  /* defs: hatch patterns (dark strokes, transparent bg \u2192 laid over colour fill) */
+  const st='stroke="#3a3327" stroke-width="1" fill="none"';
+  P.push(`<defs>
+    <pattern id="p_sand" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="0.9" fill="#3a3327"/><circle cx="6.5" cy="6" r="0.9" fill="#3a3327"/></pattern>
+    <pattern id="p_gravel" width="14" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="2.1" ${st}/><circle cx="10" cy="9" r="1.6" ${st}/><circle cx="1" cy="10" r="1.1" fill="#3a3327"/></pattern>
+    <pattern id="p_clay" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" ${st}/></pattern>
+    <pattern id="p_silt" width="12" height="7" patternUnits="userSpaceOnUse">
+      <line x1="1" y1="3.5" x2="7" y2="3.5" ${st}/></pattern>
+    <pattern id="p_organic" width="10" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="2" x2="10" y2="2" ${st}/><line x1="0" y1="5" x2="10" y2="5" ${st}/></pattern>
+    <pattern id="p_rock" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0 0L10 10M10 0L0 10" ${st}/></pattern>
+    <pattern id="p_fill" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M0 12L12 0" ${st}/><circle cx="3" cy="3" r="0.8" fill="#3a3327"/></pattern>
+  </defs>`);
+
+  /* sheet */
+  P.push(`<rect x="1" y="1" width="${W-2}" height="${H-2}" fill="${paper}" stroke="${lineP}" stroke-width="1.5"/>`);
+
+  /* header block */
+  P.push(`<rect x="1" y="1" width="${W-2}" height="${headH+headTop-4}" fill="${band}"/>`);
+  P.push(`<line x1="0" y1="${headTop+headH-4}" x2="${W}" y2="${headTop+headH-4}" stroke="${lineP}"/>`);
+  P.push(`<text x="${padX}" y="${headTop+18}" style="${FS}" font-size="15" font-weight="700" fill="${inkP}">BORING LOG \u00b7 ${esc(m.boring||"\u2014")}</text>`);
+  P.push(`<text x="${W-padX}" y="${headTop+18}" text-anchor="end" style="font-family:${'Helvetica Neue,Arial,sans-serif'}" font-size="10.5" letter-spacing="1.5" fill="${mutedP}">GEOTECHNICAL EXPLORATION</text>`);
+  const fields=[
+    ["PROJECT",m.project],["LOCATION",m.location],["SURFACE ELEV.",(m.elev?m.elev+" "+unit:"\u2014")],
+    ["DATE",m.date],["METHOD",m.method],["LOGGED BY",m.logged]
+  ];
+  const fx=[padX, padX+258, padX+258+220];
+  fields.forEach((f,i)=>{
+    const col=i%3, rw=Math.floor(i/3);
+    const x=fx[col], y=headTop+40+rw*26;
+    P.push(`<text x="${x}" y="${y}" style="${FS}" font-size="8.5" letter-spacing="0.5" fill="${mutedP}">${f[0]}</text>`);
+    P.push(`<text x="${x}" y="${y+13}" style="${FS}" font-size="11.5" fill="${inkP}">${esc(f[1]||"\u2014")}</text>`);
+  });
+
+  /* column headers */
+  const chY=headTop+headH-4;
+  const chdr=(x,w,t)=>`<text x="${x+w/2}" y="${chY+18}" text-anchor="middle" style="${FS}" font-size="9" font-weight="700" letter-spacing="0.5" fill="${mutedP}">${t}</text>`;
+  P.push(chdr(xDepth,wDepth,`DEPTH (${unit})`));
+  P.push(chdr(xLog,wLog,"GRAPHIC \u00b7 USCS"));
+  P.push(chdr(xDesc,wDesc,"MATERIAL DESCRIPTION"));
+  P.push(chdr(xSpt,wSpt,"SPT N (blows/"+(unit==="m"?"0.3m":"ft")+")"));
+  P.push(`<line x1="0" y1="${bodyTop}" x2="${W}" y2="${bodyTop}" stroke="${lineP}"/>`);
+
+  /* SPT track grid (behind layers) */
+  const nMax=50, xN=n=>xSpt+Math.min(n,nMax)/nMax*wSpt;
+  for(let n=0;n<=nMax;n+=10){
+    P.push(`<line x1="${xN(n)}" y1="${bodyTop}" x2="${xN(n)}" y2="${bodyTop+bodyH}" stroke="${lineP}" stroke-width="0.6" stroke-dasharray="1 3"/>`);
+    P.push(`<text x="${xN(n)}" y="${bodyTop-3}" text-anchor="middle" style="${FS}" font-size="8" fill="${mutedP}">${n}</text>`);
+  }
+
+  /* strata */
+  let prev=0;
+  for(const L of layers){
+    const top=yOf(prev), bot=yOf(+L.to), h=bot-top;
+    const s=SOIL[L.uscs]||{name:L.uscs,fill:"#ccc",pat:"silt"};
+    P.push(`<rect x="${xLog}" y="${top}" width="${wLog}" height="${h}" fill="${s.fill}"/>`);
+    P.push(`<rect x="${xLog}" y="${top}" width="${wLog}" height="${h}" fill="url(#p_${s.pat})"/>`);
+    P.push(`<rect x="${xLog}" y="${top}" width="${wLog}" height="${h}" fill="none" stroke="${inkP}" stroke-width="0.8"/>`);
+    // USCS chip
+    const cy=Math.min(Math.max(top+13,top+h/2), bot-6);
+    const label=L.uscs||"?";
+    const cw=label.length*8.5+14;
+    P.push(`<rect x="${xLog+wLog/2-cw/2}" y="${cy-9}" width="${cw}" height="17" rx="3" fill="${paper}" stroke="${inkP}" stroke-width="0.7"/>`);
+    P.push(`<text x="${xLog+wLog/2}" y="${cy+3}" text-anchor="middle" style="${FS}" font-size="11" font-weight="700" fill="${inkP}">${esc(label)}</text>`);
+    // depth label at base
+    P.push(`<line x1="${xDepth+wDepth-6}" y1="${bot}" x2="${xLog}" y2="${bot}" stroke="${lineP}" stroke-width="0.7"/>`);
+    P.push(`<text x="${xLog-8}" y="${bot+3}" text-anchor="end" style="${FS}" font-size="9.5" fill="${inkP}">${(+L.to).toFixed( (+L.to%1)?1:0 )}</text>`);
+    // description (name + detail, wrapped)
+    const descFont='11px ui-monospace,Menlo,Consolas,monospace';
+    const head=s.name;
+    const lines=wrap(L.desc,wDesc,'11px ui-monospace,Menlo,Consolas,monospace');
+    P.push(`<text x="${xDesc}" y="${top+13}" style="${FS}" font-size="10.5" font-weight="700" fill="${inkP}">${esc(head)}</text>`);
+    lines.forEach((ln,i)=>{
+      P.push(`<text x="${xDesc}" y="${top+27+i*13}" style="${FS}" font-size="10.5" fill="${'#3c3a33'}">${esc(ln)}</text>`);
+    });
+    prev=+L.to;
+  }
+
+  /* depth ticks/axis */
+  P.push(`<line x1="${xLog}" y1="${bodyTop}" x2="${xLog}" y2="${bodyTop+bodyH}" stroke="${inkP}" stroke-width="1"/>`);
+  for(let d=0; d<=maxD+0.0001; d+=tick){
+    const y=yOf(d);
+    P.push(`<line x1="${xLog-5}" y1="${y}" x2="${xLog}" y2="${y}" stroke="${inkP}" stroke-width="1"/>`);
+    P.push(`<text x="${xLog-8}" y="${y+3}" text-anchor="end" style="${FS}" font-size="9.5" fill="${mutedP}">${d}</text>`);
+  }
+  /* column separators */
+  P.push(`<line x1="${xLog+wLog}" y1="${bodyTop}" x2="${xLog+wLog}" y2="${bodyTop+bodyH}" stroke="${inkP}" stroke-width="1"/>`);
+  P.push(`<line x1="${xSpt}" y1="${bodyTop}" x2="${xSpt}" y2="${bodyTop+bodyH}" stroke="${lineP}"/>`);
+  P.push(`<line x1="${xSpt+wSpt}" y1="${bodyTop}" x2="${xSpt+wSpt}" y2="${bodyTop+bodyH}" stroke="${lineP}"/>`);
+  P.push(`<rect x="${xDesc-14}" y="${bodyTop}" width="0" height="0" fill="none"/>`);
+
+  /* groundwater */
+  const gwt=parseFloat(m.gwt);
+  if(isFinite(gwt) && gwt>=0 && gwt<=maxD){
+    const y=yOf(gwt);
+    P.push(`<line x1="${xLog}" y1="${y}" x2="${xDesc+wDesc}" y2="${y}" stroke="${blue}" stroke-width="1.4" stroke-dasharray="7 4"/>`);
+    P.push(`<path d="M${xLog+wLog/2-6} ${y-11}L${xLog+wLog/2+6} ${y-11}L${xLog+wLog/2} ${y-2}Z" fill="${blue}"/>`);
+    P.push(`<line x1="${xLog+wLog/2-8}" y1="${y-13}" x2="${xLog+wLog/2+8}" y2="${y-13}" stroke="${blue}" stroke-width="1.4"/>`);
+    P.push(`<text x="${xDesc+wDesc}" y="${y-4}" text-anchor="end" style="${FS}" font-size="9" font-weight="700" fill="${blue}">GWT ${gwt} ${unit}</text>`);
+  }
+
+  /* SPT plot */
+  const pts=[...S.spt].filter(s=>isFinite(+s.d)&&isFinite(+s.n)).sort((a,b)=>a.d-b.d);
+  if(pts.length){
+    const poly=pts.map(s=>`${xN(+s.n)},${yOf(+s.d)}`).join(" ");
+    P.push(`<polyline points="${poly}" fill="none" stroke="${red}" stroke-width="1.8"/>`);
+    for(const s of pts){
+      const x=xN(+s.n), y=yOf(+s.d);
+      P.push(`<circle cx="${x}" cy="${y}" r="3.1" fill="${red}" stroke="${paper}" stroke-width="1"/>`);
+      P.push(`<text x="${x+ (s.ref?-6:6)}" y="${y-5}" text-anchor="${s.ref?'end':'start'}" style="${FS}" font-size="8.5" fill="${red}">${s.ref?"Refusal":(+s.n)}</text>`);
+    }
+  }
+
+  /* footer */
+  const fY=bodyTop+bodyH;
+  P.push(`<line x1="0" y1="${fY+ (H-footH-fY) }" x2="${W}" y2="${fY}" stroke="${lineP}"/>`);
+  P.push(`<line x1="0" y1="${fY}" x2="${W}" y2="${fY}" stroke="${inkP}" stroke-width="1"/>`);
+  P.push(`<text x="${padX}" y="${fY+18}" style="${FS}" font-size="8.5" fill="${mutedP}">Boring Log Generator \u00b7 built by Heston Norcott, Geotechnical Engineer (E.I.)</text>`);
+  P.push(`<text x="${W-padX}" y="${fY+18}" text-anchor="end" style="${FS}" font-size="8.5" fill="${mutedP}">Demonstration tool \u2014 not for construction</text>`);
+  P.push(`<text x="${padX}" y="${fY+31}" style="${FS}" font-size="8.5" fill="${mutedP}">USCS classification \u00b7 SPT per ASTM D1586 \u00b7 symbols per ASTM D2487/D2488</text>`);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Geotechnical boring log">${P.join("")}</svg>`;
+}
+
+function renderLog(){ document.getElementById("log").innerHTML=buildSVG(); }
+
+/* ---------- controls ---------- */
+const $=id=>document.getElementById(id);
+const el=(t,a,txt)=>{const e=document.createElement(t);if(a)for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;};
+
+function metaField(key,label,type){
+  const f=el("div",{class:"fld"+(key==="project"||key==="location"?" wide":"")});
+  f.appendChild(el("label",null,label));
+  let inp;
+  if(key==="units"){
+    inp=el("select");
+    ["ft","m"].forEach(u=>{const o=el("option",{value:u},u);if(S.meta.units===u)o.selected=true;inp.appendChild(o);});
+  }else{
+    inp=el("input",{type:type||"text",value:S.meta[key]||""});
+  }
+  inp.addEventListener("input",e=>{S.meta[key]=e.target.value;renderLog();});
+  inp.addEventListener("change",e=>{S.meta[key]=e.target.value;renderLog();});
+  f.appendChild(inp); return f;
+}
+function buildMeta(){
+  const g=$("metaGrid");g.innerHTML="";
+  g.appendChild(metaField("project","Project"));
+  g.appendChild(metaField("location","Location"));
+  g.appendChild(metaField("boring","Boring no."));
+  g.appendChild(metaField("date","Date","text"));
+  g.appendChild(metaField("elev","Surface elev."));
+  g.appendChild(metaField("gwt","Groundwater depth","number"));
+  g.appendChild(metaField("method","Drilling method"));
+  g.appendChild(metaField("logged","Logged by"));
+  g.appendChild(metaField("units","Units"));
+}
+function buildStrata(){
+  const b=$("strataBody");b.innerHTML="";
+  S.layers.forEach((L,i)=>{
+    const tr=el("tr");
+    const td1=el("td"); const inp=el("input",{type:"number",step:"0.5",value:L.to});
+    inp.addEventListener("input",e=>{L.to=e.target.value;renderLog();}); td1.appendChild(inp); tr.appendChild(td1);
+    const td2=el("td"); const sel=el("select");
+    USCS_ORDER.forEach(k=>{const o=el("option",{value:k},k+" \u00b7 "+SOIL[k].name.split("(")[0].trim());if(L.uscs===k)o.selected=true;sel.appendChild(o);});
+    sel.addEventListener("change",e=>{L.uscs=e.target.value;renderLog();}); td2.appendChild(sel); tr.appendChild(td2);
+    const td3=el("td"); const ta=el("textarea",{rows:"1"}); ta.value=L.desc;
+    ta.addEventListener("input",e=>{L.desc=e.target.value;renderLog();}); td3.appendChild(ta); tr.appendChild(td3);
+    const td4=el("td"); const del=el("button",{class:"row-del",title:"Remove"},"\u00d7");
+    del.addEventListener("click",()=>{S.layers.splice(i,1);buildStrata();renderLog();}); td4.appendChild(del); tr.appendChild(td4);
+    b.appendChild(tr);
+  });
+}
+function buildSpt(){
+  const b=$("sptBody");b.innerHTML="";
+  S.spt.forEach((s,i)=>{
+    const tr=el("tr");
+    const t1=el("td");const d=el("input",{type:"number",step:"0.5",value:s.d});
+    d.addEventListener("input",e=>{s.d=e.target.value;renderLog();});t1.appendChild(d);tr.appendChild(t1);
+    const t2=el("td");const n=el("input",{type:"number",step:"1",value:s.n});
+    n.addEventListener("input",e=>{s.n=e.target.value;renderLog();});t2.appendChild(n);tr.appendChild(t2);
+    const t3=el("td");const wrapc=el("div",{class:"chk"});const c=el("input",{type:"checkbox"});c.checked=!!s.ref;
+    c.addEventListener("change",e=>{s.ref=e.target.checked;renderLog();});wrapc.appendChild(c);t3.appendChild(wrapc);tr.appendChild(t3);
+    const t4=el("td");const del=el("button",{class:"row-del",title:"Remove"},"\u00d7");
+    del.addEventListener("click",()=>{S.spt.splice(i,1);buildSpt();renderLog();});t4.appendChild(del);tr.appendChild(t4);
+    b.appendChild(tr);
+  });
+}
+function buildAll(){buildMeta();buildStrata();buildSpt();renderLog();}
+
+$("addLayer").addEventListener("click",()=>{
+  const last=S.layers[S.layers.length-1];
+  S.layers.push({to:(last?(+last.to+5):5),uscs:"SP",desc:"New stratum \u2014 describe soil, colour, moisture, density/consistency."});
+  buildStrata();renderLog();
+});
+$("addSpt").addEventListener("click",()=>{
+  const last=S.spt[S.spt.length-1];
+  S.spt.push({d:(last?(+last.d+2.5):2.5),n:15,ref:false});
+  buildSpt();renderLog();
+});
+$("resetBtn").addEventListener("click",()=>{S=demo();buildAll();});
+$("printBtn").addEventListener("click",()=>window.print());
+
+$("dlPng").addEventListener("click",()=>{
+  const svg=document.querySelector("#log svg");
+  const vb=svg.viewBox.baseVal, scale=2;
+  const xml=new XMLSerializer().serializeToString(svg);
+  const img=new Image();
+  const blob=new Blob([xml],{type:"image/svg+xml;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    c.width=vb.width*scale; c.height=vb.height*scale;
+    const g=c.getContext("2d");
+    g.fillStyle="#FBF9F4"; g.fillRect(0,0,c.width,c.height);
+    g.drawImage(img,0,0,c.width,c.height);
+    URL.revokeObjectURL(url);
+    c.toBlob(bl=>{
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(bl);
+      a.download=(S.meta.boring||"boring-log").replace(/\s+/g,"_")+".png";
+      a.click();
+    },"image/png");
+  };
+  img.onerror=()=>alert("Export failed \u2014 try again.");
+  img.src=url;
+});
+
+buildAll();
+</script>
+</body>
+</html>

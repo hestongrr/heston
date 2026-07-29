@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surface-Wave Cavity Detection &mdash; Elastic FD Simulator</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/cavity-detection-sim.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Surface-Wave Cavity Detection — Elastic FD Simulator">
+<meta property="og:description" content="A 2-D elastic finite-difference seismic simulator. Fire a shot, watch P, S, and Rayleigh waves scatter off a buried cavity, read the gather.">
+<meta property="og:url" content="https://thebigpicture.tech/cavity-detection-sim.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Surface-Wave Cavity Detection — Elastic FD Simulator">
+<meta name="twitter:description" content="A 2-D elastic finite-difference seismic simulator. Fire a shot, watch P, S, and Rayleigh waves scatter off a buried cavity, read the gather.">
+<meta name="twitter:image" content="https://thebigpicture.tech/og-image.png">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#E7EAE7; --panel:#F6F7F4; --panel-2:#EEF0EC; --ink:#1A1E1B; --muted:#586360;
+    --line:#D2D8D2; --accent:#0E6C77; --accent-ink:#fff; --signal:#B23A2E;
+    --field:#fff; --field-line:#C7CEC7;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --scope:#0a0e12; --scope-line:#1a2530;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#101312;--panel:#191D1B;--panel-2:#1F2421;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#2A302C;--accent:#39B2BA;--accent-ink:#052220;--signal:#E26A5C;
+      --field:#12100E;--field-line:#343B36;}
+  }
+  :root[data-theme="light"]{--bg:#E7EAE7;--panel:#F6F7F4;--panel-2:#EEF0EC;--ink:#1A1E1B;
+    --muted:#586360;--line:#D2D8D2;--accent:#0E6C77;--accent-ink:#fff;--signal:#B23A2E;
+    --field:#fff;--field-line:#C7CEC7;}
+  :root[data-theme="dark"]{--bg:#101312;--panel:#191D1B;--panel-2:#1F2421;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#2A302C;--accent:#39B2BA;--accent-ink:#052220;--signal:#E26A5C;
+    --field:#12100E;--field-line:#343B36;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  header.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:22px}
+  .brand b{color:var(--accent)}
+  .tagline{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .byline{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .byline b{color:var(--ink);font-weight:600}
+  .lede{max-width:72ch;font-size:14.5px;color:var(--muted);margin:0 0 20px}
+  .lede a{color:var(--accent)}
+  .stage{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;align-items:start}
+  @media (max-width:860px){.stage{grid-template-columns:1fr}}
+  .scope{background:var(--scope);border:1px solid var(--scope-line);border-radius:11px;
+    padding:12px;overflow:hidden}
+  .scope h3{margin:0 0 8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:#7f9099;display:flex;justify-content:space-between}
+  .scope canvas{width:100%;height:auto;display:block;border-radius:5px;background:#05080b}
+  .cap{font-family:var(--mono);font-size:10px;color:#6b7c85;margin-top:7px;display:flex;
+    justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:16px 16px 18px;margin-top:16px}
+  .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 14px}
+  .sec-h h2{font-size:12px;text-transform:uppercase;letter-spacing:.13em;margin:0;
+    color:var(--muted);font-weight:700}
+  .sec-h .rule{flex:1;height:1px;background:var(--line)}
+  .ctl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+  .ctl{display:flex;flex-direction:column;gap:7px}
+  .ctl .lab{display:flex;justify-content:space-between;font-family:var(--mono);
+    font-size:11px;color:var(--muted);letter-spacing:.03em}
+  .ctl .val{color:var(--accent);font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.03em;cursor:pointer;
+    border-radius:7px;padding:9px 14px;border:1px solid var(--field-line);
+    background:var(--panel-2);color:var(--ink);transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+    font-weight:600}
+  .btn.primary:hover{filter:brightness(1.08);color:var(--accent-ink)}
+  .toggle{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+    color:var(--ink);cursor:pointer;user-select:none;margin-left:auto}
+  .toggle input{width:16px;height:16px;accent-color:var(--signal)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;
+    color:var(--muted);margin-top:14px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:22px;height:9px;border-radius:2px}
+
+  .teach{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:18px 18px 20px;margin-top:16px}
+  .teach-lead{max-width:74ch;font-size:14px;color:var(--muted);margin:2px 0 16px}
+  .wavecards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+  .wc{border:1px solid var(--line);border-radius:9px;padding:13px 14px;background:var(--panel-2)}
+  .wc .tag{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;
+    letter-spacing:.11em;display:block;margin-bottom:5px}
+  .wc h4{margin:0 0 6px;font-size:13.5px;letter-spacing:-.01em}
+  .wc p{margin:0;font-size:12.5px;color:var(--ink);line-height:1.5}
+  .wc .eq{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;
+    padding-top:7px;border-top:1px solid var(--line)}
+  .atvoid{margin-top:18px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
+  .atvoid h4{margin:0 0 8px;font-size:13px;font-family:var(--mono);letter-spacing:.02em}
+  .atvoid ul{margin:0;padding-left:18px;font-size:12.8px;line-height:1.62;color:var(--ink)}
+  .atvoid li{margin-bottom:5px}
+  .atvoid b{color:var(--accent)}
+  .caveat{margin-top:16px;border:1px dashed var(--accent);border-radius:9px;
+    padding:12px 15px;font-size:12.6px;line-height:1.55;color:var(--ink)}
+  .caveat .tag{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;
+    letter-spacing:.11em;color:var(--accent);display:block;margin-bottom:5px}
+  .credits{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:16px 18px 18px;margin-top:16px}
+  .credits ul{list-style:none;margin:0;padding:0;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+  .credits li{font-size:12.5px;line-height:1.45;color:var(--ink)}
+  .credits li b{font-weight:700}
+  .credits .role{font-family:var(--mono);font-size:9px;text-transform:uppercase;
+    letter-spacing:.1em;color:var(--accent);display:block;margin-bottom:2px}
+  .credits .disc{margin:14px 0 0;font-size:12px;color:var(--muted);max-width:76ch}
+  .foot{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;
+    justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .foot a{color:var(--accent)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Cavity <b>Detection</b></div>
+    <div class="tagline">2-D elastic (P-SV) finite-difference wave propagation</div>
+    <div class="byline">built &amp; taught by <b>Heston Norcott</b> &middot; from his 2014 MS thesis</div>
+  </header>
+
+  <p class="lede">
+    Fire a seismic source and watch the ground respond with three distinct waves &mdash;
+    <b style="color:#ff5a3c">P</b> (compressional), <b style="color:#3b8dff">S</b> (shear), and the
+    <b style="color:#c26bff">Rayleigh</b> surface wave that scatters off a shallow buried cavity.
+    This is the core method of my master's thesis,
+    <a href="http://dx.doi.org/10.34917/5836146" target="_blank" rel="noopener">&ldquo;Finite-Difference Modeling of Surface-Wave Scattering for Shallow Cavity Detection&rdquo;</a>
+    (UNLV, 2014). Waves are colored by the physics itself: <b>divergence</b> of the wavefield
+    isolates P energy, <b>curl</b> isolates S. Toggle the cavity off to see the clean baseline.
+  </p>
+
+  <div class="stage">
+    <div class="scope">
+      <h3><span>ELASTIC WAVEFIELD &middot; P=red S=blue Rayleigh=violet</span><span id="tclock">t = 0</span></h3>
+      <canvas id="field" width="560" height="312"></canvas>
+      <div class="cap"><span>surface (free) &middot; source &#9660; &middot; moving fronts labelled P / S / R</span><span id="modelinfo"></span></div>
+    </div>
+    <div class="scope">
+      <h3><span>GEOPHONE GATHER</span><span>offset &rarr;</span></h3>
+      <canvas id="gather" width="360" height="312"></canvas>
+      <div class="cap"><span>time &darr; &middot; vertical component</span><span id="cavstate">cavity: ON</span></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="sec-h"><h2>Model &amp; source</h2><span class="rule"></span></div>
+    <div class="ctl-grid">
+      <div class="ctl"><div class="lab"><span>Cavity depth</span><span class="val" id="vDepth"></span></div>
+        <input type="range" id="depth" min="6" max="52" value="20"></div>
+      <div class="ctl"><div class="lab"><span>Cavity size</span><span class="val" id="vSize"></span></div>
+        <input type="range" id="size" min="4" max="20" value="11"></div>
+      <div class="ctl"><div class="lab"><span>Cavity offset (x)</span><span class="val" id="vOff"></span></div>
+        <input type="range" id="offx" min="34" max="86" value="60"></div>
+      <div class="ctl"><div class="lab"><span>Source frequency</span><span class="val" id="vFreq"></span></div>
+        <input type="range" id="freq" min="18" max="46" value="30"></div>
+      <div class="ctl"><div class="lab"><span>Sub-layer Vp</span><span class="val" id="vHV"></span></div>
+        <input type="range" id="hv" min="52" max="66" value="60"></div>
+    </div>
+    <div class="btns">
+      <button class="btn primary" id="fire">&#9654; Fire shot</button>
+      <button class="btn" id="pause">Pause</button>
+      <button class="btn" id="reset">Reset model</button>
+      <label class="toggle"><input type="checkbox" id="cav" checked> cavity present</label>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:#ff5a3c"></span> P-wave (divergence)</span>
+      <span><span class="sw" style="background:#3b8dff"></span> S-wave (curl)</span>
+      <span><span class="sw" style="background:#c26bff"></span> Rayleigh (surface, P+S)</span>
+      <span><span class="sw" style="background:#586b78"></span> high-velocity sub-layer</span>
+      <span><span class="sw" style="background:#05080b;outline:1px dashed #ff5a3c"></span> cavity (air)</span>
+    </div>
+  </div>
+
+  <div class="teach">
+    <div class="sec-h"><h2>The physics &mdash; what's happening at the cavity</h2><span class="rule"></span></div>
+    <p class="teach-lead">A seismic survey puts three kinds of elastic wave into the ground &mdash; and the
+      cavity treats each one differently. In the wavefield above, each is colored by the operator
+      that defines it, so you can watch them separate and label themselves.</p>
+
+    <div class="wavecards">
+      <div class="wc">
+        <span class="tag" style="color:#ff5a3c">Body wave &middot; red</span>
+        <h4>P-wave &middot; compressional</h4>
+        <p>Particle motion <b>parallel</b> to travel &mdash; push-pull. Fastest of the three, and the
+          only one that can move through fluids and air. It <b>can</b> enter the void, but the huge
+          impedance jump reflects almost all of it. Isolated here by wavefield <b>divergence</b>.</p>
+        <div class="eq">Vp = &radic;((&lambda; + 2&mu;) / &rho;)</div>
+      </div>
+      <div class="wc">
+        <span class="tag" style="color:#3b8dff">Body wave &middot; blue</span>
+        <h4>S-wave &middot; shear</h4>
+        <p>Particle motion <b>perpendicular</b> to travel. Needs shear stiffness to exist &mdash; and air
+          has none (&mu; = 0). So an S-wave <b>cannot travel through the cavity at all</b>: it reflects
+          and mode-converts at the wall. Isolated here by wavefield <b>curl</b>.</p>
+        <div class="eq">Vs = &radic;(&mu; / &rho;) &nbsp;&rarr;&nbsp; &mu;=0 in air &nbsp;&rarr;&nbsp; Vs = 0</div>
+      </div>
+      <div class="wc">
+        <span class="tag" style="color:#c26bff">Surface wave &middot; violet</span>
+        <h4>Rayleigh wave</h4>
+        <p>A coupled P&ndash;SV motion bound to the free surface &mdash; retrograde ellipse, energy within
+          about one wavelength of the top. It carries most of the source energy, so a <b>shallow</b>
+          void sitting in that band scatters it strongly. Shows as red+blue mixed near the surface.</p>
+        <div class="eq">V<sub>R</sub> &asymp; 0.92 &middot; Vs &nbsp;(for &nu; = 0.25)</div>
+      </div>
+    </div>
+
+    <div class="atvoid">
+      <h4>So &mdash; inside the void?</h4>
+      <ul>
+        <li><b>S-waves:</b> nothing. Air can't carry shear, so no shear wave exists inside &mdash; it reflects and mode-converts at the boundary.</li>
+        <li><b>P-waves:</b> a faint acoustic rattle. Some compressional energy leaks in at ~340 m/s, but the <b>&asymp;1000:1 impedance mismatch</b> (soil vs air) reflects almost all of it.</li>
+        <li><b>The real action is at the wall:</b> the void acts as a <b>scatterer</b> &mdash; it back-scatters energy toward the source, diffracts around itself, and casts an <b>amplitude shadow</b> beyond it. That anomaly is the detection signal.</li>
+        <li><b>Mode conversion:</b> P &harr; SV swap at the boundary, and Rayleigh energy leaks downward into body waves. The high-velocity layer beneath then reflects energy back up &mdash; the interference that made the interpretation hard, and why overtone-image stacking was needed.</li>
+      </ul>
+    </div>
+
+    <div class="caveat">
+      <span class="tag">Note on this model</span>
+      This browser demo solves the <b>2-D elastic (P-SV) wave equation</b> on a staggered
+      velocity&ndash;stress grid, so it genuinely produces P, S, and Rayleigh waves and their mode
+      conversion &mdash; colored by <b>divergence</b> (P) and <b>curl</b> (S). It's a 2nd-order isotropic
+      teaching version; the thesis used <b>LLNL's E3D / WPP</b> for full 3-D elastic modeling.
+      Knowing exactly where a model's edges are is the whole job.
+    </div>
+
+    <p style="margin-top:18px;font-size:13px;color:var(--muted);max-width:74ch">
+      <b style="color:var(--ink)">Why build it to teach?</b> Over a decade of leading field crews and
+      mentoring junior engineers, the teams that moved fastest were the ones who could <em>see</em>
+      the physics, not just run the software. A good engineer solves the problem; a good lead makes
+      the next person able to solve it too. That's the standard I build to.
+    </p>
+  </div>
+
+  <div class="credits">
+    <div class="sec-h"><h2>Acknowledgments</h2><span class="rule"></span></div>
+    <p class="teach-lead" style="max-width:78ch;margin-bottom:0">This demonstration grows out of my
+      2014 MS thesis at <b>UNLV</b> (Applied Geophysics Center); the full acknowledgments &mdash; advisor,
+      committee, and collaborators &mdash; are recorded in
+      <a href="http://dx.doi.org/10.34917/5836146" target="_blank" rel="noopener" style="color:var(--accent)">the thesis itself</a>.
+      The finite-difference method builds on <b>Lawrence Livermore National Laboratory's E3D and WPP</b> codes.</p>
+    <p class="disc">This interactive demo &mdash; a simplified 2-D elastic model &mdash; and any errors in it
+      are my own. It is a teaching adaptation, not the original research code.</p>
+  </div>
+
+  <div class="foot">
+    <span>2-D elastic (P-SV) staggered-grid FD &middot; a teaching adaptation of the thesis method.</span>
+    <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.) &middot; <a href="http://dx.doi.org/10.34917/5836146" target="_blank" rel="noopener">thesis DOI</a></span>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ 2-D elastic P-SV finite difference (velocity-stress, staggered) ==========
+   Fields vx,vz (velocity) and sxx,szz,sxz (stress). Standard 2nd-order Virieux scheme.
+   Top = free surface (szz=sxz=0) so a real Rayleigh wave forms; sponge on the other 3 sides.
+   P energy is isolated by div(v)=dvx/dx+dvz/dz, S energy by curl(v)=dvz/dx-dvx/dz.        */
+const NX=280, NZ=156, N=NX*NZ, ix=(i,j)=>j*NX+i;
+let vx=new Float32Array(N),vz=new Float32Array(N),
+    sxx=new Float32Array(N),szz=new Float32Array(N),sxz=new Float32Array(N);
+let lam=new Float32Array(N),mu=new Float32Array(N),lp2m=new Float32Array(N),
+    binv=new Float32Array(N),vpref=new Float32Array(N),isair=new Uint8Array(N),damp=new Float32Array(N);
+const SURF=5, SRCX=30, NTR=72, TOTAL=1050, DT=0.42;
+let step=0, running=false, raf=0;
+const P={depth:20,size:11,offx:60,freq:30,hv:60,cavity:true};
+let vHVc=1.2;
+/* representative near-surface soil speeds (for labelling moving fronts) */
+let VP0=0.86, VS0=0.48;
+
+const fc=document.getElementById("field"),fx=fc.getContext("2d");
+const fImg=document.createElement("canvas");fImg.width=NX;fImg.height=NZ;
+const fgx=fImg.getContext("2d");let fData=fgx.createImageData(NX,NZ);
+const gc=document.getElementById("gather"),gx=gc.getContext("2d");
+const gImg=document.createElement("canvas");gImg.width=NTR;gImg.height=TOTAL;
+const ggx=gImg.getContext("2d");
+
+function buildModel(){
+  vHVc=P.hv/50;                                  // sub-layer Vp
+  const soilBase=Math.round(NZ*0.62);
+  const cavZ=SURF+P.depth, cavX=Math.round(NX*P.offx/100), r=P.size;
+  VP0=0.72*0.9+0.14; VS0=VP0/1.8;
+  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){
+    const k=ix(i,j);
+    let Vp,Vs,rho;
+    if(j<soilBase){ const g=0.80+0.20*Math.min(1,j/(soilBase*0.6));
+      Vp=0.86*g; Vs=Vp/1.8; rho=1.0; }
+    else { Vp=vHVc; Vs=Vp/1.85; rho=1.15; }
+    let air=0;
+    if(P.cavity && j<soilBase){
+      const dx=i-cavX, dz=j-cavZ;
+      if((dx*dx)/(r*r)+(dz*dz)/((r*0.8)*(r*0.8))<1){ Vp=0.34; Vs=0; rho=0.06; air=1; }
+    }
+    mu[k]=rho*Vs*Vs; lam[k]=rho*(Vp*Vp-2*Vs*Vs); lp2m[k]=lam[k]+2*mu[k];
+    binv[k]=1/rho; vpref[k]=Vp; isair[k]=air;
+  }
+  const B=22;
+  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){
+    const edge=Math.min(i,NX-1-i,NZ-1-j);
+    damp[ix(i,j)]= edge<B ? 1-0.05*((B-edge)/B)*((B-edge)/B) : 1;
+  }
+  document.getElementById("modelinfo").textContent=
+    "soil Vp 0.86 / Vs 0.48  |  sub-layer Vp "+vHVc.toFixed(2);
+}
+function clearFields(){ [vx,vz,sxx,szz,sxz].forEach(a=>a.fill(0)); step=0;
+  ggx.clearRect(0,0,NTR,TOTAL); gx.clearRect(0,0,gc.width,gc.height); }
+
+function ricker(t){ const f=P.freq/1300, t0=1.5/f, a=Math.PI*f*(t-t0), a2=a*a;
+  return (1-2*a2)*Math.exp(-a2); }
+
+function advance(){
+  // stress update
+  for(let j=1;j<NZ-1;j++)for(let i=1;i<NX-1;i++){
+    const k=ix(i,j);
+    const dvxdx=vx[k]-vx[k-1], dvzdz=vz[k]-vz[k-NX];
+    sxx[k]+=DT*(lp2m[k]*dvxdx+lam[k]*dvzdz);
+    szz[k]+=DT*(lam[k]*dvxdx+lp2m[k]*dvzdz);
+    const dvxdz=vx[k+NX]-vx[k], dvzdx=vz[k+1]-vz[k];
+    const muxz=0.25*(mu[k]+mu[k+1]+mu[k+NX]+mu[k+NX+1]);
+    sxz[k]+=DT*muxz*(dvxdz+dvzdx);
+  }
+  // free surface: zero tractions at/above surface row
+  for(let j=0;j<=SURF;j++)for(let i=0;i<NX;i++){ const k=ix(i,j); szz[k]=0; sxz[k]=0; if(j<SURF) sxx[k]=0; }
+  // velocity update
+  for(let j=1;j<NZ-1;j++)for(let i=1;i<NX-1;i++){
+    const k=ix(i,j);
+    vx[k]+=DT*binv[k]*((sxx[k+1]-sxx[k])+(sxz[k]-sxz[k-NX]));
+    vz[k]+=DT*binv[k]*((sxz[k]-sxz[k-1])+(szz[k+NX]-szz[k]));
+  }
+  for(let j=0;j<SURF;j++)for(let i=0;i<NX;i++){ const k=ix(i,j); vx[k]=0; vz[k]=0; }
+  // vertical point source just below the free surface
+  if(step<4.5/(P.freq/1300)) vz[ix(SRCX,SURF+1)]+=ricker(step)*0.5;
+  // sponge
+  for(let k=0;k<N;k++){ const d=damp[k]; vx[k]*=d; vz[k]*=d; sxx[k]*=d; szz[k]*=d; sxz[k]*=d; }
+  // record surface gather (vertical component)
+  if(step<TOTAL){
+    const row=ggx.createImageData(NTR,1);
+    for(let g=0;g<NTR;g++){
+      const xi=Math.round(SRCX+8+g*(NX-SRCX-40)/NTR);
+      const a=Math.max(-1,Math.min(1,vz[ix(xi,SURF+1)]*9));
+      let r,gg,b;
+      if(a>=0){r=10+a*245;gg=14+a*70;b=18;}else{r=10;gg=14;b=18-a*235;}
+      row.data[g*4]=r;row.data[g*4+1]=gg;row.data[g*4+2]=b;row.data[g*4+3]=255;
+    }
+    ggx.putImageData(row,0,step);
+  }
+  step++;
+}
+
+function drawField(){
+  const d=fData.data, gP=190, gS=190;
+  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){
+    const k=ix(i,j);
+    let base=14+(vpref[k]-0.34)/(1.32-0.34)*26;
+    if(isair[k]) base=4;
+    let dvg=0,crl=0;
+    if(i>0&&i<NX-1&&j>0&&j<NZ-1){
+      dvg=(vx[k]-vx[k-1])+(vz[k]-vz[k-NX]);
+      crl=(vz[k+1]-vz[k])-(vx[k+NX]-vx[k]);
+    }
+    const pP=Math.min(1,Math.abs(dvg)*gP), pS=Math.min(1,Math.abs(crl)*gS);
+    d[k*4]  =Math.min(255,base+255*pP);
+    d[k*4+1]=Math.min(255,base+60*Math.max(pP,pS));
+    d[k*4+2]=Math.min(255,base+255*pS);
+    d[k*4+3]=255;
+  }
+  fgx.putImageData(fData,0,0);
+  fx.imageSmoothingEnabled=true;
+  fx.drawImage(fImg,0,0,fc.width,fc.height);
+  const sy=SURF/NZ*fc.height, sx=x=>x/NX*fc.width;
+  // surface line
+  fx.strokeStyle="rgba(180,200,210,.5)";fx.lineWidth=1;
+  fx.beginPath();fx.moveTo(0,sy);fx.lineTo(fc.width,sy);fx.stroke();
+  // source
+  fx.fillStyle="#ffd24a";const sxp=sx(SRCX);
+  fx.beginPath();fx.moveTo(sxp,sy-9);fx.lineTo(sxp-5,sy-17);fx.lineTo(sxp+5,sy-17);fx.closePath();fx.fill();
+  // moving front labels P / S / R (true propagation speeds)
+  const fronts=[["P","#ff5a3c",VP0],["S","#3b8dff",VS0],["R","#c26bff",0.92*VS0]];
+  fx.font="bold 12px ui-monospace,Menlo,monospace";fx.textAlign="center";
+  for(const[lbl,col,v]of fronts){
+    const xc=SRCX+v*DT*step;
+    if(xc>SRCX+4 && xc<NX-8){
+      const xp=sx(xc);
+      fx.strokeStyle=col;fx.globalAlpha=.55;fx.beginPath();
+      fx.moveTo(xp,sy);fx.lineTo(xp,sy+22);fx.stroke();fx.globalAlpha=1;
+      fx.fillStyle=col;fx.fillText(lbl,xp,sy-6);
+    }
+  }
+  fx.textAlign="left";
+  document.getElementById("tclock").textContent="t = "+step;
+}
+function drawGather(){ gx.imageSmoothingEnabled=true; gx.fillStyle="#05080b";
+  gx.fillRect(0,0,gc.width,gc.height); gx.drawImage(gImg,0,0,gc.width,gc.height); }
+
+function frame(){
+  if(!running)return;
+  for(let s=0;s<2&&step<TOTAL;s++)advance();
+  drawField();drawGather();
+  if(step>=TOTAL){running=false;document.getElementById("pause").textContent="Pause";return;}
+  raf=requestAnimationFrame(frame);
+}
+function fire(){ cancelAnimationFrame(raf); buildModel(); clearFields();
+  document.getElementById("cavstate").textContent="cavity: "+(P.cavity?"ON":"OFF (baseline)");
+  running=true; document.getElementById("pause").textContent="Pause";
+  drawField(); drawGather(); raf=requestAnimationFrame(frame); }
+
+function bind(id,key,label,fmt){
+  const e=document.getElementById(id),out=document.getElementById(label);
+  const upd=()=>{P[key]=+e.value;out.textContent=fmt(+e.value);buildModel();if(!running)drawField();};
+  e.addEventListener("input",upd);upd();
+}
+bind("depth","depth","vDepth",v=>v+" cells");
+bind("size","size","vSize",v=>v+" cells");
+bind("offx","offx","vOff",v=>v+" %");
+bind("freq","freq","vFreq",v=>v+" *");
+bind("hv","hv","vHV",v=>(v/50).toFixed(2));
+document.getElementById("cav").addEventListener("change",e=>{P.cavity=e.target.checked;buildModel();
+  document.getElementById("cavstate").textContent="cavity: "+(P.cavity?"ON":"OFF (baseline)");if(!running)drawField();});
+document.getElementById("fire").addEventListener("click",fire);
+document.getElementById("reset").addEventListener("click",()=>{cancelAnimationFrame(raf);running=false;
+  buildModel();clearFields();drawField();drawGather();document.getElementById("tclock").textContent="t = 0";});
+document.getElementById("pause").addEventListener("click",()=>{if(step>=TOTAL)return;
+  running=!running;document.getElementById("pause").textContent=running?"Pause":"Resume";
+  if(running)raf=requestAnimationFrame(frame);});
+
+buildModel();clearFields();drawField();drawGather();
+</script>
+</body>
+</html>

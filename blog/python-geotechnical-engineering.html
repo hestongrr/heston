@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Python Is the Future of Geotechnical Engineering — Heston Norcott, E.I.</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/blog/python-geotechnical-engineering.html">
+<meta name="description" content="How Python and automation are transforming geotechnical engineering &mdash; from boring log generation to slope stability analysis and beyond.">
+<meta property="og:title" content="Why Python Is the Future of Geotechnical Engineering">
+<meta property="og:description" content="How Python and automation are transforming geotechnical engineering workflows.">
+<meta property="og:url" content="https://thebigpicture.tech/blog/python-geotechnical-engineering.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --accent:#0E6C77; --accent-ink:#fff; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+  .wrap{max-width:680px;margin:0 auto;padding:40px 22px}
+  h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  h2{font-size:19px;margin:28px 0 10px}
+  p{font-size:15px;margin:0 0 14px;color:var(--ink)}
+  a{color:var(--accent)}
+  .back{font-family:var(--mono);font-size:12px;display:inline-block;margin-bottom:20px}
+  ul{font-size:15px;margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/blog/">&larr; Blog</a>
+<h1>Why Python Is the Future of Geotechnical Engineering</h1>
+<div class="meta">July 29, 2026 &middot; Heston Norcott, E.I.</div>
+
+<p>Most geotechnical engineering offices run on spreadsheets. Hundreds of them. A template for bearing capacity, another for settlement, another for slope stability &mdash; each one maintained by whoever built it, each one a potential source of formula drift, hardcoded constants, and manual data-entry errors.</p>
+
+<p>I started writing Python scripts because I got tired of fighting spreadsheets. What I found is that a few hundred lines of well-structured code can replace an entire folder of .xlsx files, run in a fraction of the time, and produce better documentation.</p>
+
+<h2>Where Python Adds the Most Value</h2>
+
+<ul>
+<li><strong>Boring log generation.</strong> Every geotechnical engineer has spent hours formatting boring logs &mdash; aligning columns, applying hatch patterns, adjusting SPT plots. I built a <a href="/boring-log-generator.html">boring log generator</a> that takes soil strata, SPT values, and groundwater as input and produces a publication-ready USCS log as output. Seconds instead of hours.</li>
+<li><strong>Data pipelines.</strong> Field data comes in as PDFs, scanned forms, or handwritten notes. Python can parse, validate, and transform that data into analysis-ready formats, eliminating the copy-paste cycle.</li>
+<li><strong>Slope stability automation.</strong> Running parametric studies &mdash; varying cohesion, friction angle, slope geometry, water table &mdash; is tedious by hand and trivial in Python. Loop over the parameter space, call Oasys or OpenSeesPy for each combination, collect the results, plot the sensitivity.</li>
+<li><strong>Report generation.</strong> Python + ReportLab or LaTeX can produce consistent, branded geotechnical reports from structured data, cutting production time significantly.</li>
+</ul>
+
+<h2>Real Example: The Boring Log Generator</h2>
+<p>The tool I built (<a href="/boring-log-generator.html">try it live</a>) takes USCS soil classifications, SPT blow counts, and groundwater depth, then renders a complete boring log with:</p>
+<ul>
+<li>Soil profile with USCS hatch patterns</li>
+<li>SPT N-value plot</li>
+<li>Sample symbols and groundwater elevation</li>
+<li>Clean PNG export for inclusion in reports</li>
+</ul>
+<p>It runs entirely in the browser. No software install, no license fee, no template file to corrupt.</p>
+
+<h2>The Bigger Picture</h2>
+<p>Engineering firms are under pressure to deliver more with less. Python automation isn't about replacing engineers &mdash; it's about letting engineers spend their time on engineering judgment instead of formatting boring logs or copying numbers between cells.</p>
+<p>The firms that adopt this mindset will win. The ones still running Excel 2003 macros will struggle to keep up.</p>
+
+<p>I build custom engineering automation tools for contract. If your team has a workflow that's eating hours every week, <a href="/#contact">let's talk</a>.</p>
+
+</div>
+</body>
+</html>
