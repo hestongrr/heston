@@ -1,0 +1,230 @@
+<title>SoilBox &mdash; a falling-sand physics toy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A falling-sand physics toy with real soil behavior — sand, water, mud, and stone. Built by Heston Norcott.">
+<style>
+  :root{
+    --bg:#0a0e12; --panel:#12181e; --panel-2:#182029; --ink:#e8eef2; --muted:#7f929e;
+    --line:#222c36; --accent:#4fd0d8; --accent-ink:#04211f;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#132028,#0a0e12);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 14px 40px}
+  .top{width:100%;max-width:860px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .brand b{color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .home{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
+  .home:hover{color:var(--accent)}
+  .stage{width:100%;max-width:860px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:12px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  canvas#c{width:100%;height:auto;display:block;border-radius:6px;background:#05080b;
+    image-rendering:pixelated;cursor:crosshair;touch-action:none}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+  .mat{font-family:var(--mono);font-size:12px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--ink);border-radius:7px;padding:8px 11px;display:flex;
+    align-items:center;gap:7px;transition:.12s}
+  .mat:hover{border-color:var(--accent)}
+  .mat.on{border-color:var(--accent);background:rgba(79,208,216,.12);color:var(--accent)}
+  .sw{width:12px;height:12px;border-radius:3px;border:1px solid rgba(255,255,255,.15)}
+  .spacer{flex:1}
+  .ctl{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  input[type=range]{accent-color:var(--accent);width:96px}
+  .btn{font-family:var(--mono);font-size:12px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--ink);border-radius:7px;padding:8px 12px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .hint{width:100%;max-width:860px;font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    margin-top:12px;line-height:1.6}
+  .hint b{color:var(--ink)}
+  .ded{width:100%;max-width:860px;margin-top:16px;padding:14px 16px;border:1px dashed var(--accent);
+    border-radius:10px;font-size:13.5px;color:var(--ink);line-height:1.55;background:rgba(79,208,216,.05)}
+  .ded a{color:var(--accent)}
+</style>
+
+<div class="top">
+  <span class="brand">Soil<b>Box</b></span>
+  <span class="tag">a falling-sand physics toy &middot; geotech edition</span>
+  <a class="home" href="/">&larr; thebigpicture.tech</a>
+</div>
+
+<div class="stage">
+  <canvas id="c" width="220" height="150"></canvas>
+  <div class="controls" id="palette"></div>
+  <div class="controls" style="margin-top:8px">
+    <div class="ctl">brush <input type="range" id="brush" min="1" max="10" value="4"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="pause">Pause</button>
+    <button class="btn" id="clear">Clear</button>
+    <button class="btn" id="demo">Demo</button>
+  </div>
+</div>
+
+<div class="hint">
+  <b>Draw with the mouse</b> (or finger). Pick a material, drag to paint. &nbsp;•&nbsp;
+  <b>Sand</b> piles at its angle of repose. <b>Water</b> flows and finds its level. <b>Mud</b> is
+  cohesive &mdash; it stands steeper, just like real clay. <b>Stone</b> holds everything up.
+  <b>Spring</b> pours water forever.
+</div>
+
+<div class="ded">
+  🛠️ Built by <b>Heston</b> for my brother <b><a href="https://github.com/nibuen" target="_blank" rel="noopener">Leif</a></b> &mdash; the actual gamedev.
+  Real soil mechanics under the hood: loose sand slumps to ~34°, cohesive mud stands steeper, water
+  seeks its level. Pixel-perfect on purpose. <b>Race you to a Playdate port.</b> ⛏️🎮
+</div>
+
+<script>
+"use strict";
+const cv=document.getElementById("c"), ctx=cv.getContext("2d");
+const W=cv.width, H=cv.height, N=W*H;
+const EMPTY=0, SAND=1, WATER=2, STONE=3, MUD=4, SPRING=5;
+let grid=new Uint8Array(N);
+let running=true, brush=4, cur=SAND;
+
+// material palette: type -> {name, base rgb, swatch}
+const MAT={
+  [SAND] :{name:"Sand",  rgb:[214,190,120], sw:"#d6be78"},
+  [WATER]:{name:"Water", rgb:[58,130,210],  sw:"#3a82d2"},
+  [MUD]  :{name:"Mud",   rgb:[122,92,58],   sw:"#7a5c3a"},
+  [STONE]:{name:"Stone", rgb:[104,110,120], sw:"#686e78"},
+  [SPRING]:{name:"Spring",rgb:[90,200,220], sw:"#5ac8dc"},
+  [EMPTY]:{name:"Erase", rgb:[8,12,16],     sw:"#0a0e12"}
+};
+// per-cell colour jitter so it doesn't look flat
+const jitter=new Int8Array(N);
+for(let i=0;i<N;i++) jitter[i]=((i*2654435761)>>>0)%24-12;
+
+// ---- palette UI ----
+const palOrder=[SAND,WATER,MUD,STONE,SPRING,EMPTY];
+const palEl=document.getElementById("palette");
+palOrder.forEach(t=>{
+  const b=document.createElement("button");
+  b.className="mat"+(t===cur?" on":"");
+  b.innerHTML=`<span class="sw" style="background:${MAT[t].sw}"></span>${MAT[t].name}`;
+  b.onclick=()=>{cur=t;[...palEl.children].forEach(c=>c.classList.remove("on"));b.classList.add("on");};
+  palEl.appendChild(b);
+});
+
+// ---- painting ----
+let painting=false;
+function paintAt(cx,cy){
+  const r=cv.getBoundingClientRect();
+  const gx=Math.floor((cx-r.left)/r.width*W);
+  const gy=Math.floor((cy-r.top)/r.height*H);
+  for(let dy=-brush;dy<=brush;dy++)for(let dx=-brush;dx<=brush;dx++){
+    if(dx*dx+dy*dy>brush*brush) continue;
+    const x=gx+dx, y=gy+dy;
+    if(x<0||x>=W||y<0||y>=H) continue;
+    // erase always writes; others don't overwrite stone unless erasing
+    if(cur===EMPTY || grid[y*W+x]===EMPTY || cur===STONE) grid[y*W+x]=cur;
+    else grid[y*W+x]=cur;
+  }
+}
+cv.addEventListener("pointerdown",e=>{painting=true;cv.setPointerCapture(e.pointerId);paintAt(e.clientX,e.clientY);});
+cv.addEventListener("pointermove",e=>{if(painting)paintAt(e.clientX,e.clientY);});
+cv.addEventListener("pointerup",()=>painting=false);
+cv.addEventListener("pointercancel",()=>painting=false);
+
+document.getElementById("brush").oninput=e=>brush=+e.target.value;
+document.getElementById("pause").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+document.getElementById("clear").onclick=()=>grid.fill(EMPTY);
+document.getElementById("demo").onclick=seedDemo;
+
+// ---- simulation ----
+const moved=new Uint8Array(N);
+function sim(){
+  moved.fill(0);
+  for(let y=H-1;y>=0;y--){
+    const ltr=(y&1)===0;                 // alternate scan direction to kill bias
+    for(let k=0;k<W;k++){
+      const x=ltr?k:W-1-k;
+      const i=y*W+x;
+      const t=grid[i];
+      if(t===EMPTY||t===STONE||moved[i]) continue;
+
+      if(t===SPRING){                     // emit water below
+        const b=i+W;
+        if(y<H-1 && grid[b]===EMPTY){grid[b]=WATER;moved[b]=1;}
+        continue;
+      }
+      const down=i+W;
+      if(t===SAND||t===MUD){
+        // fall; sand sinks through water
+        if(y<H-1 && (grid[down]===EMPTY || grid[down]===WATER)){
+          swap(i,down); continue;
+        }
+        // slump diagonally — mud is cohesive (slumps less often)
+        if(y<H-1 && (t===SAND || Math.random()<0.45)){
+          const dir=Math.random()<0.5?-1:1;
+          for(const d of [dir,-dir]){
+            const nx=x+d;
+            if(nx<0||nx>=W) continue;
+            const dg=down+d;
+            if(grid[dg]===EMPTY || grid[dg]===WATER){ swap(i,dg); break; }
+          }
+        }
+      } else if(t===WATER){
+        if(y<H-1 && grid[down]===EMPTY){ swap(i,down); continue; }
+        // diagonal down
+        let done=false;
+        if(y<H-1){
+          const dir=Math.random()<0.5?-1:1;
+          for(const d of [dir,-dir]){
+            const nx=x+d; if(nx<0||nx>=W) continue;
+            if(grid[down+d]===EMPTY){ swap(i,down+d); done=true; break; }
+          }
+        }
+        if(done) continue;
+        // spread horizontally to find level
+        const dir=Math.random()<0.5?-1:1;
+        for(const d of [dir,-dir]){
+          const nx=x+d; if(nx<0||nx>=W) continue;
+          if(grid[i+d]===EMPTY){ swap(i,i+d); break; }
+        }
+      }
+    }
+  }
+}
+function swap(a,b){ const t=grid[a];grid[a]=grid[b];grid[b]=t; moved[a]=1;moved[b]=1; }
+
+// ---- render ----
+const img=ctx.createImageData(W,H);
+function draw(){
+  const d=img.data;
+  for(let i=0;i<N;i++){
+    const t=grid[i], m=MAT[t]||MAT[EMPTY];
+    const j=(t===EMPTY)?0:jitter[i];
+    d[i*4]  =clamp(m.rgb[0]+j);
+    d[i*4+1]=clamp(m.rgb[1]+j);
+    d[i*4+2]=clamp(m.rgb[2]+ (t===WATER? j+10 : j));
+    d[i*4+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+}
+function clamp(v){return v<0?0:v>255?255:v;}
+
+function loop(){
+  if(running){ sim(); sim(); }   // 2 steps/frame for snappier flow
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ---- opening demo scene ----
+function seedDemo(){
+  grid.fill(EMPTY);
+  // stone bowl
+  for(let x=0;x<W;x++){
+    const yb=H-1-Math.round(18*Math.exp(-Math.pow((x-W/2)/50,2)));
+    for(let y=yb;y<H;y++) grid[y*W+x]=STONE;
+  }
+  // a couple springs up top
+  grid[6*W+Math.round(W*0.32)]=SPRING;
+  grid[6*W+Math.round(W*0.68)]=SPRING;
+  // a mound of sand + a mud shelf
+  for(let x=W*0.40;x<W*0.60;x++)for(let y=30;y<44;y++) grid[y*W+(x|0)]=SAND;
+  for(let x=W*0.12;x<W*0.24;x++)for(let y=40;y<52;y++) grid[y*W+(x|0)]=MUD;
+}
+seedDemo();
+loop();
+</script>
