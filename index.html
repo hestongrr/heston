@@ -127,7 +127,7 @@
     font-family:var(--mono);font-size:11.5px;color:var(--muted)}
 
   /* products shelf */
-  .prodgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .prodgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
   @media (max-width:760px){.prodgrid{grid-template-columns:1fr}}
   .prod{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px;
     display:flex;flex-direction:column}
@@ -358,20 +358,32 @@
         workflow? Two ways to buy.</p>
       <div class="prodgrid">
         <div class="prod">
-          <span class="price">License &middot; custom quote</span>
+          <span class="price">License &middot; from $4,000/yr</span>
           <h3>License a tool for your firm</h3>
           <p>The boring-log generator, the seismic simulator, or another demo here &mdash; branded for
             your company, hosted or handed off. Useful for training, proposals, and client-facing work.</p>
           <a class="buy" href="#contact" data-interest="License a tool">Inquire &rarr;</a>
         </div>
         <div class="prod">
-          <span class="price">Custom build &middot; fixed scope</span>
+          <span class="price">Custom build &middot; from $8,000</span>
           <h3>A tool built to your spec</h3>
           <p>Have a manual, spreadsheet-bound workflow eating your team's hours? I build a purpose-made
             tool for it &mdash; scoped and priced up front, documented, and yours to keep.</p>
           <a class="buy" href="#contact" data-interest="Custom tool build">Get a quote &rarr;</a>
         </div>
+        <div class="prod">
+          <span class="price">Advisory &middot; $300/hr</span>
+          <h3>Consulting &amp; expert calls</h3>
+          <p>Geotechnical questions, diligence on AEC / construction-tech or AI products, or a second
+            opinion from someone who has worked both the field and the software side.</p>
+          <a class="buy" href="#contact" data-interest="Advisory / expert call">Book time &rarr;</a>
+        </div>
       </div>
+      <p style="margin-top:16px;font-size:12px;color:var(--muted);max-width:70ch">
+        Fixed scope, priced up front &mdash; you know the number before work starts. Tools published on
+        this site are demonstrations of capability, not engineering deliverables; production work is
+        scoped, documented, and delivered under contract.
+      </p>
     </div>
   </section>
 
