@@ -41,6 +41,22 @@
   .ded{width:100%;max-width:860px;margin-top:16px;padding:14px 16px;border:1px dashed var(--accent);
     border-radius:10px;font-size:13.5px;color:var(--ink);line-height:1.55;background:rgba(79,208,216,.05)}
   .ded a{color:var(--accent)}
+
+  .physics{width:100%;max-width:860px;margin-top:18px}
+  .physics h2{font-size:16px;letter-spacing:-.01em;margin:0 0 4px;color:var(--ink)}
+  .physics .lead{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:0 0 14px}
+  .ptable{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
+  .ptable th{text-align:left;font-family:var(--mono);font-size:10px;text-transform:uppercase;
+    letter-spacing:.08em;color:var(--muted);padding:0 10px 8px 0;font-weight:600}
+  .ptable td{padding:9px 12px 9px 0;border-top:1px solid var(--line);vertical-align:top;color:var(--ink);line-height:1.5}
+  .ptable td:first-child{white-space:nowrap;font-weight:700;color:var(--accent);width:130px}
+  .pcards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:640px){.pcards{grid-template-columns:1fr}}
+  .pcard{border:1px solid var(--line);border-radius:9px;padding:13px 14px;background:var(--panel)}
+  .pcard h3{margin:0 0 6px;font-size:13.5px}
+  .pcard p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.52}
+  .pcard .eq{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin-top:9px;
+    padding-top:8px;border-top:1px solid var(--line)}
 </style>
 
 <div class="top">
@@ -72,6 +88,40 @@
   🛠️ Built by <b>Heston</b> for my brother <b><a href="https://github.com/nibuen" target="_blank" rel="noopener">Leif</a></b> &mdash; the actual gamedev.
   Real soil mechanics under the hood: loose sand slumps to ~34°, cohesive mud stands steeper, water
   seeks its level. Pixel-perfect on purpose. <b>Race you to a Playdate port.</b> ⛏️🎮
+</div>
+
+<div class="physics">
+  <h2>The real soil mechanics under the hood</h2>
+  <p class="lead">Every behavior in the toy maps to actual geotechnical physics &mdash; here's the cheat sheet.</p>
+  <table class="ptable">
+    <tr><th>What you see</th><th>The real physics</th></tr>
+    <tr><td>Sand slumps to a slope</td><td><b>Angle of repose.</b> Loose dry sand is only stable up to ~30&ndash;35&deg;, set by its friction angle &phi; (grain friction + interlocking). Pile it steeper and it avalanches until stable again &mdash; exactly what the diagonal-slump rule produces.</td></tr>
+    <tr><td>Mud stands steeper</td><td><b>Cohesion.</b> Clay-size particles bond electrochemically, adding cohesion <i>c</i>. That lets clay hold a near-vertical face (short-term) where sand can't &mdash; the reason a trench wall in clay stands and in sand collapses.</td></tr>
+    <tr><td>Water finds its level</td><td><b>Hydrostatic equilibrium.</b> Water flows from high hydraulic head to low until head is equal everywhere. Pore pressure grows with depth: u = &gamma;<sub>w</sub>&middot;h &nbsp;(&gamma;<sub>w</sub> &asymp; 9.81 kN/m&sup3;).</td></tr>
+    <tr><td>Sand sinks in water</td><td><b>Buoyancy + density.</b> Sand grains are denser than water (&gamma;<sub>sand</sub> &gt; &gamma;<sub>w</sub>), so they settle through it &mdash; the same grain sorting that builds real sedimentary layers.</td></tr>
+  </table>
+  <div class="pcards">
+    <div class="pcard">
+      <h3>Mohr&ndash;Coulomb strength</h3>
+      <p>It all reduces to one equation: soil resists shear with a friction part <i>and</i> a cohesion part. Sand is nearly all friction (<i>c</i>&asymp;0); clay carries real cohesion &mdash; which is why they pile so differently in the box.</p>
+      <div class="eq">&tau;<sub>f</sub> = c + &sigma;&prime; &middot; tan &phi;</div>
+    </div>
+    <div class="pcard">
+      <h3>Effective stress &amp; liquefaction</h3>
+      <p>Strength depends on grain-to-grain stress, not total stress &mdash; Terzaghi's principle. Saturate loose sand and raise pore pressure <i>u</i>, and &sigma;&prime; &rarr; 0: the sand briefly behaves like a liquid. That's <b>liquefaction</b>, and it's why saturated sand here flows so easily.</p>
+      <div class="eq">&sigma;&prime; = &sigma; &minus; u</div>
+    </div>
+    <div class="pcard">
+      <h3>Grain size is destiny</h3>
+      <p>Gravel &gt; sand &gt; silt &gt; clay, by particle size (USCS classification). Coarse soils drain fast (high permeability <i>k</i>) and lean on friction; fine soils drain slowly and lean on cohesion. Size sets the behavior.</p>
+      <div class="eq">gravel &middot; sand &middot; silt &middot; clay</div>
+    </div>
+    <div class="pcard">
+      <h3>Why a cellular automaton works</h3>
+      <p>Real soil is a continuum you'd normally solve with finite elements. But give each cell a few simple local rules &mdash; fall, slump, flow &mdash; and the <b>bulk</b> behavior emerges on its own, strikingly close to the real thing. Simple rules, complex world.</p>
+      <div class="eq">local rules &rarr; emergent mechanics</div>
+    </div>
+  </div>
 </div>
 
 <script>
