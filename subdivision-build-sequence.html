@@ -1,0 +1,592 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How a Neighborhood Gets Built &mdash; 3D Construction Sequence | Heston Norcott</title>
+<meta name="description" content="An interactive 3D model of a tract-home subdivision built the way it actually happens: rough grading, overexcavation, utilities, streets, pads, foundations, houses. With a subsurface cutaway showing what ends up under your slab.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/subdivision-build-sequence.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="How a Neighborhood Gets Built &mdash; in 3D, step by step">
+<meta property="og:description" content="Every 'how a house is built' video starts at framing. The interesting part happened months earlier and is buried under the slab. Here it is.">
+<meta property="og:url" content="https://thebigpicture.tech/subdivision-build-sequence.html">
+<meta name="theme-color" content="#0c1a1c">
+<style>
+  :root{
+    --bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;--muted:#586360;
+    --line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;
+    --hero:#0c1a1c;--hero-ink:#e9f1f0;--hero-accent:#4fd0d8;
+    --cut:#B4503C;--fill:#3B6FA0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;
+      --cut:#D6725C;--fill:#6C9FCB;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;
+    --cut:#B4503C;--fill:#3B6FA0;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;
+    --cut:#D6725C;--fill:#6C9FCB;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  nav.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 84%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:56px}
+  nav .name{font-weight:800;font-size:15px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:18px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted);text-decoration:none}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:700px){nav .links a.hideS{display:none}}
+
+  header.h{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  header.h .wrap{padding:44px 20px 40px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 14px}
+  header.h h1{font-size:clamp(28px,5vw,46px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  header.h p{max-width:64ch;font-size:clamp(15px,1.9vw,17.5px);color:#b9cbc9;margin:16px 0 0}
+  header.h p b{color:var(--hero-ink);font-weight:600}
+
+  .stage{display:grid;grid-template-columns:1fr 340px;gap:18px;margin:26px 0 0}
+  @media (max-width:900px){.stage{grid-template-columns:1fr}}
+  .viewport{position:relative;background:#0d1614;border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;min-height:520px}
+  @media (max-width:900px){.viewport{min-height:380px}}
+  #cv{display:block;width:100%;height:100%}
+  .overlay{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11px;
+    color:#9fc4c1;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.7}
+  .overlay .ph{font-size:15px;color:#e9f1f0;font-weight:700;letter-spacing:-.01em;
+    font-family:var(--sans)}
+  .legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;
+    color:#9fc4c1;text-align:right;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+
+  .side{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px 20px}
+  .card h3{margin:0 0 4px;font-size:16.5px;letter-spacing:-.01em}
+  .card .n{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  .card p{margin:0 0 10px;font-size:14px;color:var(--muted);line-height:1.6}
+  .card p:last-child{margin-bottom:0}
+  .card p b{color:var(--ink)}
+  .geo{border-left:3px solid var(--accent);padding-left:13px;margin-top:12px}
+  .geo .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:5px}
+  .geo p{font-size:13.5px;margin:0}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .stats div{background:var(--panel);padding:11px 13px}
+  .stats .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);display:block}
+  .stats .v{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .stats .v span{font-size:11px;font-weight:400;color:var(--muted)}
+
+  .ctrls{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 20px;
+    margin-top:14px}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .row+.row{margin-top:12px}
+  input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
+  .b{font-family:var(--mono);font-size:12px;cursor:pointer;border-radius:7px;padding:8px 14px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);transition:.15s}
+  .b:hover{border-color:var(--accent);color:var(--accent)}
+  .b.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  .ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+    color:var(--muted);margin-top:5px;gap:2px}
+  .ticks span{flex:1;text-align:center;cursor:pointer;padding:2px 0;border-radius:4px}
+  .ticks span:hover{color:var(--accent)}
+  .ticks span.a{color:var(--accent);font-weight:700}
+  @media (max-width:700px){.ticks{display:none}}
+
+  section{padding:52px 0}
+  .sec-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(22px,3.1vw,29px);letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+  .prose{max-width:70ch}
+  .prose p{font-size:16px;line-height:1.66;margin:0 0 16px}
+  .prose ul{font-size:16px;line-height:1.62;padding-left:22px}
+  .prose li{margin-bottom:8px}
+  .scroller{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);font-weight:400}
+  .note{background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;
+    padding:20px 24px;margin:24px 0;font-size:14.5px;color:var(--muted);line-height:1.62}
+  .note b{color:var(--ink)}
+  .cta{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px;
+    text-align:center}
+  .cta h2{font-size:clamp(20px,2.6vw,25px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta p{color:var(--muted);max-width:54ch;margin:0 auto 20px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;border-radius:8px;padding:11px 18px;
+    border:1px solid var(--line-2);color:var(--ink);text-decoration:none;display:inline-block;
+    margin:4px 5px;transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="./index.html">Heston Norcott<b>.</b></a>
+  <span class="links">
+    <a href="./index.html#tools">Work</a><a href="./learn.html">Learn</a>
+    <a href="./diagrams.html" class="hideS">Diagrams</a><a href="./index.html#contact">Hire me</a>
+  </span>
+</div></nav>
+
+<header class="h"><div class="wrap">
+  <p class="eyebrow">Interactive 3D &middot; Construction sequence</p>
+  <h1>How a neighborhood actually gets built</h1>
+  <p>Every "how a house is built" video starts at framing. By then the interesting work has been
+    finished for months and buried under the slab. This is the whole sequence &mdash; grading,
+    overexcavation, utilities, streets, pads, foundations &mdash; in the order it really happens.
+    <b>Turn on the cutaway to see what ends up underneath your floor.</b></p>
+</div></header>
+
+<div class="wrap">
+  <div class="stage">
+    <div class="viewport"><canvas id="cv"></canvas>
+      <div class="overlay"><div class="ph" id="ovPh">Phase 0</div><div id="ovSub"></div></div>
+      <div class="legend" id="lg"></div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <p class="n" id="cN">Phase 0 of 10</p>
+        <h3 id="cT">Native ground</h3>
+        <p id="cB"></p>
+        <div class="geo"><span class="k">The geotechnical part</span><p id="cG"></p></div>
+      </div>
+      <div class="stats">
+        <div><span class="k">Cut</span><span class="v" id="sCut">&mdash;</span></div>
+        <div><span class="k">Fill</span><span class="v" id="sFill">&mdash;</span></div>
+        <div><span class="k">Overexcavation</span><span class="v" id="sOx">&mdash;</span></div>
+        <div><span class="k">Lots</span><span class="v" id="sLot">&mdash;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrls">
+    <div class="row">
+      <button class="b" id="play">&#9654; Play</button>
+      <input type="range" id="ph" min="0" max="10" step="1" value="0">
+      <button class="b" id="cut">Cutaway</button>
+      <button class="b" id="reset">Reset view</button>
+    </div>
+    <div class="ticks" id="ticks"></div>
+  </div>
+</div>
+
+<div class="wrap"><section>
+  <p class="sec-label">Why this exists</p>
+  <h2 class="sec">The part nobody films</h2>
+  <div class="prose">
+    <p>A finished subdivision looks like it was placed on the ground. It wasn't &mdash; the ground
+      was rebuilt to receive it. On a typical Las Vegas valley tract, months of work happen before a
+      single stick of lumber arrives, and essentially all of it is invisible by the time anyone
+      moves in.</p>
+    <p>That invisible work is where the geotechnical engineering lives, and it is the reason the
+      house stays flat. Native desert soils in this valley are frequently loose, collapsible when
+      first wetted, and interrupted by caliche &mdash; a naturally cemented layer that can be
+      strong enough to need a hoe ram in one spot and absent thirty feet away. You do not build on
+      that as found. You take it apart and put it back under control.</p>
+    <p>The model above walks through that sequence. The dimensions come from ordinary residential
+      practice: 50&nbsp;&times;&nbsp;100&nbsp;ft lots, a 40&nbsp;ft street corridor at a 2% crown,
+      pads set roughly a foot above the gutter for drainage, and 3&nbsp;ft of remedial
+      overexcavation below pad grade. Cut and fill volumes are computed from the actual mesh, not
+      typed in.</p>
+  </div>
+
+  <div class="note">
+    <b>What's real and what's representative.</b> The engineering standards, dimensions, sequence,
+    and soil profile are drawn from ordinary Las Vegas valley residential practice, and the
+    earthwork quantities are computed from the model geometry. The terrain itself is a
+    representative alluvial-fan surface rather than a specific parcel, and no project-specific data
+    from any client report is used here. Swapping in a real USGS elevation tile and a recorded
+    subdivision map is straightforward &mdash; that's the next version.
+  </div>
+
+  <p class="sec-label" style="margin-top:40px">Reference</p>
+  <h2 class="sec">The sequence, and why the order is fixed</h2>
+  <div class="prose"><p>Most of this ordering isn't preference. It's forced by gravity, by access,
+    and by what you're willing to dig back up.</p></div>
+  <div class="scroller"><table>
+    <tr><th>#</th><th>Phase</th><th>Why it has to come here</th></tr>
+    <tr><td>0</td><td>Investigation</td><td>Borings before design &mdash; you can't set pad grades until you know what's under them</td></tr>
+    <tr><td>1</td><td>Clearing &amp; grubbing</td><td>Organics can't be left under fill; they decompose and the surface settles</td></tr>
+    <tr><td>2</td><td>Rough grading</td><td>Balance cut and fill on site &mdash; hauling dirt off or in is expensive</td></tr>
+    <tr><td>3</td><td>Remedial grading</td><td>Overexcavate and recompact <i>before</i> anything is built on top of it</td></tr>
+    <tr><td>4</td><td>Wet utilities</td><td>Sewer runs on gravity, so it's deepest and goes in first</td></tr>
+    <tr><td>5</td><td>Dry utilities</td><td>Shallower, and can dodge the wet lines already in the ground</td></tr>
+    <tr><td>6</td><td>Streets</td><td>After the trenches, or you'd cut up new pavement</td></tr>
+    <tr><td>7</td><td>Pad certification</td><td>Compaction and grade signed off before a foundation is permitted</td></tr>
+    <tr><td>8</td><td>Foundations</td><td>Post-tensioned slabs are common here &mdash; they tolerate soil movement</td></tr>
+    <tr><td>9</td><td>Vertical construction</td><td>The part everyone photographs</td></tr>
+    <tr><td>10</td><td>Final grade &amp; flatwork</td><td>Drainage away from the house is the last defense, and the most often broken</td></tr>
+  </table></div>
+
+  <div class="cta">
+    <h2>Need a site or sequence visualized like this?</h2>
+    <p>3-D site models, grading visualizations, and construction sequencing built from your real
+      survey and geotechnical data &mdash; for entitlement exhibits, public meetings, or client
+      presentations.</p>
+    <a class="btn solid" href="./index.html#contact">Start a conversation</a>
+    <a class="btn" href="./learn.html">See the free library</a>
+  </div>
+</section></div>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV</span>
+  <span>Educational model &mdash; not a design for any specific site.</span>
+</div></footer>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script>
+/* ---------------------------------------------------------------------------
+   Tract subdivision construction sequence.
+   Units are FEET throughout. Grid runs -SX/2..SX/2 by -SZ/2..SZ/2.
+   Two rows of 50x100 lots either side of a 40 ft street corridor on centerline.
+---------------------------------------------------------------------------- */
+const SX=480, SZ=260, NX=97, NZ=53;          // site size + grid resolution
+const DX=SX/(NX-1), DZ=SZ/(NZ-1), CELL=DX*DZ;
+const ST_HALF=20;                             // street corridor half-width
+const LOT_W=50, LOT_D=100, NLOT=9;            // 9 lots per side
+const LOT_X0=-225;                            // first lot left edge
+const PAD_OVER=1.2;                           // pad above gutter
+const RAMP=15;                                // street-edge to pad transition
+const OX_DEPTH=3;                             // remedial overexcavation depth
+const XG=i=>-SX/2+i*DX, ZG=j=>-SZ/2+j*DZ;
+
+// --- ground surfaces -------------------------------------------------------
+function hNat(x,z){                            // alluvial fan, ~2% to the east
+  return 22 - 0.02*(x+SX/2) + 1.9*Math.sin(x/72) + 1.15*Math.cos(z/54+0.7)
+         + 0.5*Math.sin(x/23+z/31);
+}
+// Street centerline datum. 20.145 is not arbitrary — it's solved so cut balances fill
+// across the site (net 0 CY). A real grading plan is set the same way: you pick the
+// elevation that keeps dirt from having to be hauled on or off the job.
+const stCL = x => 20.145 - 0.015*(x+SX/2);     // street centerline, 1.5% grade
+function lotIndex(x){
+  const k=Math.floor((x-LOT_X0)/LOT_W);
+  return (k<0||k>=NLOT)?-1:k;
+}
+const lotCX = k => LOT_X0 + k*LOT_W + LOT_W/2;
+function padElev(x){
+  const k=lotIndex(x); if(k<0) return null;
+  return stCL(lotCX(k)) + PAD_OVER;
+}
+function hDes(x,z){
+  const az=Math.abs(z);
+  if(az<=ST_HALF) return stCL(x) - 0.02*az;    // 2% crown
+  const pe=padElev(x);
+  const gut=stCL(x)-0.02*ST_HALF;
+  if(pe===null) return gut + (az-ST_HALF)*0.03; // out-of-lot: drain away
+  if(az<ST_HALF+RAMP){                          // driveway/parkway transition
+    const t=(az-ST_HALF)/RAMP; return gut+(pe-gut)*t;
+  }
+  if(az>ST_HALF+RAMP+LOT_D) return pe-1.0;      // beyond rear lot line
+  return pe;                                    // flat pad
+}
+const inLot = (x,z)=>{const az=Math.abs(z);
+  return lotIndex(x)>=0 && az>ST_HALF+RAMP && az<=ST_HALF+RAMP+LOT_D;};
+
+// --- earthwork quantities (computed, not typed) ----------------------------
+let CUT=0, FILL=0, OX=0;
+for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){
+  const x=XG(i), z=ZG(j), d=hNat(x,z)-hDes(x,z);
+  if(d>0) CUT+=d*CELL; else FILL+=-d*CELL;
+  if(inLot(x,z)) OX+=OX_DEPTH*CELL;
+}
+const cy=v=>Math.round(v/27);
+
+// --- phase definitions -----------------------------------------------------
+const PH=[
+ {t:"Native ground",s:"Raw desert, pre-construction",
+  b:"An undisturbed alluvial fan surface falling about 2% across the site. Before anything is designed, a drill rig puts down borings to find out what the ground is made of and how deep the competent material sits.",
+  g:"This is where I come in. Borings, sampling, lab testing, and a report that sets pad grades, overexcavation depth, bearing capacity, and slab type. Every number in the phases that follow traces back to this step."},
+ {t:"Clearing &amp; grubbing",s:"Strip organics and debris",
+  b:"Desert scrub, roots, and any trash are stripped off and hauled. It looks like almost nothing happened, which is the point.",
+  g:"Organic material cannot be left buried under fill. It decomposes, loses volume, and the surface above it settles years later &mdash; usually unevenly, which is worse than settling a lot."},
+ {t:"Rough grading",s:"Cut the highs, fill the lows",
+  b:"Scrapers move the site to design grade. Red is material being cut away; blue is where fill is placed. The goal is to balance the two so dirt neither leaves nor arrives &mdash; hauling is one of the most expensive line items on the job.",
+  g:"Fill isn't just pushed into place. It goes down in lifts of roughly 8 inches, each moisture-conditioned and compacted to a specified percentage of maximum dry density, with a technician testing as it goes."},
+ {t:"Remedial grading",s:"Overexcavate and recompact",
+  b:"Under every future building pad the ground is dug out an additional 3 ft below grade, then put back as engineered fill under controlled moisture and compaction. Turn on the cutaway &mdash; this is the layer you will never see again.",
+  g:"The reason is collapsible soil. Loose desert alluvium can hold itself up dry for centuries and then lose volume abruptly the first time it gets thoroughly wet &mdash; from irrigation, a broken line, or a storm. Recompacting removes that potential before a house is on top of it."},
+ {t:"Wet utilities",s:"Sewer, then water",
+  b:"Sanitary sewer goes in first and deepest, because it runs on gravity and its slope is not negotiable. Storm drain and pressurized water follow above it.",
+  g:"Trench backfill is its own compaction problem. A poorly compacted trench telegraphs to the surface as a long settled scar down the middle of a street, and every one of those is a pavement failure waiting to happen."},
+ {t:"Dry utilities",s:"Power, gas, communications",
+  b:"Shallower joint trench for electric, gas, and communications, routed to avoid the wet lines already in the ground.",
+  g:"Sequencing is the whole game here. Once pavement is down, anything still needing to go under it becomes a saw cut, a patch, and a permanent weak seam."},
+ {t:"Streets",s:"Subgrade, base, pavement",
+  b:"The street section is built up in layers: compacted subgrade, aggregate base, then asphalt. The crown sheds water to the gutters on each side.",
+  g:"Pavement is a structural system, not a surface. It spreads wheel loads out over enough area that the subgrade underneath never sees a stress it can't take &mdash; which means the subgrade's strength determines how thick everything above it has to be."},
+ {t:"Pad certification",s:"Fine grade and sign-off",
+  b:"Each lot is brought to final pad elevation, tested, and certified. Nothing gets a foundation permit without this.",
+  g:"The pad certification letter states that compaction and elevation meet the approved plan and geotechnical report. It's a stamped document with a name on it &mdash; and it's the last check before the ground is covered for good."},
+ {t:"Foundations",s:"Post-tensioned slabs",
+  b:"Slabs are formed and poured on the certified pads. Post-tensioned slabs are common across the valley &mdash; steel tendons are tensioned after the concrete cures, putting the slab into compression.",
+  g:"A post-tensioned slab is designed to move as one stiff plate rather than crack apart in pieces. On soils that swell, shrink, or settle unevenly, that ability to ride out differential movement is worth far more than raw strength."},
+ {t:"Vertical construction",s:"The part everyone photographs",
+  b:"Framing, roof, mechanical, drywall, finishes. Months of highly visible work sitting on top of the months of invisible work below.",
+  g:"By this point the geotechnical work is finished and unreachable. Anything missed under the slab is now a repair measured in tens of thousands of dollars instead of a fix measured in truckloads."},
+ {t:"Final grading &amp; flatwork",s:"Drainage, driveways, landscape",
+  b:"Lot grading is finished so water runs away from the structure, then driveways, walks, and landscaping go in. The neighborhood is done.",
+  g:"Final grade is the last line of defense and the one most often undone later &mdash; by a planter built against the house, a patio poured flat, or irrigation aimed at the foundation. Keep water moving away from the slab and most soil problems never start."}
+];
+
+// --- scene -----------------------------------------------------------------
+let renderer,scene,camera,controls,root,phase=0,cutaway=false,playing=false,timer=null;
+const cv=document.getElementById("cv");
+
+function init(){
+  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  scene=new THREE.Scene(); scene.background=new THREE.Color(0x0d1614);
+  scene.fog=new THREE.Fog(0x0d1614,700,1500);
+  camera=new THREE.PerspectiveCamera(42,1,1,4000);
+  camera.position.set(330,255,375);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08;
+  controls.maxPolarAngle=Math.PI/2.06; controls.minDistance=90; controls.maxDistance=1300;
+  scene.add(new THREE.HemisphereLight(0xd8ecff,0x4a4030,.85));
+  scene.add(new THREE.AmbientLight(0xffffff,.22));
+  const sun=new THREE.DirectionalLight(0xffe9c4,1.15); sun.position.set(280,420,190); scene.add(sun);
+  const rim=new THREE.DirectionalLight(0x8fd4e8,.32); rim.position.set(-260,150,-220); scene.add(rim);
+  root=new THREE.Group(); scene.add(root);
+  addEventListener("resize",size); size(); build(); loop();
+}
+function size(){
+  const r=cv.parentElement.getBoundingClientRect();
+  renderer.setSize(r.width,r.height,false);
+  camera.aspect=r.width/r.height; camera.updateProjectionMatrix();
+}
+function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);}
+function clear(o){while(o.children.length){const c=o.children.pop();
+  if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); o.remove(c);}}
+const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign(
+  {color:c,roughness:.94,metalness:0,flatShading:false},o||{}));
+function box(w,h,d,x,y,z,c,o){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c,o));
+  m.position.set(x,y+h/2,z); root.add(m); return m;
+}
+
+// surface height for the current phase
+function hAt(x,z){ return phase<2 ? hNat(x,z) : hDes(x,z); }
+
+// strata colours by depth below natural ground
+const STRAT=[[4,0xc4ab84],[9,0xd8d2c0],[22,0xa87c52],[99,0x7d5636]];
+function stratColor(d){for(const [lim,c] of STRAT) if(d<lim) return c; return 0x7d5636;}
+
+function buildTerrain(){
+  const g=new THREE.BufferGeometry(), pos=[],col=[],idx=[];
+  const iMax = cutaway ? Math.floor(NX/2) : NX-1;
+  const cA=new THREE.Color(), cB=new THREE.Color();
+  for(let j=0;j<NZ;j++)for(let i=0;i<=iMax;i++){
+    const x=XG(i),z=ZG(j),y=hAt(x,z);
+    pos.push(x,y,z);
+    let c;
+    if(phase===2){                                   // cut / fill map
+      const d=hNat(x,z)-hDes(x,z);
+      c = d>0.15 ? cA.setHex(0xb4503c) : d<-0.15 ? cB.setHex(0x3b6fa0) : cA.setHex(0x9a9384);
+      const t=Math.min(Math.abs(d)/6,1)*.55+.45; c=c.clone().multiplyScalar(t);
+    } else if(phase>=3 && inLot(x,z)){
+      c=new THREE.Color(0xb9a888);                   // recompacted pad
+    } else if(phase>=6 && Math.abs(z)<=ST_HALF){
+      c=new THREE.Color(0x3a3a3c);                   // pavement
+    } else {
+      const n=(Math.sin(x*.21+z*.17)+1)*7-3;
+      c=new THREE.Color().setRGB((190+n)/255,(168+n)/255,(128+n)/255);
+    }
+    col.push(c.r,c.g,c.b);
+  }
+  const W=iMax+1;
+  for(let j=0;j<NZ-1;j++)for(let i=0;i<iMax;i++){
+    const a=j*W+i,b=a+1,c2=a+W,d=c2+1;
+    idx.push(a,c2,b, b,c2,d);
+  }
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  root.add(new THREE.Mesh(g,mat(0xffffff,{vertexColors:true})));
+}
+
+// vertical section wall at the cut plane, showing strata + the overex zone
+function buildSection(){
+  const i=Math.floor(NX/2), x=XG(i), ROWS=40, DEPTH=30;
+  const g=new THREE.BufferGeometry(), pos=[],col=[],idx=[];
+  for(let j=0;j<NZ;j++){
+    const z=ZG(j), top=hAt(x,z), nat=hNat(x,z);
+    for(let r=0;r<=ROWS;r++){
+      const y=top-(r/ROWS)*DEPTH;
+      pos.push(x,y,z);
+      const dBelowNat=nat-y;
+      let c;
+      if(phase>=3 && inLot(x,z) && y>hDes(x,z)-OX_DEPTH && y<=hDes(x,z)){
+        c=new THREE.Color(0xb9a888);                 // engineered fill
+      } else if(phase>=2 && y>nat){
+        c=new THREE.Color(0xcbb992);                 // placed fill above native
+      } else {
+        c=new THREE.Color(stratColor(Math.max(dBelowNat,0)));
+      }
+      const n=((j*5+r*3)%7-3)/255; col.push(c.r+n,c.g+n,c.b+n);
+    }
+  }
+  for(let j=0;j<NZ-1;j++)for(let r=0;r<ROWS;r++){
+    const a=j*(ROWS+1)+r,b=a+1,c2=a+ROWS+1,d=c2+1;
+    idx.push(a,b,c2, b,d,c2);
+  }
+  g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  root.add(new THREE.Mesh(g,mat(0xffffff,{vertexColors:true,side:THREE.DoubleSide})));
+}
+
+function buildUtilities(){
+  const xL=cutaway?0:SX/2;
+  // sewer (deep, centre) then water
+  const sew=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,xL+SX/2,12),mat(0x53606b));
+  sew.rotation.z=Math.PI/2; sew.position.set((-SX/2+xL)/2, stCL(0)-9.5, 0); root.add(sew);
+  const wat=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,xL+SX/2,12),mat(0x2f6f9e));
+  wat.rotation.z=Math.PI/2; wat.position.set((-SX/2+xL)/2, stCL(0)-5.5, 8); root.add(wat);
+  for(let k=0;k<NLOT;k++){ const x=lotCX(k); if(cutaway&&x>0) continue;
+    box(2.6,1.2,2.6,x,stCL(x)-0.02*ST_HALF-.6,0,0x6d757c);   // manhole lids
+  }
+}
+function buildDry(){
+  const xL=cutaway?0:SX/2;
+  const j=new THREE.Mesh(new THREE.BoxGeometry(xL+SX/2,1.6,3.4),mat(0x8a6a3c));
+  j.position.set((-SX/2+xL)/2, stCL(0)-3.2, -13); root.add(j);
+}
+function buildStreet(){
+  // curb ribbons each side
+  for(const s of [-1,1]){
+    const pts=[],W=cutaway?0:SX/2;
+    const g=new THREE.BufferGeometry(),pos=[],idx=[];
+    let n=0;
+    for(let x=-SX/2;x<=W;x+=DX){
+      const zc=s*ST_HALF, y=stCL(x)-0.02*ST_HALF;
+      pos.push(x,y,zc, x,y+0.55,zc+s*1.2); n++;
+    }
+    for(let k=0;k<n-1;k++){const a=k*2;idx.push(a,a+1,a+2, a+1,a+3,a+2);}
+    g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+    g.setIndex(idx); g.computeVertexNormals();
+    root.add(new THREE.Mesh(g,mat(0xb9b4ab,{side:THREE.DoubleSide})));
+  }
+}
+function buildLots(){
+  for(let k=0;k<NLOT;k++){
+    const x=lotCX(k); if(cutaway&&x>0) continue;
+    for(const s of [-1,1]){
+      const z=s*(ST_HALF+RAMP+LOT_D/2), pe=padElev(x);
+      if(phase===7) box(LOT_W-6,0.3,LOT_D-14,x,pe,z,0xc8b58e);            // fine-graded pad
+      if(phase>=8) box(38,0.9,44,x,pe,z,0xd6d2c8);                        // slab
+      if(phase>=9){                                                        // house massing
+        const hgt=(k%3===0)?19:(k%3===1)?15:22;
+        box(34,hgt,40,x,pe+0.9,z,(k%2)?0xd9cdb8:0xcfc0a8);
+        const roof=new THREE.Mesh(new THREE.ConeGeometry(27,7,4),mat((k%2)?0x8c7a63:0x7d6b56));
+        roof.rotation.y=Math.PI/4; roof.position.set(x,pe+0.9+hgt+3.5,z); root.add(roof);
+      }
+      if(phase>=10){
+        box(12,0.25,RAMP+4,x,pe-0.4,s*(ST_HALF+RAMP/2),0xc9c4ba);         // driveway
+        for(let q=0;q<5;q++){
+          const t=new THREE.Mesh(new THREE.SphereGeometry(2.6,7,6),mat(0x5c7a4a));
+          t.position.set(x-16+q*8, pe+3, z+s*(LOT_D/2-8)); root.add(t);
+        }
+      }
+    }
+  }
+}
+function buildRigs(){                                    // phase 0 boring rigs
+  for(const p of [[-150,-70],[10,60],[160,-40],[-60,90]]){
+    if(cutaway&&p[0]>0) continue;
+    const y=hNat(p[0],p[1]);
+    box(7,3,7,p[0],y,p[1],0x6f6a5e);
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,26,8),mat(0xd8b25a));
+    m.position.set(p[0],y+16,p[1]); root.add(m);
+  }
+}
+function buildOverexGhost(){                             // phase 3 translucent zone
+  for(let k=0;k<NLOT;k++){
+    const x=lotCX(k); if(cutaway&&x>0) continue;
+    for(const s of [-1,1]){
+      const z=s*(ST_HALF+RAMP+LOT_D/2), pe=padElev(x);
+      const m=new THREE.Mesh(new THREE.BoxGeometry(LOT_W-4,OX_DEPTH,LOT_D-10),
+        new THREE.MeshStandardMaterial({color:0x4fd0d8,transparent:true,opacity:.28,
+          roughness:1,depthWrite:false}));
+      m.position.set(x,pe-OX_DEPTH/2,z); root.add(m);
+    }
+  }
+}
+
+function build(){
+  clear(root);
+  buildTerrain();
+  if(cutaway) buildSection();
+  if(phase===0) buildRigs();
+  if(phase===3) buildOverexGhost();
+  if(phase>=4) buildUtilities();
+  if(phase>=5) buildDry();
+  if(phase>=6) buildStreet();
+  buildLots();
+  ui();
+}
+
+const LEG={
+ 2:'<i style="background:#b4503c"></i>cut &nbsp; <i style="background:#3b6fa0"></i>fill',
+ 3:'<i style="background:#4fd0d8"></i>overexcavation zone (3 ft)'
+};
+const LEG_CUT='<i style="background:#c4ab84"></i>alluvium &nbsp;<i style="background:#d8d2c0"></i>caliche'
+  +' &nbsp;<i style="background:#a87c52"></i>dense alluvium &nbsp;<i style="background:#b9a888"></i>engineered fill';
+
+function ui(){
+  const p=PH[phase];
+  document.getElementById("ovPh").innerHTML="Phase "+phase+" &mdash; "+p.t;
+  document.getElementById("ovSub").textContent=p.s;
+  document.getElementById("cN").textContent="Phase "+phase+" of 10";
+  document.getElementById("cT").innerHTML=p.t;
+  document.getElementById("cB").innerHTML=p.b;
+  document.getElementById("cG").innerHTML=p.g;
+  document.getElementById("lg").innerHTML=cutaway?LEG_CUT:(LEG[phase]||"");
+  document.getElementById("sCut").innerHTML =phase>=2?cy(CUT).toLocaleString()+' <span>CY</span>':"&mdash;";
+  document.getElementById("sFill").innerHTML=phase>=2?cy(FILL).toLocaleString()+' <span>CY</span>':"&mdash;";
+  document.getElementById("sOx").innerHTML  =phase>=3?cy(OX).toLocaleString()+' <span>CY</span>':"&mdash;";
+  document.getElementById("sLot").innerHTML =phase>=7?(NLOT*2)+' <span>pads</span>':"&mdash;";
+  document.getElementById("ph").value=phase;
+  [...document.querySelectorAll("#ticks span")].forEach((s,k)=>s.classList.toggle("a",k===phase));
+}
+
+// --- controls --------------------------------------------------------------
+const ticks=document.getElementById("ticks");
+PH.forEach((p,k)=>{const s=document.createElement("span");s.textContent=k;
+  s.title=p.t.replace(/&amp;/g,"&");
+  s.onclick=()=>{phase=k;stop();build();};ticks.appendChild(s);});
+document.getElementById("ph").oninput=e=>{phase=+e.target.value;stop();build();};
+document.getElementById("cut").onclick=e=>{cutaway=!cutaway;
+  e.target.classList.toggle("on",cutaway);build();};
+document.getElementById("reset").onclick=()=>{camera.position.set(330,255,375);
+  controls.target.set(0,0,0);controls.update();};
+function stop(){playing=false;clearInterval(timer);
+  document.getElementById("play").innerHTML="&#9654; Play";}
+document.getElementById("play").onclick=e=>{
+  if(playing){stop();return;}
+  playing=true; e.target.innerHTML="&#10073;&#10073; Pause";
+  if(phase>=10) phase=0;
+  timer=setInterval(()=>{ if(phase>=10){stop();return;} phase++; build(); },2100);
+};
+addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"&&phase<10){phase++;stop();build();}
+  if(e.key==="ArrowLeft"&&phase>0){phase--;stop();build();}
+});
+init();
+</script>
