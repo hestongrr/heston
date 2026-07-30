@@ -1,0 +1,367 @@
+<title>USCS Soil Classification Calculator (ASTM D2487) — Free</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free USCS soil classification calculator. Enter sieve analysis and Atterberg limits to get the ASTM D2487 group symbol and group name, with the plasticity chart plotted and every decision step shown.">
+<link rel="canonical" href="https://thebigpicture.tech/uscs-soil-classification-calculator.html">
+<meta property="og:title" content="USCS Soil Classification Calculator (ASTM D2487)">
+<meta property="og:description" content="Enter sieve data and Atterberg limits — get the group symbol, group name, and see exactly which branch of the decision tree you took.">
+<meta property="og:url" content="https://thebigpicture.tech/uscs-soil-classification-calculator.html">
+<meta property="og:image" content="https://thebigpicture.tech/pe-diagrams/uscs_plasticity_chart.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff; --red:#B23A2E;
+    --gold:#C99A2E;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;--red:#E26A5C;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;--red:#B23A2E;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;--red:#E26A5C;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  nav.top{border-bottom:1px solid var(--line);background:var(--panel)}
+  nav.top .wrap{display:flex;align-items:center;gap:16px;height:54px}
+  nav .name{font-weight:800;font-size:15px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:18px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted);text-decoration:none}
+  header.hd{padding:34px 0 8px}
+  h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+  header.hd p{color:var(--muted);max-width:68ch;margin:0;font-size:15.5px}
+
+  .app{display:grid;grid-template-columns:400px 1fr;gap:20px;margin:26px 0 10px;align-items:start}
+  @media (max-width:900px){.app{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);
+    margin:0 0 14px;font-weight:700}
+  .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
+  .fld label{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--muted)}
+  .fld .hint{font-size:10.5px;color:var(--muted);opacity:.8}
+  input[type=number]{width:100%;font-family:var(--mono);font-size:14px;color:var(--ink);
+    background:var(--bg);border:1px solid var(--line-2);border-radius:7px;padding:8px 10px;
+    font-variant-numeric:tabular-nums}
+  input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sub{margin:16px 0 8px;padding-top:14px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+
+  .result{background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:22px 24px;
+    margin-bottom:16px}
+  .result .sym{font-size:clamp(40px,8vw,64px);font-weight:800;line-height:1;letter-spacing:-.03em}
+  .result .nm{font-size:17px;margin-top:8px;font-weight:600;opacity:.95}
+  .result .warn{margin-top:12px;font-size:13px;background:rgba(0,0,0,.18);padding:9px 12px;
+    border-radius:7px}
+  .steps{list-style:none;margin:0;padding:0}
+  .steps li{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .steps li:last-child{border-bottom:0}
+  .steps .k{font-family:var(--mono);font-size:11px;color:var(--accent);flex:none;width:74px;
+    padding-top:2px;font-weight:700}
+  .steps .v{color:var(--ink)}
+  .steps .v em{color:var(--muted);font-style:normal}
+  canvas{width:100%;height:auto;display:block;border-radius:8px;margin-top:4px}
+
+  .prose{max-width:70ch;margin:34px 0}
+  .prose h2{font-size:22px;letter-spacing:-.01em;margin:28px 0 10px}
+  .prose h3{font-size:16px;margin:20px 0 6px}
+  .prose p,.prose li{color:var(--ink);font-size:15px}
+  .prose code{font-family:var(--mono);font-size:13px;background:var(--panel-2);padding:1px 5px;
+    border-radius:4px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--muted)}
+  .cta{background:var(--panel);border:1px dashed var(--accent);border-radius:12px;padding:20px 22px;
+    margin:30px 0}
+  .cta h3{margin:0 0 7px;font-size:17px}
+  .cta p{margin:0 0 14px;color:var(--muted);font-size:14.5px}
+  .btn{display:inline-block;font-family:var(--mono);font-size:13px;font-weight:700;
+    background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 18px;
+    text-decoration:none}
+  .disc{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;
+    margin-top:30px}
+  footer{border-top:1px solid var(--line);margin-top:26px;padding:22px 0}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="/">Heston <b>Norcott</b></a>
+  <span class="links"><a href="/#tools">Tools</a><a href="/diagrams.html">Diagrams</a><a href="/#contact">Hire me</a></span>
+</div></nav>
+
+<div class="wrap">
+  <header class="hd">
+    <h1>USCS Soil Classification Calculator</h1>
+    <p>Enter your sieve analysis and Atterberg limits. You'll get the <b>ASTM D2487 group symbol
+      and group name</b>, your sample plotted on the plasticity chart, and every decision step
+      shown — because the branching is where classifications actually go wrong, not the arithmetic.</p>
+  </header>
+
+  <div class="app">
+    <div class="card">
+      <h2>Sieve analysis</h2>
+      <div class="fld">
+        <label for="p200">% passing No. 200 (0.075 mm)</label>
+        <input type="number" id="p200" value="12" min="0" max="100" step="0.1">
+        <span class="hint">≥50 % → fine-grained · &lt;50 % → coarse-grained</span>
+      </div>
+      <div class="fld">
+        <label for="p4">% passing No. 4 (4.75 mm)</label>
+        <input type="number" id="p4" value="70" min="0" max="100" step="0.1">
+        <span class="hint">Used to split gravel from sand — on the coarse fraction only</span>
+      </div>
+
+      <div class="sub">Gradation — only if fines &lt; 12 %</div>
+      <div class="two">
+        <div class="fld"><label for="d60">D₆₀ (mm)</label><input type="number" id="d60" value="2.0" step="0.01" min="0"></div>
+        <div class="fld"><label for="d30">D₃₀ (mm)</label><input type="number" id="d30" value="0.5" step="0.01" min="0"></div>
+      </div>
+      <div class="fld"><label for="d10">D₁₀ (mm)</label><input type="number" id="d10" value="0.1" step="0.01" min="0"></div>
+
+      <div class="sub">Atterberg limits — of the minus-40 fraction</div>
+      <div class="two">
+        <div class="fld"><label for="ll">Liquid limit, LL</label><input type="number" id="ll" value="35" step="0.1" min="0"></div>
+        <div class="fld"><label for="pl">Plastic limit, PL</label><input type="number" id="pl" value="20" step="0.1" min="0"></div>
+      </div>
+      <div class="fld">
+        <label><input type="checkbox" id="org" style="width:auto;margin-right:7px"> Organic (odour, colour, or LL ratio &lt; 0.75)</label>
+      </div>
+    </div>
+
+    <div>
+      <div class="result" id="res">
+        <div class="sym" id="sym">—</div>
+        <div class="nm" id="nm">Enter values to classify</div>
+        <div class="warn" id="warn" hidden></div>
+      </div>
+      <div class="card">
+        <h2>How it classified — the decision path</h2>
+        <ul class="steps" id="steps"></ul>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Plasticity chart — your sample plotted</h2>
+        <canvas id="pc" width="720" height="440"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h3>Need this built into your workflow?</h3>
+    <p>I'm a geotechnical engineer who builds custom engineering software — batch classification from
+      lab spreadsheets, boring logs generated straight from field data, report automation. This
+      calculator is a free demonstration; production tooling is contract work.</p>
+    <a class="btn" href="/#contact">Get in touch →</a>
+  </div>
+
+  <div class="prose">
+    <h2>How USCS classification works</h2>
+    <p>The Unified Soil Classification System (ASTM D2487) sorts soil by grain size and plasticity
+      into a two-letter group symbol. The arithmetic is trivial; the classification is a
+      <b>decision tree</b>, and most errors are wrong turns rather than bad math.</p>
+
+    <h3>1. Coarse-grained or fine-grained?</h3>
+    <p>The split is <b>50 % passing the No. 200 sieve</b>. Pass 50 % or more and the soil is
+      fine-grained — you're on the plasticity chart. Less than 50 % and it's coarse-grained.</p>
+
+    <h3>2. Gravel or sand?</h3>
+    <p>For coarse soils, the No. 4 sieve decides — but the split is on the <b>coarse fraction</b>,
+      not the total sample. More than half of the coarse fraction retained on the No. 4 makes it
+      gravel (G); otherwise sand (S). Getting this backwards is the single most common error.</p>
+
+    <h3>3. How much fines?</h3>
+    <table>
+      <tr><th>Fines (% passing #200)</th><th>Result</th></tr>
+      <tr><td>&lt; 5 %</td><td>Clean — grade it: <code>GW</code>/<code>GP</code>/<code>SW</code>/<code>SP</code></td></tr>
+      <tr><td>5 – 12 %</td><td><b>Dual symbol</b> — e.g. <code>SW-SM</code></td></tr>
+      <tr><td>&gt; 12 %</td><td>Fines govern: <code>GM</code>/<code>GC</code>/<code>SM</code>/<code>SC</code></td></tr>
+    </table>
+
+    <h3>4. Well graded or poorly graded?</h3>
+    <p>Two coefficients, and <b>the thresholds differ between gravel and sand</b>:</p>
+    <p><code>Cu = D₆₀ / D₁₀</code> &nbsp;&nbsp; <code>Cc = D₃₀² / (D₆₀ × D₁₀)</code></p>
+    <table>
+      <tr><th></th><th>Well graded requires</th></tr>
+      <tr><td><b>Gravel</b></td><td>Cu ≥ 4 <em>and</em> 1 ≤ Cc ≤ 3</td></tr>
+      <tr><td><b>Sand</b></td><td>Cu ≥ 6 <em>and</em> 1 ≤ Cc ≤ 3</td></tr>
+    </table>
+    <p>Most people memorise one number. Fail either condition and it's poorly graded.</p>
+
+    <h3>5. The plasticity chart</h3>
+    <p>For fine-grained soils, plot LL against PI. The <b>A-line</b> separates clays from silts;
+      <b>LL = 50</b> separates low from high plasticity.</p>
+    <p><code>A-line: PI = 0.73 (LL − 20)</code> &nbsp;&nbsp; <code>U-line: PI = 0.9 (LL − 8)</code></p>
+    <p>The U-line isn't a classification boundary — it's an upper bound on real soil. If your point
+      plots above it, check the lab data rather than reaching for an exotic explanation.</p>
+
+    <div class="disc">
+      <b>Disclaimer.</b> This calculator is provided for education and preliminary screening only.
+      It is not engineering advice, creates no engineer–client relationship, and must not be used
+      as the basis for design. Verify all classifications against ASTM D2487 and the judgement of a
+      licensed professional engineer. Free to use, and corrected in public — if you find an error,
+      email me and I'll fix it and say what it was.
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <span>© Heston Norcott · Geotechnical Engineer (E.I.)</span>
+  <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> · <a href="/">thebigpicture.tech</a></span>
+</div></footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const IN = ["p200","p4","d60","d30","d10","ll","pl","org"];
+
+function classify(){
+  const p200=+$("p200").value, p4=+$("p4").value;
+  const D60=+$("d60").value, D30=+$("d30").value, D10=+$("d10").value;
+  const LL=+$("ll").value, PL=+$("pl").value, organic=$("org").checked;
+  const PI = LL - PL;
+  const steps = [];
+  let sym="—", name="Enter values", warn="";
+
+  const Aline = 0.73*(LL-20);
+  const Uline = 0.9*(LL-8);
+
+  if (p200 >= 50){
+    // ---------- FINE-GRAINED ----------
+    steps.push(["#200", `<b>${p200}%</b> passing ≥ 50% → <b>fine-grained</b>`]);
+    steps.push(["PI", `LL ${LL} − PL ${PL} = <b>PI ${PI.toFixed(1)}</b>`]);
+    steps.push(["A-line", `PI = 0.73(${LL} − 20) = <b>${Aline.toFixed(1)}</b> — sample is
+                 <b>${PI>=Aline?"above":"below"}</b> it`]);
+    const high = LL >= 50;
+    steps.push(["LL = 50", `LL ${LL} → <b>${high?"high (H)":"low (L)"}</b> plasticity`]);
+    if (organic){
+      sym = high ? "OH" : "OL";
+      name = high ? "Organic clay or organic silt (high plasticity)"
+                  : "Organic clay or organic silt (low plasticity)";
+      steps.push(["organic", "Marked organic → O prefix"]);
+    } else if (!high && PI>=4 && PI<=7 && PI>=Aline){
+      sym="CL-ML"; name="Silty clay";
+      steps.push(["dual", "PI between 4 and 7 and above A-line → borderline <b>CL-ML</b>"]);
+    } else if (PI >= Aline && PI >= 7){
+      sym = high?"CH":"CL"; name = high?"Fat clay":"Lean clay";
+    } else {
+      sym = high?"MH":"ML"; name = high?"Elastic silt":"Silt";
+    }
+    if (PI > Uline && LL>0)
+      warn = "⚠ This point plots ABOVE the U-line. Real soils don't — re-check the lab results.";
+  } else {
+    // ---------- COARSE-GRAINED ----------
+    steps.push(["#200", `<b>${p200}%</b> passing &lt; 50% → <b>coarse-grained</b>`]);
+    const coarse = 100 - p200;                    // total coarse fraction
+    const retained4_total = 100 - p4;             // retained on #4, of total
+    const pctOfCoarse = coarse>0 ? (retained4_total/coarse)*100 : 0;
+    const gravel = pctOfCoarse > 50;
+    steps.push(["#4", `${retained4_total.toFixed(1)}% of the sample retained on #4 =
+      <b>${pctOfCoarse.toFixed(1)}% of the coarse fraction</b> → <b>${gravel?"GRAVEL (G)":"SAND (S)"}</b>
+      <em>(split is on the coarse fraction, not the total)</em>`]);
+    const G = gravel?"G":"S";
+    const base = gravel?"gravel":"sand";
+    const Cu = D10>0 ? D60/D10 : 0;
+    const Cc = (D60>0&&D10>0) ? (D30*D30)/(D60*D10) : 0;
+    const cuMin = gravel?4:6;
+    const wellGraded = Cu>=cuMin && Cc>=1 && Cc<=3;
+    const fineIsClay = PI>=Aline && PI>=7;
+
+    if (p200 < 5){
+      steps.push(["fines", `${p200}% &lt; 5% → clean, grade it`]);
+      steps.push(["Cu / Cc", `Cu = ${Cu.toFixed(1)} (needs ≥ ${cuMin}) · Cc = ${Cc.toFixed(2)}
+        (needs 1–3) → <b>${wellGraded?"well graded":"poorly graded"}</b>`]);
+      sym = G + (wellGraded?"W":"P");
+      name = (wellGraded?"Well-graded ":"Poorly graded ") + base;
+    } else if (p200 <= 12){
+      steps.push(["fines", `${p200}% is in the <b>5–12% band → DUAL SYMBOL</b>`]);
+      steps.push(["Cu / Cc", `Cu = ${Cu.toFixed(1)} · Cc = ${Cc.toFixed(2)} →
+        ${wellGraded?"well graded":"poorly graded"}`]);
+      steps.push(["fines type", `PI ${PI.toFixed(1)} vs A-line ${Aline.toFixed(1)} →
+        ${fineIsClay?"clayey (C)":"silty (M)"}`]);
+      sym = G + (wellGraded?"W":"P") + "-" + G + (fineIsClay?"C":"M");
+      name = (wellGraded?"Well-graded ":"Poorly graded ") + base +
+             (fineIsClay?" with clay":" with silt");
+    } else {
+      steps.push(["fines", `${p200}% &gt; 12% → fines govern the symbol`]);
+      steps.push(["fines type", `PI ${PI.toFixed(1)} vs A-line ${Aline.toFixed(1)} →
+        ${fineIsClay?"clayey (C)":"silty (M)"}`]);
+      sym = G + (fineIsClay?"C":"M");
+      name = (fineIsClay?"Clayey ":"Silty ") + base;
+    }
+  }
+
+  $("sym").textContent = sym;
+  $("nm").textContent  = name;
+  const w=$("warn"); w.hidden=!warn; w.textContent=warn;
+  $("steps").innerHTML = steps.map(s=>`<li><span class="k">${s[0]}</span><span class="v">${s[1]}</span></li>`).join("");
+  drawChart(LL, PI, p200>=50);
+}
+
+function drawChart(LL, PI, isFine){
+  const c=$("pc"), x=c.getContext("2d");
+  const cs=getComputedStyle(document.documentElement);
+  const ink=cs.getPropertyValue("--ink").trim()||"#171A18";
+  const mut=cs.getPropertyValue("--muted").trim()||"#586360";
+  const acc=cs.getPropertyValue("--accent").trim()||"#0E6C77";
+  const red=cs.getPropertyValue("--red").trim()||"#B23A2E";
+  const line=cs.getPropertyValue("--line").trim()||"#D6DBD6";
+  x.clearRect(0,0,c.width,c.height);
+  const L=54, R=c.width-16, T=16, B=c.height-40;
+  const px=ll=>L+(ll/100)*(R-L), py=pi=>B-(pi/60)*(B-T);
+
+  x.strokeStyle=line; x.lineWidth=1; x.fillStyle=mut; x.font="11px sans-serif";
+  for(let ll=0;ll<=100;ll+=10){
+    x.beginPath();x.moveTo(px(ll),T);x.lineTo(px(ll),B);x.stroke();
+    x.textAlign="center";x.fillText(ll,px(ll),B+15);
+  }
+  for(let pi=0;pi<=60;pi+=10){
+    x.beginPath();x.moveTo(L,py(pi));x.lineTo(R,py(pi));x.stroke();
+    x.textAlign="right";x.fillText(pi,L-6,py(pi)+4);
+  }
+  x.fillStyle=ink; x.textAlign="center";
+  x.fillText("Liquid Limit, LL", (L+R)/2, B+32);
+  x.save();x.translate(14,(T+B)/2);x.rotate(-Math.PI/2);x.fillText("Plasticity Index, PI",0,0);x.restore();
+
+  // A-line and U-line
+  const seg=(f,col,dash)=>{
+    x.strokeStyle=col;x.lineWidth=2.2;x.setLineDash(dash||[]);x.beginPath();
+    let started=false;
+    for(let ll=0;ll<=100;ll+=0.5){const v=f(ll); if(v>=0&&v<=60){ started?x.lineTo(px(ll),py(v)):x.moveTo(px(ll),py(v)); started=true; }}
+    x.stroke();x.setLineDash([]);
+  };
+  seg(ll=>0.73*(ll-20), red);
+  seg(ll=>0.9*(ll-8), "#C99A2E", [7,4]);
+  x.strokeStyle=ink;x.lineWidth=1.6;x.setLineDash([5,4]);
+  x.beginPath();x.moveTo(px(50),T);x.lineTo(px(50),B);x.stroke();x.setLineDash([]);
+
+  x.fillStyle=red;x.font="bold 12px sans-serif";x.textAlign="left";
+  x.fillText("A-line",px(78),py(0.73*78-20)-6);
+  x.fillStyle="#C99A2E";x.fillText("U-line",px(40),py(0.9*40-8)-6);
+  x.fillStyle=mut;x.font="bold 15px sans-serif";x.textAlign="center";
+  x.fillText("CL",px(35),py(24)); x.fillText("CH",px(72),py(45));
+  x.fillText("ML",px(38),py(3));  x.fillText("MH",px(72),py(20));
+
+  if(isFine && LL>0 && isFinite(PI)){
+    const X=px(Math.min(LL,100)), Y=py(Math.max(0,Math.min(PI,60)));
+    x.beginPath();x.arc(X,Y,8,0,7);x.fillStyle=acc;x.fill();
+    x.lineWidth=2.5;x.strokeStyle="#fff";x.stroke();
+    x.fillStyle=acc;x.font="bold 12px sans-serif";x.textAlign="left";
+    x.fillText(`your sample (${LL}, ${PI.toFixed(1)})`, X+13, Y-9);
+  } else {
+    x.fillStyle=mut;x.font="italic 12.5px sans-serif";x.textAlign="center";
+    x.fillText("coarse-grained — plasticity chart not used for the primary symbol",(L+R)/2,py(52));
+  }
+}
+
+IN.forEach(id=>{const e=$(id); e.addEventListener("input",classify); e.addEventListener("change",classify);});
+classify();
+window.addEventListener("resize",classify);
+</script>
