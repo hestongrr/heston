@@ -73,6 +73,10 @@
   code{font-family:var(--mono);font-size:.88em;background:var(--panel-2);
     border:1px solid var(--line);border-radius:5px;padding:1px 5px}
   hr{border:0;border-top:1px solid var(--line);margin:44px 0}
+  blockquote{margin:0 0 18px;padding:2px 0 2px 20px;border-left:3px solid var(--accent);
+    font-size:16px;line-height:1.62;color:var(--ink);font-style:italic}
+  .mistake blockquote{font-size:15px;color:var(--ink);margin:14px 0}
+  .mistake code{background:var(--bg)}
 
   .toc{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px 26px;
     margin:0 0 40px}
@@ -396,8 +400,29 @@
       returned smooth, plausible, professionally-plotted contours that were quietly wrong, and I
       would have had no reason to look twice. Numerical methods fail silently far more often than
       they fail loudly.</p>
-    <p>There is a version of this every numerical modeler already knows. When I was first writing
-      wave-propagation models, NaN <i>was</i> my error detector &mdash; wrong timestep, wrong sign,
+    <p>There is a version of this every numerical modeler already knows, and I can point at my own
+      from 2014. My MS thesis modeled seismic surface waves scattering off underground cavities
+      &mdash; and a cavity is the one thing an elastic grid cannot actually represent. Physically,
+      the shear-wave velocity inside a void should be zero, because S-waves do not travel through
+      air. Numerically, zero is fatal. From page 34:</p>
+    <blockquote>"The V<sub>S</sub> inside a cavity would ideally be zero because S-waves do not
+      travel through fluids. However, setting the V<sub>S</sub> to zero results in numerically
+      unstable results."</blockquote>
+    <p>Finding a value that would run took three dead attempts &mdash; V<sub>S</sub> of 10 m/s
+      failed, 20 m/s failed, 30 m/s finally worked. But the interesting part is the trap underneath
+      it. The program's accuracy parameter is <code>P = V<sub>S,min</sub> / (h &middot;
+      f<sub>max</sub>)</code>, so <b>every step I took toward the correct physics made the grid
+      resolve it worse.</b> At V<sub>S</sub> = 30 m/s, h = 0.2 m, f<sub>max</sub> = 125 Hz, that
+      works out to P = 1.2 inside the cavity &mdash; against P = 8 in the surrounding ground, and a
+      guideline of P &ge; 15 for results you can lean on.</p>
+    <p>There was no clean answer available, so the honest move was to publish the number:
+      the most important region of the model was also the least well resolved, stated plainly in the
+      thesis rather than left for a reader to discover. <b>That is what verification looks like when
+      the check comes back bad</b> &mdash; you report it, you bound it, and you let it qualify the
+      conclusion. Same discipline, whether the questionable number came from a solver in 2014 or a
+      model in 2026.</p>
+    <p>The everyday version is simpler. When I was first writing wave models, NaN <i>was</i> my
+      error detector &mdash; wrong timestep, wrong sign,
       wrong boundary condition, and the whole field would go to garbage and tell me immediately.
       It fires constantly while you are learning, and it teaches you fast.</p>
     <p><b>Then your models get good enough to stop blowing up, and you lose the alarm.</b> The errors
