@@ -1,0 +1,222 @@
+<title>Engineering Diagrams &amp; Technical Illustration &mdash; Heston Norcott</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Technical illustration for geotechnical and civil engineering — computed, correct, publication-ready figures for reports, proposals, expert testimony, and training. By Heston Norcott.">
+<meta property="og:title" content="Engineering Diagrams & Technical Illustration — Heston Norcott">
+<meta property="og:description" content="Computed, correct, publication-ready engineering figures — for reports, proposals, expert testimony, and training.">
+<meta property="og:image" content="https://thebigpicture.tech/pe-diagrams/seepage_flownet.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:58px 22px 52px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(30px,5.2vw,50px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero p{max-width:62ch;font-size:clamp(15px,2vw,18px);color:#b9cbc9;margin:20px 0 0}
+  .hero p b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:52px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:66ch;margin:0 0 30px;font-size:15.5px}
+
+  figure{margin:0 0 34px;background:var(--panel);border:1px solid var(--line);
+    border-radius:13px;overflow:hidden}
+  figure img{width:100%;height:auto;display:block;background:#F7F8F5}
+  figcaption{padding:16px 20px 18px;border-top:1px solid var(--line)}
+  figcaption h3{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}
+  figcaption p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+  figcaption .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:5px}
+
+  .uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .use{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .use h3{margin:0 0 7px;font-size:16px}
+  .use p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.55}
+
+  .cta-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:34px;text-align:center}
+  .cta-box h2{font-size:clamp(21px,3vw,27px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);max-width:56ch;margin:0 auto 22px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:8px;
+    padding:12px 22px;border:1px solid var(--accent);background:var(--accent);
+    color:var(--accent-ink);font-weight:700;display:inline-block}
+  .btn:hover{filter:brightness(1.08);color:var(--accent-ink)}
+  .btn.ghost{background:transparent;color:var(--accent);font-weight:400}
+  footer{border-top:1px solid var(--line);padding:26px 0;margin-top:20px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+</style>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="name" href="/">Heston <b>Norcott</b></a>
+    <span class="links">
+      <a href="/#tools">Tools</a>
+      <a href="/diagrams.html">Diagrams</a>
+      <a href="/#services">Services</a>
+      <a href="/#contact">Hire me</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Technical illustration &middot; engineering visualization</p>
+    <h1>Engineering figures that are<br>actually correct.</h1>
+    <p>Most engineering diagrams are redrawn badly in Word, scanned from a 1970s textbook, or
+      lately, generated by AI with errors baked in. I make them <b>from the physics</b> &mdash; solved
+      numerically where it matters, drawn from code so the geometry is explicit and checkable,
+      and reviewed by an engineer who knows what the figure is supposed to say.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <p class="sec-label">Selected work</p>
+      <h2 class="sec">A few examples</h2>
+      <p class="sec-intro">These come from a geotechnical reference library I'm building. Every
+        figure is original, generated from code at 1920&times;1080, and consistent with the rest of
+        the set &mdash; which is what makes a collection read as a publication rather than a folder.</p>
+
+      <figure>
+        <img src="/pe-diagrams/seepage_flownet.png" alt="Computed flow net beneath a concrete weir">
+        <figcaption>
+          <span class="tag">Computed &middot; seepage analysis</span>
+          <h3>Flow net under a weir &mdash; solved, not sketched</h3>
+          <p>Laplace's equation solved numerically for both the head field and the stream function
+            (red-black SOR), then contoured at equal intervals. The lines meet at 90&deg; because the
+            mathematics makes them, and the shape factor N<sub>f</sub>/N<sub>d</sub> = 0.645 falls out
+            of the solution instead of being counted off a hand drawing. Every flow net in every
+            textbook is a sketch; this one is a solution.</p>
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="/pe-diagrams/ep03_wall_section.png" alt="Soil nail wall section showing bonded length">
+        <figcaption>
+          <span class="tag">Retaining structures</span>
+          <h3>Bonded length vs. the active wedge</h3>
+          <p>Why only the portion of a soil nail beyond the failure plane carries capacity &mdash; the
+            part inside the wedge is anchored to the soil that's failing. Geometry driven by
+            &theta; = 45&deg; + &phi;&prime;/2, so the drawing is dimensionally honest.</p>
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="/pe-diagrams/ep03_cross_section.png" alt="Soil nail cross section, grout and drill hole">
+        <figcaption>
+          <span class="tag">Detail &middot; teaching figure</span>
+          <h3>Which diameter carries the bond</h3>
+          <p>A detail built to answer one question unambiguously: bond develops at the grout-to-soil
+            boundary, so capacity uses the drilled hole diameter, not the bar. The kind of figure
+            that settles an argument in a report.</p>
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="/pe-diagrams/ep05_hillside_cut.png" alt="Hillside cut with soil nail wall">
+        <figcaption>
+          <span class="tag">Site &middot; earth retention</span>
+          <h3>Hillside bench cut with soil nail retention</h3>
+          <p>Original ground, the material removed, the retained mass, and nails anchored into it &mdash;
+            drawn so a non-engineer can follow what happened to the site. This is the register that
+            works for planning submittals and expert testimony.</p>
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="/pe-diagrams/ep05_bond_comparison.png" alt="Bond stress comparison chart">
+        <figcaption>
+          <span class="tag">Data &middot; comparison</span>
+          <h3>Why local geology changes the design</h3>
+          <p>Grout-to-ground bond stress across soil types, with Las Vegas caliche at roughly eight
+            times loose sand. A single chart that explains why a design that works in one valley
+            doesn't transfer to another.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">What it's for</p>
+      <h2 class="sec">Where a good figure earns its keep</h2>
+      <div class="uses">
+        <div class="use">
+          <h3>Reports &amp; proposals</h3>
+          <p>A clear section drawing does more for a client's understanding than three pages of
+            text, and it makes the whole submittal look like the work of a serious firm.</p>
+        </div>
+        <div class="use">
+          <h3>Expert testimony &amp; forensics</h3>
+          <p>Litigation graphics have to be legible to people with no technical background while
+            staying defensible under cross-examination. That's a narrow target.</p>
+        </div>
+        <div class="use">
+          <h3>Training &amp; onboarding</h3>
+          <p>Consistent figure sets for internal training, so junior staff learn the mechanism
+            rather than memorizing a formula.</p>
+        </div>
+        <div class="use">
+          <h3>Software &amp; marketing</h3>
+          <p>Diagrams for engineering products, documentation, and technical marketing &mdash; drawn by
+            someone who understands the subject, not a designer working from a description.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta-box">
+        <h2>Need figures for something?</h2>
+        <p>Technical illustration is available on its own, or bundled with the geotechnical
+          consulting and engineering-automation work. Tell me what the figure has to say and who
+          has to understand it.</p>
+        <a class="btn" href="/#contact">Get in touch &rarr;</a>
+        <a class="btn ghost" href="/">See the interactive tools</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.)</span>
+    <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> &middot; <a href="https://github.com/hestongrr" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
