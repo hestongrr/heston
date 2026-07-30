@@ -168,7 +168,7 @@
       <div class="stats">
         <div><span class="k">Cut</span><span class="v" id="sCut">&mdash;</span></div>
         <div><span class="k">Fill</span><span class="v" id="sFill">&mdash;</span></div>
-        <div><span class="k">Overexcavation</span><span class="v" id="sOx">&mdash;</span></div>
+        <div><span class="k">Overex (model, 3 ft)</span><span class="v" id="sOx">&mdash;</span></div>
         <div><span class="k">Lots</span><span class="v" id="sLot">&mdash;</span></div>
       </div>
     </div>
@@ -200,18 +200,23 @@
       that as found. You take it apart and put it back under control.</p>
     <p>The model above walks through that sequence. The dimensions come from ordinary residential
       practice: 50&nbsp;&times;&nbsp;100&nbsp;ft lots, a 40&nbsp;ft street corridor at a 2% crown,
-      pads set roughly a foot above the gutter for drainage, and 3&nbsp;ft of remedial
-      overexcavation below pad grade. Cut and fill volumes are computed from the actual mesh, not
+      pads set roughly a foot above the gutter for drainage, and an illustrative 3&nbsp;ft of remedial
+      overexcavation below pad grade (real depth is site-specific &mdash; see below). Cut and fill volumes are computed from the actual mesh, not
       typed in.</p>
   </div>
 
   <div class="note">
-    <b>What's real and what's representative.</b> The engineering standards, dimensions, sequence,
-    and soil profile are drawn from ordinary Las Vegas valley residential practice, and the
-    earthwork quantities are computed from the model geometry. The terrain itself is a
-    representative alluvial-fan surface rather than a specific parcel, and no project-specific data
-    from any client report is used here. Swapping in a real USGS elevation tile and a recorded
-    subdivision map is straightforward &mdash; that's the next version.
+    <b>What's real and what's representative.</b> The sequence, dimensions, and general soil profile
+    reflect ordinary Las Vegas valley residential practice, and the earthwork quantities are
+    computed from the model geometry. The terrain is a representative alluvial-fan surface rather
+    than a specific parcel, and no project-specific data from any client report is used here.
+    <br><br>
+    <b>The 3 ft overexcavation depth in this model is an illustration, not a standard.</b> Real
+    remedial depth is set by the geotechnical investigation for that specific site and varies
+    widely across this valley &mdash; driven by how thick the collapsible material is, where caliche
+    shows up, and what the structure needs. Some sites take very little. Some take a great deal
+    more. Anyone who quotes you a typical number for your lot without drilling it is guessing.
+    Do not use any quantity on this page for a real project.
   </div>
 
   <p class="sec-label" style="margin-top:40px">Reference</p>
@@ -223,7 +228,7 @@
     <tr><td>0</td><td>Investigation</td><td>Borings before design &mdash; you can't set pad grades until you know what's under them</td></tr>
     <tr><td>1</td><td>Clearing &amp; grubbing</td><td>Organics can't be left under fill; they decompose and the surface settles</td></tr>
     <tr><td>2</td><td>Rough grading</td><td>Balance cut and fill on site &mdash; hauling dirt off or in is expensive</td></tr>
-    <tr><td>3</td><td>Remedial grading</td><td>Overexcavate and recompact <i>before</i> anything is built on top of it</td></tr>
+    <tr><td>3</td><td>Remedial grading</td><td>Overexcavate and recompact <i>before</i> anything is built on top of it &mdash; depth set by the borings, not by a rule of thumb</td></tr>
     <tr><td>4</td><td>Wet utilities</td><td>Sewer runs on gravity, so it's deepest and goes in first</td></tr>
     <tr><td>5</td><td>Dry utilities</td><td>Shallower, and can dodge the wet lines already in the ground</td></tr>
     <tr><td>6</td><td>Streets</td><td>After the trenches, or you'd cut up new pavement</td></tr>
@@ -320,8 +325,8 @@ const PH=[
   b:"Scrapers move the site to design grade. Red is material being cut away; blue is where fill is placed. The goal is to balance the two so dirt neither leaves nor arrives &mdash; hauling is one of the most expensive line items on the job.",
   g:"Fill isn't just pushed into place. It goes down in lifts of roughly 8 inches, each moisture-conditioned and compacted to a specified percentage of maximum dry density, with a technician testing as it goes."},
  {t:"Remedial grading",s:"Overexcavate and recompact",
-  b:"Under every future building pad the ground is dug out an additional 3 ft below grade, then put back as engineered fill under controlled moisture and compaction. Turn on the cutaway &mdash; this is the layer you will never see again.",
-  g:"The reason is collapsible soil. Loose desert alluvium can hold itself up dry for centuries and then lose volume abruptly the first time it gets thoroughly wet &mdash; from irrigation, a broken line, or a storm. Recompacting removes that potential before a house is on top of it."},
+  b:"Under every future building pad the ground is dug out below grade and put back as engineered fill under controlled moisture and compaction. This model uses 3 ft, but that number is <b>not</b> a standard &mdash; see the note below. Turn on the cutaway; this is the layer you will never see again.",
+  g:"The reason is collapsible soil. Loose desert alluvium can hold itself up dry for centuries and then lose volume abruptly the first time it gets thoroughly wet &mdash; from irrigation, a broken line, or a storm. Recompacting removes that potential before a house is on top of it. <b>How deep is the whole question</b>, and it varies enormously across this valley &mdash; which is exactly why somebody drills before anyone designs."},
  {t:"Wet utilities",s:"Sewer, then water",
   b:"Sanitary sewer goes in first and deepest, because it runs on gravity and its slope is not negotiable. Storm drain and pressurized water follow above it.",
   g:"Trench backfill is its own compaction problem. A poorly compacted trench telegraphs to the surface as a long settled scar down the middle of a street, and every one of those is a pavement failure waiting to happen."},
