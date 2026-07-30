@@ -1,0 +1,255 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn &mdash; Geotechnical Engineering, Code &amp; AI | Heston Norcott</title>
+<meta name="description" content="Free, open teaching library for geotechnical engineers: how the engineering works, how to code it, and how to actually use AI in engineering practice. Written by a practicing geotechnical engineer.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/learn.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Learn &mdash; Geotechnical Engineering, Code &amp; AI">
+<meta property="og:description" content="Free teaching library: the engineering, the code that computes it, and how to use AI in engineering practice.">
+<meta property="og:url" content="https://thebigpicture.tech/learn.html">
+<meta name="theme-color" content="#0c1a1c">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:64px 22px 56px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero .sub{max-width:62ch;font-size:clamp(15.5px,2vw,19px);color:#b9cbc9;margin:20px 0 0}
+  .hero .sub b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:56px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(23px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:66ch;margin:0 0 30px;font-size:15.5px}
+
+  .why{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 30px;
+    max-width:none}
+  .why h3{margin:0 0 12px;font-size:19px;letter-spacing:-.01em}
+  .why p{color:var(--muted);font-size:15px;line-height:1.62;margin:0 0 12px;max-width:70ch}
+  .why p:last-child{margin-bottom:0}
+  .why b{color:var(--ink)}
+
+  .track{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:26px 28px;margin-bottom:20px}
+  .track .head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .track .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent-ink);background:var(--accent);border-radius:20px;padding:3px 10px}
+  .track h3{font-size:21px;margin:0;letter-spacing:-.015em}
+  .track .blurb{color:var(--muted);font-size:14.5px;margin:0 0 18px;max-width:68ch;line-height:1.55}
+  .lessons{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .lessons li{border-bottom:1px solid var(--line);padding:13px 0;display:flex;gap:14px;
+    align-items:baseline;flex-wrap:wrap}
+  .lessons .num{font-family:var(--mono);font-size:11.5px;color:var(--muted);min-width:2.2em}
+  .lessons .t{font-size:15px;font-weight:600;flex:1;min-width:16ch}
+  .lessons .t span{display:block;font-weight:400;font-size:13.5px;color:var(--muted);
+    margin-top:3px;line-height:1.5}
+  .lessons .st{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 9px;border-radius:20px;border:1px solid var(--line-2);color:var(--muted);
+    white-space:nowrap}
+  .lessons .st.live{color:var(--accent);border-color:var(--accent)}
+
+  .promise{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:760px){.promise{grid-template-columns:1fr}}
+  .promise div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .promise h4{margin:0 0 8px;font-size:15.5px;letter-spacing:-.01em}
+  .promise p{margin:0;color:var(--muted);font-size:13.8px;line-height:1.55}
+
+  .cta-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:36px;text-align:center}
+  .cta-box h2{font-size:clamp(21px,2.8vw,27px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);max-width:56ch;margin:0 auto 22px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:8px;padding:11px 18px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);transition:.15s;
+    display:inline-flex;align-items:center;gap:7px;margin:0 5px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  .btn.solid:hover{filter:brightness(1.08);color:var(--accent-ink)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="./index.html">Heston Norcott<b>.</b></a>
+  <span class="links">
+    <a href="./index.html#tools">Work</a>
+    <a href="./learn.html">Learn</a>
+    <a href="./diagrams.html">Diagrams</a>
+    <a href="./index.html#services" class="hideS">Services</a>
+    <a href="./index.html#contact">Hire me</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Free &middot; Open &middot; Written by a practicing engineer</p>
+  <h1>Learn the engineering, the code,<br>and the AI.</h1>
+  <p class="sub">Most engineering education stops at the equation. Most coding tutorials never touch
+    real engineering. Almost nobody shows you <b>how to actually use AI on real work</b> without
+    handing you an answer you can't check. This library does all three &mdash; the physics, the
+    implementation, and the workflow &mdash; and every tool on this site is a worked example of it.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="why">
+    <h3>Why this exists</h3>
+    <p>I went looking for the geotechnical engineering community online. The Discords are empty.
+      The subreddits are quiet. The forums are archives of conversations that ended a decade ago.
+      For a discipline that decides whether buildings stand up, there is <b>almost nothing</b> being
+      taught in the open.</p>
+    <p>Meanwhile the good material sits behind $2,000 review courses, and the code that engineers
+      quietly write to do their jobs &mdash; the spreadsheets, the scripts, the little solvers &mdash;
+      never gets shared at all. Every one of us rebuilds the same tools alone.</p>
+    <p>So this is the thing I wanted and couldn't find. It's free because a discipline with no
+      public teaching doesn't need another paywall &mdash; it needs somebody to start. I'm studying
+      for the PE Geotechnical exam myself, so I'm <b>studying in public</b>: you get the material as
+      I build it, mistakes named and corrected where I make them.</p>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">The format</p>
+  <h2 class="sec">Every lesson answers three questions</h2>
+  <p class="sec-intro">This is the part that doesn't exist anywhere else. Not the theory alone, not
+    the code alone &mdash; the whole path from soil behavior to a running tool.</p>
+  <div class="promise">
+    <div><h4>1 &middot; How does it work?</h4>
+      <p>The actual mechanics, drawn. Effective stress, seepage, bearing capacity &mdash; explained
+        the way it behaves in the ground, with figures you can read at a glance.</p></div>
+    <div><h4>2 &middot; How do I code it?</h4>
+      <p>Working, readable code that computes it &mdash; and the numerical traps that make it wrong.
+        Copy it, run it, check it against a hand calculation.</p></div>
+    <div><h4>3 &middot; How do I use AI here?</h4>
+      <p>The real workflow: what to hand off, how to prompt it, and &mdash; most importantly &mdash;
+        how to verify the answer as an engineer before it reaches a drawing.</p></div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">The library</p>
+  <h2 class="sec">Three tracks</h2>
+  <p class="sec-intro">Published lessons are linked. The rest is the build order &mdash; it follows
+    the PE Geotechnical exam specification, so studying for the exam and building the library are
+    the same work.</p>
+
+  <div class="track">
+    <div class="head"><span class="tag">Track 1</span><h3>Dirt &mdash; Geotechnical Engineering</h3></div>
+    <p class="blurb">The discipline itself, taught visually. Aimed at PE Geotechnical candidates and
+      at any civil engineer who has to read a geotechnical report and actually understand it.</p>
+    <ul class="lessons">
+      <li><span class="num">1.1</span><span class="t"><a href="./uscs-soil-classification-calculator.html">Soil classification (USCS / ASTM D2487)</a>
+        <span>The #200 and #4 splits, why the #4 split is taken on the coarse fraction, Cu and Cc,
+          and reading the plasticity chart.</span></span><span class="st live">Live</span></li>
+      <li><span class="num">1.2</span><span class="t">Effective stress &amp; pore pressure
+        <span>The single idea the rest of the discipline is built on.</span></span><span class="st">Next</span></li>
+      <li><span class="num">1.3</span><span class="t">Seepage &amp; flow nets
+        <span>Laplace's equation in the ground; uplift, exit gradient, and piping.</span></span><span class="st">Drafted</span></li>
+      <li><span class="num">1.4</span><span class="t">Shear strength &amp; Mohr&ndash;Coulomb
+        <span>Where c and &phi; come from and what the tests actually measure.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">1.5</span><span class="t">Lateral earth pressure &amp; retaining walls
+        <span>At-rest, active, passive &mdash; and the shoring that follows from them.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">1.6</span><span class="t">Bearing capacity &amp; settlement
+        <span>Shallow foundations, from Terzaghi to what actually controls the design.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">1.7</span><span class="t">Slope stability
+        <span>Method of slices, and why the critical surface is rarely where you'd guess.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">1.8</span><span class="t">Site characterization &amp; in-situ testing
+        <span>SPT, CPT, and geophysics &mdash; what each one can and cannot tell you.</span></span><span class="st">Planned</span></li>
+    </ul>
+  </div>
+
+  <div class="track">
+    <div class="head"><span class="tag">Track 2</span><h3>Code &mdash; Engineering, Implemented</h3></div>
+    <p class="blurb">How to turn engineering into software you can trust. For engineers who have
+      never written code, and for programmers who want to know what engineering computation
+      actually demands. Python and JavaScript, no computer-science prerequisites.</p>
+    <ul class="lessons">
+      <li><span class="num">2.1</span><span class="t">Your first engineering script
+        <span>Replace one spreadsheet with code you can test. Start to finish.</span></span><span class="st">Next</span></li>
+      <li><span class="num">2.2</span><span class="t">Coding a classification standard
+        <span>Turning ASTM D2487's decision tree into code &mdash; the branch order matters.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">2.3</span><span class="t">Solving Laplace's equation numerically
+        <span>Finite differences and relaxation. Includes the over-relaxation trap that silently
+          returns NaN if you get the update order wrong.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">2.4</span><span class="t">Wave propagation from scratch
+        <span>The 2-D elastic staggered-grid scheme behind the cavity-detection simulator.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">2.5</span><span class="t">Engineering figures that don't lie
+        <span>Programmatic drawing, and reviewing every render before it ships.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">2.6</span><span class="t">Real terrain data &amp; 3-D site models
+        <span>Pulling USGS elevation and building a site model in the browser.</span></span><span class="st">Planned</span></li>
+    </ul>
+  </div>
+
+  <div class="track">
+    <div class="head"><span class="tag">Track 3</span><h3>AI &mdash; For Working Engineers</h3></div>
+    <p class="blurb">AI is genuinely useful in engineering practice, and it is also confidently wrong
+      in ways that matter when a number ends up on a drawing. Both of those are true, and the skill
+      is knowing which situation you're in. This track teaches the workflow, not the hype.</p>
+    <ul class="lessons">
+      <li><span class="num">3.1</span><span class="t">What AI is actually good at in engineering
+        <span>An honest map: where it saves hours, and where it will hand you a wrong answer with
+          total confidence.</span></span><span class="st">Next</span></li>
+      <li><span class="num">3.2</span><span class="t">Verification is the engineering skill
+        <span>The habit that makes AI safe to use: never accept a number you haven't checked.
+          Includes real errors I caught in my own published figures.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">3.3</span><span class="t">Building an engineering tool with AI, end to end
+        <span>The full session that produced the classification calculator on this site.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">3.4</span><span class="t">Reports, specs, and documents
+        <span>Drafting and reviewing with AI while keeping the engineer responsible for the content.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">3.5</span><span class="t">Running AI on your own machine
+        <span>Local models for work you can't send to a third party &mdash; client data, unpublished
+          reports.</span></span><span class="st">Planned</span></li>
+      <li><span class="num">3.6</span><span class="t">Where AI does not belong
+        <span>Stamped work, engineering judgment, and the responsibility that can't be delegated.</span></span><span class="st">Planned</span></li>
+    </ul>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="cta-box">
+    <h2>Free to learn. Available to hire.</h2>
+    <p>Everything here is free and stays free. If you'd rather have it built, integrated, and
+      running inside your own workflow &mdash; that's the work I take on.</p>
+    <a class="btn solid" href="./index.html#contact">Start a conversation</a>
+    <a class="btn" href="./index.html#tools">See the tools</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV</span>
+  <span>Educational content only &mdash; not engineering advice for a specific project.</span>
+</div></footer>
