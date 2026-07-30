@@ -396,7 +396,14 @@
       returned smooth, plausible, professionally-plotted contours that were quietly wrong, and I
       would have had no reason to look twice. Numerical methods fail silently far more often than
       they fail loudly.</p>
-    <p>This is why the verification for a solver is never "did it run." It is: does it reproduce a
+    <p>There is a version of this every numerical modeler already knows. When I was first writing
+      wave-propagation models, NaN <i>was</i> my error detector &mdash; wrong timestep, wrong sign,
+      wrong boundary condition, and the whole field would go to garbage and tell me immediately.
+      It fires constantly while you are learning, and it teaches you fast.</p>
+    <p><b>Then your models get good enough to stop blowing up, and you lose the alarm.</b> The errors
+      do not stop &mdash; the notification does. Everything after that point has to be caught on
+      purpose.</p>
+    <p>Which is why the verification for a solver is never "did it run." It is: does it reproduce a
       case with a known analytical answer?</p>
   </div>
 
