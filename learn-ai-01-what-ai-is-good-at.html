@@ -1,0 +1,496 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What AI Is Actually Good At in Engineering &mdash; Lesson 3.1 | Heston Norcott</title>
+<meta name="description" content="An honest map of where AI saves a working engineer hours, where it will hand you a wrong answer with total confidence, and the verification habit that makes it safe to use. Written by a practicing geotechnical engineer, with real errors from published work.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/learn-ai-01-what-ai-is-good-at.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What AI Is Actually Good At in Engineering">
+<meta property="og:description" content="Where AI saves hours, where it fails, and the verification habit that makes it safe. From a practicing geotechnical engineer &mdash; including real errors caught in my own published work.">
+<meta property="og:url" content="https://thebigpicture.tech/learn-ai-01-what-ai-is-good-at.html">
+<meta name="theme-color" content="#0c1a1c">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --good:#1F7A4D; --warn:#8A6A12; --bad:#A33A2E;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;
+      --good:#4FBF86;--warn:#D6AC3E;--bad:#E0705F;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;
+    --good:#1F7A4D;--warn:#8A6A12;--bad:#A33A2E;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;
+    --good:#4FBF86;--warn:#D6AC3E;--bad:#E0705F;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .col{max-width:720px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px;text-decoration:none;color:var(--ink)}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted);text-decoration:none}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .col{padding:56px 22px 48px}
+  .crumb{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .crumb a{color:var(--hero-accent);text-decoration:none}
+  .hero h1{font-size:clamp(31px,5.4vw,50px);line-height:1.06;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero .standfirst{font-size:clamp(15.5px,2vw,18.5px);color:#b9cbc9;margin:20px 0 0;line-height:1.55}
+  .hero .standfirst b{color:var(--hero-ink);font-weight:600}
+  .byline{font-family:var(--mono);font-size:12px;color:#7f9a98;margin:26px 0 0;
+    border-top:1px solid #1c3937;padding-top:16px}
+
+  article{padding:52px 0 30px}
+  article h2{font-size:clamp(21px,3vw,27px);letter-spacing:-.02em;margin:46px 0 14px;
+    text-wrap:balance;scroll-margin-top:70px}
+  article h2:first-child{margin-top:0}
+  article h3{font-size:17.5px;letter-spacing:-.01em;margin:30px 0 10px}
+  article p{font-size:16.5px;line-height:1.68;margin:0 0 18px;color:var(--ink)}
+  article p.lead{font-size:18px;color:var(--muted)}
+  article ul,article ol{font-size:16.5px;line-height:1.66;padding-left:22px;margin:0 0 18px}
+  article li{margin-bottom:9px}
+  article strong{font-weight:700}
+  code{font-family:var(--mono);font-size:.88em;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  hr{border:0;border-top:1px solid var(--line);margin:44px 0}
+
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px 26px;
+    margin:0 0 40px}
+  .toc p{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 12px}
+  .toc ol{margin:0;padding-left:20px;font-size:15px;line-height:1.5}
+  .toc li{margin-bottom:7px}
+  .toc a{text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+
+  .zone{border:1px solid var(--line);border-left-width:4px;border-radius:11px;
+    background:var(--panel);padding:20px 24px;margin:0 0 18px}
+  .zone .z{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    margin:0 0 9px;font-weight:700}
+  .zone h4{margin:0 0 8px;font-size:16.5px;letter-spacing:-.01em}
+  .zone p{margin:0;font-size:15px;color:var(--muted);line-height:1.6}
+  .zone p+p{margin-top:10px}
+  .zone.g{border-left-color:var(--good)} .zone.g .z{color:var(--good)}
+  .zone.w{border-left-color:var(--warn)} .zone.w .z{color:var(--warn)}
+  .zone.b{border-left-color:var(--bad)}  .zone.b .z{color:var(--bad)}
+
+  .callout{background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;
+    padding:22px 26px;margin:26px 0}
+  .callout p{margin:0;font-size:16px;line-height:1.62}
+  .callout p+p{margin-top:12px}
+  .callout .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:9px}
+
+  .mistake{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px 26px;margin:0 0 16px}
+  .mistake h4{margin:0 0 4px;font-size:16.5px;letter-spacing:-.01em}
+  .mistake .caught{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin:0 0 12px}
+  .mistake p{margin:0;font-size:15px;color:var(--muted);line-height:1.62}
+  .mistake p+p{margin-top:10px}
+  .mistake p b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:15px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);font-weight:400}
+  td b{font-weight:700}
+  .scroller{overflow-x:auto}
+
+  .cta-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:34px;text-align:center;margin:46px 0 0}
+  .cta-box h2{font-size:clamp(20px,2.6vw,25px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);max-width:54ch;margin:0 auto 20px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:8px;padding:11px 18px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);transition:.15s;
+    display:inline-flex;align-items:center;gap:7px;margin:4px 5px;text-decoration:none}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  .btn.solid:hover{filter:brightness(1.08);color:var(--accent-ink)}
+
+  .next{border-top:1px solid var(--line);margin-top:40px;padding-top:26px;font-size:15px;
+    color:var(--muted)}
+  .next a{font-weight:600;text-decoration:none}
+
+  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:13px;
+    margin-top:50px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="./index.html">Heston Norcott<b>.</b></a>
+  <span class="links">
+    <a href="./index.html#tools">Work</a>
+    <a href="./learn.html">Learn</a>
+    <a href="./diagrams.html">Diagrams</a>
+    <a href="./index.html#services" class="hideS">Services</a>
+    <a href="./index.html#contact">Hire me</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="col">
+  <p class="crumb"><a href="./learn.html">Learn</a> &nbsp;/&nbsp; Track 3 &mdash; AI &nbsp;/&nbsp; Lesson 3.1</p>
+  <h1>What AI is actually good at in engineering</h1>
+  <p class="standfirst">An honest map of where it saves a working engineer hours, where it will hand
+    you a wrong answer with complete confidence, and the one habit that makes the difference.
+    <b>Including real errors it produced in my own published work</b> &mdash; and how each one got
+    caught.</p>
+  <p class="byline">Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV<br>
+    Written 2026 &middot; Free &middot; No signup</p>
+</div></header>
+
+<article><div class="col">
+
+  <p class="lead">Most of what engineers read about AI is written by people who have never had to
+    stamp anything, defend a number in a design review, or explain to a contractor why the pad
+    elevation changed. The advice ends up in one of two ditches: it either promises the work is
+    about to do itself, or it warns you off entirely.</p>
+
+  <p>Neither is useful, because the actual situation is more specific and more interesting than
+    either. AI is genuinely excellent at a well-defined set of things in engineering practice, and
+    genuinely dangerous at another set, and the boundary between them is learnable. That boundary
+    is what this lesson is about.</p>
+
+  <p>I use these tools daily on real geotechnical work &mdash; classification routines, numerical
+    solvers, figures, report drafting, code for the tools published on this site. I am also
+    studying for the PE Geotechnical exam, which means I am checking a lot of output against
+    first principles right now. What follows is what that experience actually taught me, errors
+    included.</p>
+
+  <div class="toc">
+    <p>In this lesson</p>
+    <ol>
+      <li><a href="#one-thing">The one thing to understand first</a></li>
+      <li><a href="#green">Where it genuinely saves you hours</a></li>
+      <li><a href="#red">Where it will hurt you</a></li>
+      <li><a href="#gray">The middle: useful, but only with verification</a></li>
+      <li><a href="#mistakes">Four real errors from my own published work</a></li>
+      <li><a href="#habit">The habit that makes all of this safe</a></li>
+      <li><a href="#responsibility">What does not change</a></li>
+    </ol>
+  </div>
+
+  <h2 id="one-thing">1. The one thing to understand first</h2>
+
+  <p>Engineers usually arrive expecting the failure mode to be stupidity &mdash; that the tool will
+    say something obviously wrong and you will catch it because it is obviously wrong. That is not
+    the failure mode.</p>
+
+  <div class="callout">
+    <span class="k">The core idea</span>
+    <p>These systems are extraordinarily good at producing output that is <b>plausible</b>. Plausible
+      is not the same as correct, and in engineering the gap between those two words is where people
+      get hurt.</p>
+    <p>A wrong answer that <i>looks</i> wrong costs you nothing. A wrong answer that looks exactly
+      like a right answer &mdash; correct units, reasonable magnitude, properly formatted, citing a
+      real standard &mdash; is the one that reaches a drawing.</p>
+  </div>
+
+  <p>Here is the useful reframe: this is not a new problem. Our profession has always dealt with
+    confidently-presented information of uncertain quality. A lab result can be wrong. A boring log
+    can be mislabeled. A contractor's as-built can be fiction. A textbook can have a typo in an
+    equation, and vendor software can have a bug in a module nobody exercises.</p>
+
+  <p><strong>Engineering already has the answer to "plausible but possibly wrong." It is
+    verification.</strong> Check the magnitude. Check the units. Check the limiting case. Ask whether
+    the sign makes physical sense. Compare against a hand calculation. That discipline is not
+    something you need to acquire to use AI safely &mdash; it is the thing you were trained to do,
+    pointed at a new source.</p>
+
+  <p>Which leads to the rule that organizes everything below:</p>
+
+  <div class="callout">
+    <span class="k">The rule</span>
+    <p><b>AI is safe in direct proportion to how cheaply you can check its work.</b></p>
+    <p>Where verification is fast, obvious, or automatic, use it aggressively &mdash; the speedup is
+      real and large. Where verification is slow, subtle, or impossible, that is exactly where it
+      will cost you more than it saves.</p>
+  </div>
+
+  <h2 id="green">2. Where it genuinely saves you hours</h2>
+
+  <p>These are the cases where a wrong answer announces itself immediately &mdash; the code throws
+    an error, the figure looks wrong, the draft reads wrong. The cost of a mistake is close to zero,
+    so you can move fast.</p>
+
+  <div class="zone g">
+    <p class="z">Strong &mdash; use freely</p>
+    <h4>Writing code that computes something you already understand</h4>
+    <p>This is the single biggest win available to a working engineer, and it is why Track 2 of this
+      library exists. If you can state the calculation, you can get working code for it in minutes
+      &mdash; sieve analysis, settlement over layers, a pressure diagram, a data conversion, a
+      one-off script that saves an afternoon of spreadsheet work.</p>
+    <p>Verification is nearly free here: run it against a problem you already solved by hand. If the
+      numbers match, the code works. That single check catches essentially everything.</p>
+  </div>
+
+  <div class="zone g">
+    <p class="z">Strong &mdash; use freely</p>
+    <h4>Explaining an unfamiliar concept until it clicks</h4>
+    <p>Asking the same question five different ways, at five levels of detail, without an ounce of
+      impatience, is something no textbook and few colleagues can offer. For exam study this is
+      close to unreasonable &mdash; "explain why the #4 split is taken on the coarse fraction, not
+      total sample" gets a clear answer instantly.</p>
+    <p>Verify by closing the loop with a real source: the standard, the textbook, the code
+      provision. Use it to <i>understand</i>, then confirm the fact.</p>
+  </div>
+
+  <div class="zone g">
+    <p class="z">Strong &mdash; use freely</p>
+    <h4>First drafts of anything you were going to rewrite anyway</h4>
+    <p>Report boilerplate, a scope of work, an email explaining a recommendation to a client, a
+      proposal outline. You are going to edit it heavily regardless, and editing a mediocre draft is
+      faster than facing a blank page.</p>
+    <p>Verification is automatic &mdash; you read every word before it goes out, because your name is
+      on it.</p>
+  </div>
+
+  <div class="zone g">
+    <p class="z">Strong &mdash; use freely</p>
+    <h4>Finding your own mistake</h4>
+    <p>Underrated and excellent. Paste in a calculation, a script, or a paragraph and ask what is
+      wrong with it. You are not accepting an answer &mdash; you are getting a list of candidates to
+      check yourself. False positives cost you thirty seconds; a real catch saves you far more.</p>
+  </div>
+
+  <h2 id="red">3. Where it will hurt you</h2>
+
+  <p>Same tool, inverted economics. In these cases a wrong answer looks identical to a right one, and
+    nothing downstream will flag it.</p>
+
+  <div class="zone b">
+    <p class="z">Avoid</p>
+    <h4>Specific numerical values from codes and standards</h4>
+    <p>Load factors, resistance factors, table lookups, section numbers, minimum embedments. It will
+      produce a value with the right shape and the right units and cite a plausible section number,
+      and you have no way to tell a correct recall from a confident reconstruction without opening
+      the document.</p>
+    <p>And if you are opening the document anyway, you have not saved anything. <b>Open the standard.
+      Always.</b></p>
+  </div>
+
+  <div class="zone b">
+    <p class="z">Avoid</p>
+    <h4>Engineering judgment on a specific site</h4>
+    <p>"Is this slope stable?" "Is this bearing pressure appropriate?" It has not seen your borings,
+      walked the site, or read the local geology. Southern Nevada caliche alone breaks the general
+      case badly &mdash; it can be a competent bearing layer or a cemented crust with soft material
+      underneath, and nothing in a general model knows which one you are standing on.</p>
+    <p>It also cannot be held responsible for the answer. You can.</p>
+  </div>
+
+  <div class="zone b">
+    <p class="z">Avoid</p>
+    <h4>Anything where a subtle error stays invisible</h4>
+    <p>Long calculation chains where an early wrong assumption propagates quietly. A sign convention
+      that flips halfway through. A unit conversion buried in step six of twelve. If you cannot
+      cheaply check the intermediate values, do not hand off the chain &mdash; hand off one step at a
+      time and check each one.</p>
+  </div>
+
+  <div class="zone b">
+    <p class="z">Avoid</p>
+    <h4>Client data you are not permitted to send out</h4>
+    <p>A practical one that has nothing to do with accuracy. Unpublished reports, confidential site
+      data, anything under an NDA &mdash; know your firm's policy before pasting. If the work needs
+      to stay in-house, run a model locally instead. That is a solved problem and it is Lesson 3.5.</p>
+  </div>
+
+  <h2 id="gray">4. The middle: useful, but only with verification</h2>
+
+  <p>This is where most real engineering work actually lands, and where the skill is.</p>
+
+  <div class="scroller"><table>
+    <tr><th>Task</th><th>Why it's worth doing</th><th>What you must check</th></tr>
+    <tr><td><b>Technical figures &amp; diagrams</b></td>
+      <td>Enormous time savings versus drawing by hand</td>
+      <td>The geometry, every time. See the soil nails below.</td></tr>
+    <tr><td><b>Numerical methods</b></td>
+      <td>Gets a working solver up in an hour instead of a week</td>
+      <td>Stability and convergence &mdash; the scheme can be subtly wrong and still run</td></tr>
+    <tr><td><b>Literature and background</b></td>
+      <td>Fast orientation in an unfamiliar subject</td>
+      <td>Every citation. Confirm the paper exists and says what was claimed.</td></tr>
+    <tr><td><b>Data cleanup &amp; conversion</b></td>
+      <td>Turns a tedious afternoon into ten minutes</td>
+      <td>Spot-check rows against the source; confirm the record count</td></tr>
+    <tr><td><b>Report review</b></td>
+      <td>Catches things you have read past five times</td>
+      <td>Treat output as candidates to investigate, not corrections to accept</td></tr>
+  </table></div>
+
+  <p>Notice the pattern: in every row the verification is <i>specific</i>. Not "review the output"
+    &mdash; that is too vague to actually perform. Know the particular thing that goes wrong in that
+    particular task, and check that.</p>
+
+  <h2 id="mistakes">5. Four real errors from my own published work</h2>
+
+  <p>This is the part I think is worth the most, because it is the part nobody publishes. These are
+    genuine errors that appeared in figures and code I built with AI assistance for this site.
+    Every one of them got caught before it shipped, and <i>how</i> each got caught is the actual
+    lesson.</p>
+
+  <div class="mistake">
+    <h4>The soil nails pointed the wrong way</h4>
+    <p class="caught">Caught by: looking at the picture</p>
+    <p>A hillside stabilization figure came out with the soil nails drilled into the <b>downhill</b>
+      face &mdash; into the mass that is trying to slide away, rather than anchored back into the
+      stable ground behind the failure surface. The rendering was clean and professional. The
+      dimensions were right. The engineering was backwards.</p>
+    <p>No amount of checking the code would have found this. It took one look by somebody who knows
+      what a soil nail is for. <b>Every figure gets eyeballed by an engineer before it ships</b>, no
+      matter how good it looks.</p>
+  </div>
+
+  <div class="mistake">
+    <h4>The uplift pressure came out negative</h4>
+    <p class="caught">Caught by: the sign was physically impossible</p>
+    <p>A flow-net practice problem produced a negative uplift pressure under a structure. Water does
+      not pull down on a base. The arithmetic was internally consistent &mdash; the error was an
+      incorrectly placed datum, which propagated cleanly through every subsequent step and produced
+      a confidently wrong final number.</p>
+    <p>Re-setting the datum at bedrock fixed it: 72.6 kPa at the heel down to 5.9 kPa at the toe.
+      This is the classic case &mdash; <b>the physics caught it, not the math.</b> Asking "can this
+      quantity even be negative?" is a two-second check that would have saved the whole chain.</p>
+  </div>
+
+  <div class="mistake">
+    <h4>The building was founded on a cliff face</h4>
+    <p class="caught">Caught by: my own eyes, laughing</p>
+    <p>A 3-D site model built on real USGS terrain placed the structure halfway up a slope with the
+      foundation hanging out into open air. Real elevation data, correct coordinate handling, and a
+      building that could not exist.</p>
+    <p>The fix was to search the terrain for the flattest viable footprint and add an engineered fill
+      skirt &mdash; which is, notably, exactly what you would actually do on that site. <b>Correct
+      input data does not produce a sensible result on its own.</b> Nothing in the pipeline knew that
+      buildings need ground underneath them.</p>
+  </div>
+
+  <div class="mistake">
+    <h4>The solver returned NaN &mdash; and this is the scary one</h4>
+    <p class="caught">Caught by: the output was garbage. It might not have been.</p>
+    <p>Solving Laplace's equation for a flow net, the relaxation scheme used an over-relaxation factor
+      of 1.92 applied with a Jacobi-style update. That combination is unstable, and it diverged to
+      NaN. The fix is red-black Gauss&ndash;Seidel ordering, where over-relaxation is valid.</p>
+    <p>It got caught instantly because NaN is unmistakable. <b>That is luck, and it is worth sitting
+      with.</b> A slightly less aggressive factor would not have blown up &mdash; it would have
+      returned smooth, plausible, professionally-plotted contours that were quietly wrong, and I
+      would have had no reason to look twice. Numerical methods fail silently far more often than
+      they fail loudly.</p>
+    <p>This is why the verification for a solver is never "did it run." It is: does it reproduce a
+      case with a known analytical answer?</p>
+  </div>
+
+  <h3>A fifth one, different in kind</h3>
+
+  <p>Worth separating out because it is not a hallucination at all. I recommended a professional
+    community based on confirming that it <i>existed</i>. It existed. It was also completely dead
+    &mdash; no meaningful activity, useful to nobody.</p>
+
+  <p>The answer was factually correct and practically worthless, because <b>I had verified the wrong
+    property.</b> Existence was easy to check, so that is what got checked; liveliness was what
+    actually mattered. This failure mode is subtle and common, and it is entirely on the engineer:
+    make sure the thing you are verifying is the thing that matters.</p>
+
+  <h2 id="habit">6. The habit that makes all of this safe</h2>
+
+  <p>Everything above collapses into one practice, and it takes about thirty seconds per result.</p>
+
+  <ol>
+    <li><b>Can this quantity be this sign?</b> Negative uplift, negative settlement, a factor of
+      safety below zero &mdash; the fastest check there is, and it catches propagated errors that
+      look fine everywhere else.</li>
+    <li><b>Is the order of magnitude right?</b> You know roughly what a bearing pressure, a
+      settlement, or a friction angle should be. Trust that instinct &mdash; it is the most valuable
+      thing your experience gave you.</li>
+    <li><b>Do the units work?</b> All the way through, not just at the end.</li>
+    <li><b>What happens at the limits?</b> Set the cohesion to zero. Make the layer infinitely
+      thick. Drop the water table below the footing. Does the result move the way the physics says
+      it must?</li>
+    <li><b>Does one hand calculation agree?</b> One. Not the whole set. If a single worked case
+      matches, the method is probably sound; if it does not, you have found something.</li>
+    <li><b>Look at the picture.</b> If it produced a figure, actually look at it, as an engineer.
+      Three of the five errors above were visible on sight.</li>
+  </ol>
+
+  <div class="callout">
+    <span class="k">The reframe worth keeping</span>
+    <p>These checks are not overhead imposed by using AI. <b>They are engineering.</b> You would run
+      them on a junior's calculation, on a lab report with a number that looked off, on output from
+      software you had not used before.</p>
+    <p>Which points at something genuinely encouraging: the engineers best positioned to use these
+      tools well are the ones with the strongest fundamentals &mdash; because verification <i>is</i>
+      the skill, and they already have it. Judgment does not become less valuable here. It becomes
+      the entire point.</p>
+  </div>
+
+  <h2 id="responsibility">7. What does not change</h2>
+
+  <p>The engineer is responsible for the work. Not the tool, not the vendor, not the model.</p>
+
+  <p>That is not a caveat tacked onto the end &mdash; it is the reason the verification habit is
+    non-negotiable rather than a nice practice. When a number ends up on a drawing, a person's
+    judgment stands behind it, and that has not moved an inch. The tools change how fast you get to
+    a candidate answer. They change nothing about who owns it.</p>
+
+  <p>Which is, honestly, the optimistic read. The part of this profession that is genuinely hard
+    &mdash; knowing what matters on a site, what to be suspicious of, what the ground is likely
+    doing between two borings &mdash; is exactly the part that stays yours.</p>
+
+  <hr>
+
+  <h3>What's next</h3>
+  <p>Lesson <b>3.2 &mdash; Verification is the engineering skill</b> takes the checklist above and
+    makes it a working method, with more errors caught in practice. Lesson <b>3.3</b> walks through
+    building a real engineering tool end to end &mdash; the full session that produced the
+    <a href="./uscs-soil-classification-calculator.html">USCS classification calculator</a> on this
+    site, including what went wrong along the way.</p>
+
+  <p>You can also just go use the tools. Every one of them was built the way this lesson describes,
+    and every one of them is free:</p>
+  <ul>
+    <li><a href="./uscs-soil-classification-calculator.html">USCS Soil Classification Calculator</a>
+      &mdash; ASTM D2487, with the decision path shown</li>
+    <li><a href="./cavity-detection-sim.html">Surface-Wave Cavity Detection</a> &mdash; 2-D elastic
+      wave propagation, rebuilt from my MS thesis</li>
+    <li><a href="./boring-log-generator.html">Boring Log Generator</a> &mdash; USCS logs with SPT plots</li>
+    <li><a href="./redrock-3d.html">Red Rock 3-D Site Model</a> &mdash; real USGS terrain (yes, the
+      one with the cliff)</li>
+  </ul>
+
+  <div class="cta-box">
+    <h2>Free to learn. Available to hire.</h2>
+    <p>If you would rather have this built, verified, and running inside your own workflow instead of
+      figuring it out yourself &mdash; that is the work I take on.</p>
+    <a class="btn solid" href="./index.html#contact">Start a conversation</a>
+    <a class="btn" href="./learn.html">Back to the library</a>
+  </div>
+
+  <p class="next"><a href="./learn.html">&larr; All lessons</a> &nbsp;&middot;&nbsp; Track 3, Lesson 3.1
+    &nbsp;&middot;&nbsp; Next: 3.2 Verification is the engineering skill</p>
+
+</div></article>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV</span>
+  <span>Educational content only &mdash; not engineering advice for a specific project.</span>
+</div></footer>
