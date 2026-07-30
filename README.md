@@ -29,6 +29,15 @@ curvilinear squares are actually square and the shape factor falls out of the so
 
 Gallery: **[thebigpicture.tech/diagrams.html](https://thebigpicture.tech/diagrams.html)**
 
+## How this is maintained
+
+Free to look at, free to learn from. Figures are generated from code, so the geometry is explicit
+and a correction is a one-line change and a re-run rather than a new edition. Where something can
+be computed instead of approximated, it is. When I find an error — in my own work or in a source —
+I fix it and say what it was; see [`pe-diagrams/CHANGELOG.md`](pe-diagrams/CHANGELOG.md), which
+also states the known limits of each model up front. A reference nobody ever corrects isn't
+careful, it's just quiet.
+
 ## What I do
 
 Geotechnical consulting · Python automation for AEC · applied AI (self-hosted LLMs,
