@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geotechnical Project Portfolio &mdash; Heston Norcott, M.S., E.I.</title>
+<meta name="description" content="335 verified geotechnical projects across Nevada (2014–2025): Richmond American Homes, Pulte, DR Horton, CCSD, Taylor Morrison, commercial developments, and GeoTek utility testing. Full portfolio of Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/projects.html">
+<meta property="og:title" content="Geotechnical Project Portfolio &mdash; Heston Norcott, M.S., E.I.">
+<meta property="og:description" content="335 verified projects across Nevada: residential subdivisions, CCSD schools, commercial developments, Phase I/II ESAs, and utility testing.">
+<meta property="og:url" content="https://thebigpicture.tech/projects.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:58px 22px 52px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(30px,5.2vw,50px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero p{max-width:62ch;font-size:clamp(15px,2vw,18px);color:#b9cbc9;margin:20px 0 0}
+  .hero p b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:52px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:66ch;margin:0 0 30px;font-size:15.5px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:30px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center}
+  .stat .num{font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-.03em;color:var(--accent);line-height:1}
+  .stat .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+
+  .client{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:24px;margin-bottom:16px}
+  .client h3{font-size:18px;margin:0 0 4px;letter-spacing:-.01em}
+  .client .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px}
+  .client .meta span{display:inline-block;margin-right:16px}
+  .client .meta strong{color:var(--accent)}
+  .client p{margin:0;color:var(--ink);font-size:14px;line-height:1.6}
+  .client .highlights{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .client .highlights span{font-family:var(--mono);font-size:10.5px;color:var(--ink);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:12px}
+  .proj{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:12px 14px;font-size:13px;line-height:1.4}
+  .proj .id{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.03em}
+  .proj .name{font-weight:600;margin:2px 0}
+  .proj .desc{color:var(--muted);font-size:12px}
+
+  .note{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:16px 20px;font-size:13px;color:var(--muted);margin-top:20px}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;margin-top:20px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="name" href="/">Heston <b>Norcott</b></a>
+    <span class="links">
+      <a href="/#tools">Tools</a>
+      <a href="/projects.html" style="color:var(--accent)">Projects</a>
+      <a href="/resume.html">Resume</a>
+      <a href="/#contact">Hire me</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Geotechnical &middot; 2014–2025 &middot; Nevada</p>
+    <h1>335 projects across<br>ten years in Nevada.</h1>
+    <p>Every number in this portfolio is verified against timesheet records, report metadata, or project files &mdash; from Tier-1 residential subdivisions and CCSD schools to commercial developments and utility-scale testing. <b>Verified against 1,100+ timesheet entries</b>.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <div class="stats">
+        <div class="stat"><div class="num">335</div><div class="lbl">Project numbers</div></div>
+        <div class="stat"><div class="num">1,101</div><div class="lbl">Timesheet entries</div></div>
+        <div class="stat"><div class="num">7</div><div class="lbl">Years (2016–2022)</div></div>
+        <div class="stat"><div class="num">40+</div><div class="lbl">GeoTek projects</div></div>
+        <div class="stat"><div class="num">11</div><div class="lbl">Authored reports</div></div>
+        <div class="stat"><div class="num">200+</div><div class="lbl">Phase I/II ESAs</div></div>
+      </div>
+
+      <p class="sec-label">Angle Engineering &middot; 2014–2022</p>
+      <h2 class="sec">Residential subdivision portfolio</h2>
+      <p class="sec-intro">Full geotechnical investigation, foundation/grading compliance, and Phase I/II environmental site assessments for Tier-1 homebuilders across Nevada. Timesheet records span 2016–2022; earlier project work (2014–2015) documented in report files.</p>
+
+      <div class="client">
+        <h3>Richmond American Homes</h3>
+        <div class="meta"><strong>22+ projects</strong> &middot; <span>2014–2022</span> <span>Project series 26234–26268</span></div>
+        <p>Full life-cycle geotechnical work for Richmond's Las Vegas division: geotechnical investigations, foundation plan reviews, grading compliance inspections, and soil bearing reports across Summerlin, Mountain's Edge, and other master-planned communities. Notable projects include Dove Pointe Place (21.7 acres, 12 ft uncontrolled fill removal), Osprey Ridge / Summerlin V22 Parcel E (Site Class D, slope stability), and multiple parcels in the 262xx series.</p>
+        <div class="highlights">
+          <span>26250-1 Dove Pointe Place</span>
+          <span>26260-1 Osprey Ridge</span>
+          <span>26268-1 Summerlin V22</span>
+          <span>26234–26259 series (26 numbers)</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>Pulte Homes</h3>
+        <div class="meta"><strong>10+ projects</strong> &middot; <span>2014–2022</span> <span>Project series 77095–77111</span></div>
+        <p>Geotechnical investigations, slope stability analyses (tiered retaining walls), foundation compliance, and grading reports for Pulte's Nevada developments. Reverence 15 (77111-1) involved severe sulfate conditions with Type V cement and post-tensioned foundations. Additional Pulte projects in the 262xx range.</p>
+        <div class="highlights">
+          <span>77111-1 Reverence 15</span>
+          <span>77095-1 Summerlin V22 G&H</span>
+          <span>77098-2</span>
+          <span>77096-1</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>DR Horton</h3>
+        <div class="meta"><strong>5+ projects</strong> &middot; <span>2017–2021</span> <span>Project series 37025–37041</span></div>
+        <p>Geotechnical investigations and foundation compliance work for DR Horton communities across the Las Vegas valley. The 37xxx project number range contains 23 unique project numbers, of which at least 5 are directly tied to DR Horton by name.</p>
+        <div class="highlights">
+          <span>37029-1</span>
+          <span>37039-1</span>
+          <span>37041-1</span>
+          <span>37025-1</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>Lennar / KB Home / Other Builders</h3>
+        <div class="meta"><strong>5+ projects</strong> &middot; <span>2016–2022</span></div>
+        <p>Geotechnical work for Lennar (Stonewater, BLM 270 Parcel E) and other national homebuilders. Additional builder-specific projects identified in the 57xxx and 26xxx project ranges.</p>
+        <div class="highlights">
+          <span>57039-1 Lennar / Stonewater</span>
+          <span>56030-2 BLM 270 Parcel E</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>Additional residential subdivisions</h3>
+        <div class="meta"><strong>50+ projects</strong> &middot; <span>2016–2022</span> <span>57xxx, 26xxx, 77xxx series</span></div>
+        <p>Grading inspections, foundation compliance, soil bearing reports, and full geotechnical investigations for residential tract developments across the 26xxx, 57xxx, and 77xxx project number series. Over 1,100 timesheet entries logged across all residential and commercial work from 2016–2022.</p>
+        <div class="highlights">
+          <span>Full grading inspection</span>
+          <span>Foundation compliance (72+)</span>
+          <span>Slope stability analyses (22+)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">Angle Engineering &middot; 2014–2022</p>
+      <h2 class="sec">CCSD schools &amp; commercial work</h2>
+      <p class="sec-intro">Full geotechnical reports per IBC 2018 for Clark County School District replacement schools, plus commercial developments and environmental site assessments across Nevada.</p>
+
+      <div class="client">
+        <h3>Clark County School District</h3>
+        <div class="meta"><strong>3 projects</strong> &middot; <span>2019–2021</span> <span>32035–32039 series</span></div>
+        <p>Full geotechnical investigations for CCSD school replacement and modernization projects, performed to IBC 2018 standards. Included liquefaction analysis, settlement evaluation, and seismic site classification.</p>
+        <div class="highlights">
+          <span>32037-1 John C. Fremont MS</span>
+          <span>32039-1 Mountain View ES</span>
+          <span>32035-1 JD Smith MS (liquefaction)</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>Commercial &amp; Industrial</h3>
+        <div class="meta"><strong>30+ projects</strong> &middot; <span>2016–2022</span> <span>34xxx, 63xxx, 76xxx series</span></div>
+        <p>Geotechnical investigations for commercial developments: medical facilities (Emerus Hospital campuses, Women's Cancer Center), industrial buildings (LVP Small Tools, SSS O&amp;M Building), retail (Republic Services, Charger Furniture Store), and mixed-use.</p>
+        <div class="highlights">
+          <span>Emerus (4 hospital campuses)</span>
+          <span>34021-1 Women's Cancer Center</span>
+          <span>4330 Cameron (76011-1)</span>
+          <span>33002-1 Centennial &amp; Durango</span>
+        </div>
+      </div>
+
+      <div class="client">
+        <h3>Phase I &amp; Phase II Environmental Site Assessments</h3>
+        <div class="meta"><strong>200+ entries</strong> &middot; <span>2016–2022</span> <span>53xxx, 44xxx series</span></div>
+        <p>Environmental due diligence for property transactions, including Phase I ESAs (records review, site reconnaissance, regulatory database), Phase II subsurface investigations (soil borings, groundwater sampling, laboratory analysis), and remediation oversight. Notable: US-93 &amp; Golf Course Drive, Ely; McGill Family Dollar Store; 35,000 CY TPH-contaminated material export under NDEP oversight.</p>
+        <div class="highlights">
+          <span>44015-1 US-93 Ely</span>
+          <span>44013-1 McGill Family Dollar</span>
+          <span>Rural Nevada projects</span>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Full commercial/ESA project list available on request.</strong> Over 200 Phase I/II ESA entries and 30+ additional commercial project numbers are documented in the timesheet records.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="sec-label">GeoTek &middot; 2023–2025</p>
+      <h2 class="sec">Utility &amp; commercial development testing</h2>
+      <p class="sec-intro">Materials testing, special inspection, and geotechnical report authorship for large-scale utility and commercial projects across Southern Nevada. All projects under P.E. review.</p>
+
+      <div class="client">
+        <h3>Utility distribution &amp; commercial development</h3>
+        <div class="meta"><strong>40+ projects</strong> &middot; <span>Jun 2024 – Jul 2025</span></div>
+        <p>Construction materials testing and special inspection for utility-scale distribution projects and commercial development grading. Authored engineering reports under ICC, ACI, and NAQTC standards for P.E. review. Notable clients include Taylor Morrison (Opus at Cadence), Touchstone Living, and multiple residential subdivision developments.</p>
+        <div class="highlights">
+          <span>17592.2-LVR Taylor Morrison / Opus</span>
+          <span>14509.3-LVR Touchstone Living</span>
+          <span>16054.2/3-LVR Kyle Canyon</span>
+          <span>16100-LVR Iron Mountain</span>
+          <span>17925-LVR Summerlin V22 Parcel F</span>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>GeoTek project records are stored separately</strong> from the Angle Engineering timesheet database. The 40+ figure is based on phone backup records and project file inventory; individual project details available on request.
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">Selected project details</p>
+      <h2 class="sec">Representative projects</h2>
+      <p class="sec-intro">A closer look at a few projects that illustrate the range of work — from severe sulfate conditions and deep foundations to seismic site classification and environmental remediation.</p>
+
+      <div class="client">
+        <h3>Reverence 15 (77111-1) &mdash; Pulte Homes</h3>
+        <div class="meta"><strong>Severe sulfate / Post-tensioned foundations</strong></div>
+        <p>Geotechnical investigation revealing severe sulfate exposure conditions (highly corrosive to concrete). Recommended Type V cement with sulfate-resistant concrete mix design, post-tensioned foundation system, and Site Class C seismic designation. Included slope stability analysis for tiered pad layout.</p>
+      </div>
+
+      <div class="client">
+        <h3>Dove Pointe Place / Rainbow &amp; Rancho II (26250-1) &mdash; Richmond American</h3>
+        <div class="meta"><strong>21.7 acres / Uncontrolled fill / 8 foundation plan sets</strong></div>
+        <p>Full geotechnical investigation for a 21.7-acre Richmond development. Up to 12 feet of uncontrolled fill removal required across the site. Low swell potential, S0 sulfate exposure. Eight separate foundation plan sets reviewed and stamped for construction.</p>
+      </div>
+
+      <div class="client">
+        <h3>John C. Fremont Middle School (32037-1) &mdash; CCSD</h3>
+        <div class="meta"><strong>IBC 2018 / Full geotechnical report</strong></div>
+        <p>Complete geotechnical investigation per IBC 2018 for the Clark County School District's Fremont Middle School replacement project. Included subsurface exploration, laboratory testing, seismic site classification, liquefaction assessment, settlement analysis, and foundation recommendations for the new school building.</p>
+      </div>
+
+      <div class="client">
+        <h3>US-93 &amp; Golf Course Drive (44015-1) &mdash; Phase I ESA, Ely NV</h3>
+        <div class="meta"><strong>Rural Nevada / Environmental due diligence</strong></div>
+        <p>Phase I Environmental Site Assessment for a commercial property at US-93 and Golf Course Drive in Ely, Nevada. Multiple revisions reflecting client and regulatory feedback. Representative of the rural Nevada ESA work covering White Pine County.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="sec-label">Data integrity</p>
+      <h2 class="sec">How these numbers were built</h2>
+      <p class="sec-intro">Every project count in this portfolio is backed by a specific data source — timesheets, report metadata, or project files — not by memory.</p>
+
+      <div class="client" style="margin-bottom:0">
+        <p><strong>Timesheet records (2016–2022):</strong> 1,101 individual entries extracted from original .xls/.xlsx timesheet files, each showing year, project number, project name, and hours worked. The 335 unique project numbers come from this single source.</p>
+        <p style="margin-top:10px"><strong>Report metadata:</strong> 11 geotechnical reports confirmed authored by Heston Norcott via DOCX author metadata and OLE document summary information from old .doc files. An additional 6 reports identified through OLE metadata extraction.</p>
+        <p style="margin-top:10px"><strong>GeoTek phone backup:</strong> 156 files from a Google Drive phone backup containing 40+ unique GeoTek project numbers (2023–2025).</p>
+        <p style="margin-top:10px"><strong>What's not included:</strong> GeoTek projects from 2023 (not backed up), some early Angle Engineering projects (2014–2015, paper records), and projects worked under other engineers' report numbers.</p>
+        <div class="highlights" style="margin-top:12px">
+          <span>1,101 timesheet entries</span>
+          <span>335 unique project numbers</span>
+          <span>17 authored reports (verified)</span>
+          <span>156 GeoTek phone backup files</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.)</span>
+    <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> &middot; <a href="tel:+17022040407">702-204-0407</a> &middot; <a href="https://github.com/hestongrr" target="_blank" rel="noopener">GitHub</a> &middot; Discord: heston_norcott</span>
+  </div>
+</footer>
+
+</body>
+</html>

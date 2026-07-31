@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slope Stability Calculator — Infinite Slope, Planar Wedge &amp; Bishop | Free</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/slope-stability.html">
+<meta name="description" content="Free slope stability calculator for flat-crest cut slopes. Infinite slope, planar wedge (Culmann), and Bishop's simplified circular search with water table effects. Built by a Nevada geotechnical engineer.">
+<meta property="og:title" content="Slope Stability Calculator — Infinite Slope, Planar Wedge &amp; Bishop | Free">
+<meta property="og:description" content="Slope stability calculator using infinite slope, planar wedge, and Bishop's Simplified Method.">
+<meta property="og:url" content="https://thebigpicture.tech/slope-stability.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Slope Stability Calculator",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/slope-stability.html",
+  "description": "Free slope stability calculator for flat-crest cut slopes: infinite slope, planar wedge (Culmann), and Bishop's simplified circular search with water table effects.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff; --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; --red:#B23A2E; --teal:#0E6C77; --blue:#2E6FB0; --gold:#C99A2E; }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}nav .links a:hover{color:var(--ink)}
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:48px 22px 42px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--hero-accent);margin:0 0 14px}
+  .hero h1{font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0;font-weight:800}
+  .hero p{max-width:66ch;font-size:clamp(14px,1.8vw,17px);color:#b9cbc9;margin:14px 0 0}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:24px 0;align-items:start}
+  @media (max-width:960px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono);color:var(--muted);margin:0 0 14px}
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+  .field label{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+  .field label .val{color:var(--accent);font-weight:600}
+  .field input,.field select{width:100%;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:7px 9px}
+  .field :focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .field .hint{font-size:10.5px;color:var(--muted);margin:1px 0 0}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .btn{font-family:var(--mono);font-size:12px;cursor:pointer;border-radius:7px;padding:9px 16px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;transition:.12s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.ghost{background:transparent;color:var(--accent)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:12.5px}
+  .result-grid .k{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase}
+  .result-grid .v{text-align:right;font-weight:600}
+  .fs-box{border:1px solid var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .fs-box .fs-method{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
+  .fs-box .fs-val{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:-.03em;line-height:1}
+  .fs-box .fs-val.danger{color:var(--red)}
+  .fs-box .fs-val.warn{color:var(--gold)}
+  .fs-box .fs-val.ok{color:var(--accent)}
+  .fs-box .fs-val.na{color:var(--muted)}
+  .canvas-wrap canvas{width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fafbf8;display:block}
+  @media (prefers-color-scheme:dark){.canvas-wrap canvas{background:#0d100f}}
+  .canvas-cap{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;text-align:center}
+  .status{font-family:var(--mono);font-size:12px;color:var(--muted);padding:8px 0;text-align:center}
+  .note{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding:12px 0 0;margin-top:12px}
+  .note b{color:var(--ink)}
+  footer{border-top:1px solid var(--line);padding:22px 0;margin-top:10px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap">
+  <a class="name" href="/">Heston <b>Norcott</b></a>
+  <span class="links">
+    <a href="/#tools">Tools</a>
+    <a href="/projects.html">Projects</a>
+    <a href="/resume.html">Resume</a>
+    <a href="/slope-stability.html" style="color:var(--accent)">Slope Tool</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Infinite slope &middot; Planar wedge &middot; Bishop circular</p>
+  <h1>Slope stability for flat-crest<br>cut slopes in Nevada.</h1>
+  <p>Three methods in one tool. For c=0 fills the critical mechanism is planar (infinite slope). For c&ndash;&phi; soils, planar wedge and circular searches provide upper-bound estimates. No retaining wall model &mdash; results reflect the soil alone.</p>
+</div></header>
+
+<main class="wrap layout">
+<div class="canvas-wrap">
+  <div class="card" style="padding:12px">
+    <canvas id="slopeCanvas" width="800" height="500"></canvas>
+  </div>
+  <div id="status" class="status">Adjust parameters and click Run</div>
+</div>
+
+<div>
+  <div class="card">
+    <h2>Slope Geometry</h2>
+    <div class="row2">
+      <div class="field"><label>Height H <span class="val" id="vH">20</span> ft</label><input type="range" id="slopeH" min="4" max="80" value="20" step="1"></div>
+      <div class="field"><label>Angle β <span class="val" id="vBeta">34</span> °</label><input type="range" id="slopeBeta" min="10" max="60" value="34" step="0.5"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Crest width <span class="val" id="vCrest">40</span> ft</label><input type="range" id="crestW" min="10" max="200" value="40" step="1"></div>
+      <div class="field"><label>Toe bench <span class="val" id="vToe">20</span> ft</label><input type="range" id="toeW" min="5" max="80" value="20" step="1"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>Soil Properties</h2>
+    <div class="row3">
+      <div class="field"><label>γ <span class="val" id="vGamma">135</span> pcf</label><input type="range" id="soilGamma" min="100" max="150" value="135" step="1"></div>
+      <div class="field"><label>c <span class="val" id="vCohesion">0</span> psf</label><input type="range" id="soilC" min="0" max="500" value="0" step="5"></div>
+      <div class="field"><label>φ <span class="val" id="vPhi">34</span> °</label><input type="range" id="soilPhi" min="15" max="50" value="34" step="0.5"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>Water Table</h2>
+    <div class="field">
+      <label>Depth below crest z<sub>w</sub> <span class="val" id="vWt">100</span> ft</label>
+      <input type="range" id="wtDepth" min="0" max="100" value="100" step="1">
+      <span class="hint" id="wtHint">Below slope base — dry conditions</span>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button class="btn" id="runBtn">Run Analysis</button>
+    <button class="btn ghost" id="resetBtn">Reset Defaults</button>
+  </div>
+
+  <div style="margin-top:12px">
+    <div class="fs-box">
+      <div class="fs-method">Infinite Slope (critical)</div>
+      <div class="fs-val ok" id="infFS">—</div>
+      <div style="font-size:11px;color:var(--muted);margin:2px 0 0">FS = tan φ / tan β (c=0); lower bound for flat-crest slopes</div>
+    </div>
+    <div class="fs-box">
+      <div class="fs-method">Planar Wedge (Culmann)</div>
+      <div class="fs-val" id="wedgeFS">—</div>
+      <div style="font-size:11px;color:var(--muted);margin:2px 0 0">Plane from toe through crest; includes cohesion</div>
+    </div>
+    <div class="fs-box">
+      <div class="fs-method">Bishop Circular (search)</div>
+      <div class="fs-val na" id="circFS">N/A</div>
+      <div style="font-size:11px;color:var(--muted);margin:2px 0 0">Circular surface search; flat crest limits valid surfaces</div>
+    </div>
+    <div class="card" style="margin-top:12px" id="detailCard">
+      <h2>Critical Surface</h2>
+      <div class="result-grid" id="detailGrid">
+        <span class="k">Method</span><span class="v" id="detMethod">—</span>
+        <span class="k">FS</span><span class="v" id="detFS">—</span>
+        <span class="k">Geometry</span><span class="v" id="detGeo">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>About</h2>
+    <div class="note" style="border:none;padding:0;margin:0">
+      <p style="margin:0 0 6px;font-size:13px"><b>Infinite slope</b> &mdash; For c=0 fills, the critical failure is a plane parallel to the slope face. FS = tan φ / tan β. This is the lower bound for flat-crest cut slopes.</p>
+      <p style="margin:0 0 6px;font-size:13px"><b>Planar wedge (Culmann)</b> &mdash; Translational slide along a plane from the toe through the crest. Accounts for cohesion and crest width.</p>
+      <p style="margin:0 0 6px;font-size:13px"><b>Bishop circular</b> &mdash; Grid search for critical circles. For c=0 slopes with wide flat crests, net driving force (ΣW sin α) is typically &le; 0, making circular surfaces non-critical. Still runs for c &gt; 0 cases.</p>
+      <p style="margin:0;font-size:13px"><b>Water table</b> &mdash; Pore pressure below the phreatic surface reduces effective normal stress (FS lower). Set z<sub>w</sub> below the slope base for dry conditions.</p>
+      <p style="margin:8px 0 0;font-size:12px">Related tools: <a href="/uscs-soil-classification-calculator.html">USCS soil classification calculator</a> &middot; <a href="/boring-log-generator.html">boring log generator</a></p>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; Heston Norcott · Geotechnical Engineer (E.I.)</span>
+  <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a></span>
+</div></footer>
+
+<script>
+(function(){
+  var canvas = document.getElementById('slopeCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H_c = canvas.height;
+
+  function el(id){ return document.getElementById(id); }
+  function v(id){ return parseFloat(el(id).value); }
+
+  function updateLabels(){
+    el('vH').textContent=el('slopeH').value;
+    el('vBeta').textContent=el('slopeBeta').value;
+    el('vGamma').textContent=el('soilGamma').value;
+    el('vCohesion').textContent=el('soilC').value;
+    el('vPhi').textContent=el('soilPhi').value;
+    el('vCrest').textContent=el('crestW').value;
+    el('vToe').textContent=el('toeW').value;
+    el('vWt').textContent=el('wtDepth').value;
+    var h=parseFloat(el('slopeH').value), zw=parseFloat(el('wtDepth').value);
+    el('wtHint').textContent = zw>=h
+      ? 'Below slope base — dry conditions'
+      : 'Phreatic surface at '+(h-zw).toFixed(1)+' ft above toe — saturated below';
+  }
+  document.querySelectorAll('input[type=range]').forEach(function(i){ i.addEventListener('input', updateLabels); });
+
+  function getP(){
+    return { H:v('slopeH'), beta:v('slopeBeta'), gamma:v('soilGamma'), c:v('soilC'), phi:v('soilPhi'), crestW:v('crestW'), toeW:v('toeW'), wt:v('wtDepth') };
+  }
+
+  function slopeGeo(p){
+    var rad=p.beta*Math.PI/180, run=p.H/Math.tan(rad);
+    var xt=p.toeW, xc=xt+run, xe=xc+p.crestW;
+    return { H:p.H,beta:p.beta,rad:rad,toe:{x:xt,y:0},crest:{x:xc,y:p.H},xe:xe,
+      points:[{x:0,y:0},{x:xt,y:0},{x:xc,y:p.H},{x:xe,y:p.H},{x:xe+3*p.H,y:p.H}] };
+  }
+
+  function ptOnSlope(pts, sx){
+    if(sx<pts[0].x) return pts[0].y;
+    if(sx>pts[pts.length-1].x) return pts[pts.length-1].y;
+    for(var i=0;i<pts.length-1;i++){var a=pts[i],b=pts[i+1];if(sx>=a.x&&sx<=b.x) return b.x===a.x?a.y:a.y+(b.y-a.y)*(sx-a.x)/(b.x-a.x);}
+    return null;
+  }
+
+  // ---- Infinite slope ----
+  var GAMMA_W=62.4;
+  function infSlopeFS(p){
+    var phi_r=p.phi*Math.PI/180, beta_r=p.beta*Math.PI/180;
+    var sinB=Math.sin(beta_r), cosB=Math.cos(beta_r);
+    var den=p.gamma*p.H*sinB*cosB;
+    if(den<=0) return null;
+    // Effective stress at depth H; pore pressure u = gamma_w * (H - z_w) below phreatic surface
+    var zw=Math.min(p.wt,p.H);
+    var sigV=p.gamma*p.H-GAMMA_W*Math.max(0,p.H-zw);
+    var num=p.c+sigV*cosB*cosB*Math.tan(phi_r);
+    return num/den;
+  }
+
+  // ---- Planar wedge (Culmann) ----
+  function wedgeFS(p, slope){
+    var best=null, gamma=p.gamma, c=p.c, phi_r=p.phi*Math.PI/180;
+    var beta_r=p.beta*Math.PI/180;
+    // Scan entry angles from just above bench to beyond slope angle
+    var nScan=60;
+    for(var i=2;i<nScan-2;i++){
+      var theta=beta_r*0.1+beta_r*i/(nScan-1)*0.9;
+      // Failure plane from toe to intersection with ground
+      // Slope face equation: y = tan(beta)*(x - toe.x) for x in [toe.x, crest.x]
+      // Crest equation: y = H for x > crest.x
+      // Failure plane: y = tan(theta)*(x - toe.x)
+      // Intersection with slope: tan(theta)(x-toe.x) = tan(beta)(x-toe.x) => x = toe.x if theta != beta
+      //   OR tan(theta)(x-toe.x) = H => x = toe.x + H/tan(theta) (if beyond crest)
+      var xi=slope.toe.x+p.H/Math.tan(theta);
+      var yi=p.H;
+      // Check if intersection is on the slope face (between toe and crest) or behind crest
+      if(xi>slope.points[slope.points.length-1].x) continue; // beyond extended crest
+      if(xi<slope.crest.x) continue; // on slope face, handled below
+
+      // Wedge: toe to entry behind crest
+      // Weight = area * gamma
+      // Area = 0.5 * base * height where:
+      // base = (xi - slope.toe.x)
+      // height = H (if entry behind crest)
+      // For a more accurate area, compute the polygon
+      var x0=slope.toe.x, x1=xi;
+      // Wedge polygon points: toe, along slope to crest, along crest to entry, along failure plane back to toe
+      var poly=[{x:x0,y:0}];
+      // Points along slope face up to crest
+      var nSeg=20;
+      for(var j=1;j<=nSeg;j++){
+        var x=x0+(slope.crest.x-x0)*j/nSeg;
+        var y=p.H*(x-x0)/(slope.crest.x-x0);
+        poly.push({x:x,y:y});
+      }
+      // Points along crest from crest to entry
+      for(var j=1;j<=nSeg;j++){
+        var x=slope.crest.x+(x1-slope.crest.x)*j/nSeg;
+        poly.push({x:x,y:p.H});
+      }
+      // Back along failure plane to toe (in reverse to close polygon)
+      // Failure plane: y = tan(theta)*(x-x0)
+      for(var j=nSeg-1;j>=0;j--){
+        var x=x0+(x1-x0)*j/nSeg;
+        var y=Math.tan(theta)*(x-x0);
+        poly.push({x:x,y:y});
+      }
+
+      // Area by shoelace
+      var area=0, L=0;
+      for(var j=0;j<poly.length;j++){
+        var a=poly[j], b=poly[(j+1)%poly.length];
+        area+=a.x*b.y-b.x*a.y;
+      }
+      area=Math.abs(area)/2;
+
+      // Length of failure plane
+      L=Math.sqrt((x1-x0)*(x1-x0)+p.H*p.H);
+
+      if(area<0.1) continue;
+      var W=gamma*area, Wn=W*Math.cos(theta), Ws=W*Math.sin(theta);
+      // Water pressure on the submerged portion of the failure plane
+      // WT elevation y_wt = H - z_w; plane rises from y=0 (toe) at angle theta
+      // Triangular pressure: U = 0.5 * gamma_w * h_w^2 / sin(theta), h_w = min(y_wt, H)
+      var U=0;
+      if(p.wt<p.H){
+        var hw=Math.min(p.H-p.wt,p.H);
+        U=0.5*GAMMA_W*hw*hw/Math.sin(theta);
+      }
+      var fs=Ws>0?(c*L+(Wn-U)*Math.tan(phi_r))/Ws:null;
+      if(fs!==null&&fs>0&&isFinite(fs)&&(!best||fs<best.fs)) best={fs:fs,theta:theta*180/Math.PI,entry:x1,L:L,W:W/1000,area:area,U:U/1000};
+    }
+    return best;
+  }
+
+  // ---- Bishop circular ----
+  function bishopFOS(p, slope, cx, cy, r){
+    var gamma=p.gamma, phi_r=p.phi*Math.PI/180, c=p.c;
+    var xl=Math.min(slope.points[0].x,cx-r), xr=Math.max(slope.points[slope.points.length-1].x,cx+r);
+    var nScan=500, under=[], runStart=-1, us=-1, bestRun=0, bestUS=-1;
+    for(var i=0;i<nScan;i++){
+      var f=i/(nScan-1), x=xl+(xr-xl)*f, yg=ptOnSlope(slope.points,x), isU=false;
+      if(yg!==null){var dy=r*r-(x-cx)*(x-cx);if(dy>0){var yc=cy-Math.sqrt(dy);if(yc<yg-0.01)isU=true;}}
+      if(isU){if(runStart<0){runStart=i;us=under.length;}under.push({x:x,yg:yg});}
+      else{if(runStart>=0){var len=i-runStart;if(len>bestRun){bestRun=len;bestUS=us;}runStart=-1;}}
+    }
+    if(runStart>=0){var len=nScan-runStart;if(len>bestRun){bestRun=len;bestUS=us;}}
+    if(bestRun<6||bestUS<0) return null;
+    var ru=under.slice(bestUS,bestUS+bestRun);
+    if(ru.length<4) return null;
+    var left=ru[0], right=ru[ru.length-1];
+    var cr=false;
+    for(var i=0;i<ru.length;i++){if(ru[i].x>=slope.toe.x-0.5&&ru[i].x<=slope.crest.x+0.5){cr=true;break;}}
+    if(!cr) return null;
+
+    var ns=Math.min(40,Math.max(10,Math.round((right.x-left.x)*0.5)));
+    var dx=(right.x-left.x)/ns, sd=[], sw=0;
+    var ywt=p.H-p.wt;
+    for(var i=0;i<ns;i++){
+      var xm=left.x+(i+0.5)*dx, yt=ptOnSlope(slope.points,xm);if(yt===null)continue;
+      var dy=r*r-(xm-cx)*(xm-cx);if(dy<=0)continue;
+      var yb=cy-Math.sqrt(dy), h=yt-yb;if(h<=0.02)continue;
+      var b=dx, alp=Math.asin(Math.max(-1,Math.min(1,(cx-xm)/r)));
+      var W=gamma*h*b; sw+=W*Math.sin(alp);
+      var u=ywt>yb?GAMMA_W*(ywt-yb):0;
+      var cb=c*b, Wt=(W-u*b)*Math.tan(phi_r);
+      sd.push({cb:cb,Wt:Wt,W:W,sa:Math.sin(alp),u:u});
+    }
+    if(sd.length<4) return null;
+    sw/=1000; if(sw<=0) return null;
+
+    var FS=1.5;
+    for(var it=0;it<100;it++){
+      var sm=0;
+      for(var i=0;i<sd.length;i++){
+        var s=sd[i], ca=Math.sqrt(Math.max(0,1-s.sa*s.sa)), tp=Math.tan(phi_r);
+        var ma=ca+s.sa*tp/FS; if(ma<=0.01){sm=1e10;break;}
+        sm+=(s.cb+s.Wt)/ma;
+      }
+      sm/=1000; if(sm>1e9) return null;
+      var nFS=sm/sw; if(Math.abs(nFS-FS)<0.0001) break;
+      FS=nFS; if(!isFinite(FS)||FS>20||FS<0.01) return null;
+    }
+    if(!isFinite(FS)||FS>20||FS<0.01) return null;
+    return {fs:FS,left:left,right:right,cx:cx,cy:cy,r:r,n:sd.length};
+  }
+
+  function searchCirc(p, slope){
+    var best=null, d=12;
+    var cxMin=slope.toe.x-0.5*slope.H, cxMax=slope.crest.x+3*slope.H;
+    var cyMin=slope.H*0.3, cyMax=slope.H*4;
+    var ncx=Math.round(d*1.2), ncy=Math.round(d*0.8);
+    var kp=[{x:slope.toe.x,y:0},{x:(slope.toe.x+slope.crest.x)/2,y:slope.H/2},{x:slope.crest.x,y:slope.H},{x:slope.crest.x+slope.H,y:slope.H},{x:slope.crest.x+2*slope.H,y:slope.H}];
+    for(var ci=0;ci<ncx;ci++){for(var cj=0;cj<ncy;cj++){
+      var cx=cxMin+(cxMax-cxMin)*ci/(ncx-1), cy=cyMin+(cyMax-cyMin)*cj/(ncy-1);
+      for(var pi=0;pi<kp.length;pi++){
+        var rb=Math.sqrt((kp[pi].x-cx)*(kp[pi].x-cx)+(kp[pi].y-cy)*(kp[pi].y-cy));
+        for(var ri=-2;ri<=2;ri++){var r=rb+ri*Math.max(1,slope.H*0.05);if(r<5)continue;var res=bishopFOS(p,slope,cx,cy,r);if(res&&(!best||res.fs<best.fs))best=res;}
+      }
+    }}
+    for(var ci=0;ci<Math.round(d);ci++){for(var cj=0;cj<Math.round(d*0.7);cj++){
+      var cx=cxMin+(cxMax-cxMin)*ci/(Math.round(d)-1), cy=cyMin+(cyMax-cyMin)*cj/(Math.round(d*0.7)-1);
+      var dt=Math.sqrt((slope.toe.x-cx)*(slope.toe.x-cx)+cy*cy);
+      var dc=Math.sqrt((slope.crest.x-cx)*(slope.crest.x-cx)+(slope.H-cy)*(slope.H-cy));
+      var rMin=Math.min(dt,dc)*0.5, rMax=Math.max(dt,dc)*2, nr=Math.round(d*0.4);
+      for(var ri=0;ri<nr;ri++){var r=rMin+(rMax-rMin)*ri/(nr-1);var res=bishopFOS(p,slope,cx,cy,r);if(res&&(!best||res.fs<best.fs))best=res;}
+    }}
+    return best;
+  }
+
+  // ---- drawing ----
+  function draw(p, slope, wedgeRes, circRes){
+    ctx.clearRect(0,0,W,H_c);
+    var allX=[], allY=[];
+    slope.points.forEach(function(pt){allX.push(pt.x);allY.push(pt.y);});
+    allX.push(slope.left-5,slope.right+5); allY.push(0,slope.H+10);
+    if(circRes){allX.push(circRes.cx-circRes.r-5,circRes.cx+circRes.r+5);allY.push(circRes.cy-circRes.r-5,circRes.cy+circRes.r+5);}
+    var minX=Math.min.apply(null,allX), maxX=Math.max.apply(null,allX);
+    var minY=-5, maxY=Math.max.apply(null,allY)+5;
+    var pad=40, sc=Math.min((W-2*pad)/(maxX-minX),(H_c-2*pad)/(maxY-minY));
+    function tx(x){return pad+(x-minX)*sc;} function ty(y){return H_c-pad-(y-minY)*sc;}
+
+    // grid
+    ctx.strokeStyle='#e0e3e0'; ctx.lineWidth=0.5;
+    for(var gx=0;gx<=maxX+10;gx+=10){ctx.beginPath();ctx.moveTo(tx(gx),ty(minY));ctx.lineTo(tx(gx),ty(maxY));ctx.stroke();}
+    for(var gy=0;gy<=maxY+10;gy+=10){ctx.beginPath();ctx.moveTo(tx(minX),ty(gy));ctx.lineTo(tx(maxX),ty(gy));ctx.stroke();}
+
+    // slope
+    ctx.beginPath(); ctx.moveTo(tx(slope.points[0].x),ty(slope.points[0].y));
+    for(var i=1;i<slope.points.length;i++) ctx.lineTo(tx(slope.points[i].x),ty(slope.points[i].y));
+    ctx.fillStyle='#d9c8a4'; ctx.fill(); ctx.strokeStyle='#8a7a5a'; ctx.lineWidth=2; ctx.stroke();
+
+    // water table
+    var ywt=p.H-p.wt;
+    if(ywt>0){
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(tx(slope.points[0].x),ty(slope.points[0].y));
+      for(var i=1;i<slope.points.length;i++) ctx.lineTo(tx(slope.points[i].x),ty(slope.points[i].y));
+      ctx.closePath(); ctx.clip();
+      ctx.fillStyle='rgba(46,111,176,0.16)';
+      ctx.fillRect(tx(minX),ty(ywt),W,ty(0)-ty(ywt));
+      ctx.restore();
+      ctx.strokeStyle='#2E6FB0'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(tx(minX),ty(ywt)); ctx.lineTo(tx(maxX),ty(ywt)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#2E6FB0'; ctx.font='bold 11px sans-serif';
+      ctx.fillText('WT (z\u209B='+p.wt+' ft)', tx(minX)+4, ty(ywt)-5);
+    }
+
+    // wedge
+    if(wedgeRes){
+      var ew=wedgeRes.entry;
+      ctx.beginPath(); ctx.moveTo(tx(slope.toe.x),ty(0)); ctx.lineTo(tx(ew),ty(p.H)); ctx.strokeStyle='#2E6FB0'; ctx.lineWidth=2.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#2E6FB0'; ctx.font='bold 11px sans-serif';
+      ctx.fillText('Wedge FS='+wedgeRes.fs.toFixed(3), tx(slope.toe.x)+5, ty(0)-8);
+    }
+
+    // circular
+    if(circRes){
+      ctx.beginPath();
+      for(var ai=0;ai<=60;ai++){
+        var f=ai/60, x=circRes.left.x+(circRes.right.x-circRes.left.x)*f;
+        var dy=circRes.r*circRes.r-(x-circRes.cx)*(x-circRes.cx);
+        if(dy<=0) continue;
+        var y=circRes.cy-Math.sqrt(dy);
+        if(ai===0) ctx.moveTo(tx(x),ty(y)); else ctx.lineTo(tx(x),ty(y));
+      }
+      ctx.strokeStyle='#B23A2E'; ctx.lineWidth=2.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(tx(circRes.cx),ty(circRes.cy),3,0,2*Math.PI);
+      ctx.fillStyle='#B23A2E'; ctx.fill();
+      ctx.fillStyle='#B23A2E'; ctx.font='bold 11px sans-serif';
+      ctx.fillText('Circ FS='+circRes.fs.toFixed(3), tx(circRes.cx)+5, ty(circRes.cy)-5);
+    }
+  }
+
+  // ---- run ----
+  function run(){
+    var p=getP();
+    var slope=slopeGeo(p);
+    el('status').textContent='Computing...';
+
+    setTimeout(function(){
+      // 1. Infinite slope
+      var infFS=infSlopeFS(p);
+      el('infFS').textContent=infFS!==null?infFS.toFixed(4):'—';
+      el('infFS').className='fs-val'+(infFS!==null?(infFS<1?' danger':infFS<1.3?' warn':' ok'):' na');
+
+      // 2. Planar wedge
+      var wedgeRes=wedgeFS(p,slope);
+      if(wedgeRes){
+        el('wedgeFS').textContent=wedgeRes.fs.toFixed(4);
+        el('wedgeFS').className='fs-val'+(wedgeRes.fs<1?' danger':wedgeRes.fs<1.3?' warn':' ok');
+      } else {
+        el('wedgeFS').textContent='—';
+        el('wedgeFS').className='fs-val na';
+      }
+
+      // 3. Bishop circular
+      var circRes=searchCirc(p,slope);
+      if(circRes){
+        el('circFS').textContent=circRes.fs.toFixed(4);
+        el('circFS').className='fs-val'+(circRes.fs<1?' danger':circRes.fs<1.3?' warn':' ok');
+        el('detailGrid').innerHTML=
+          '<span class="k">Method</span><span class="v">Bishop Circular</span>'+
+          '<span class="k">FS</span><span class="v">'+circRes.fs.toFixed(4)+'</span>'+
+          '<span class="k">Center</span><span class="v">('+circRes.cx.toFixed(1)+', '+circRes.cy.toFixed(1)+')</span>'+
+          '<span class="k">Radius</span><span class="v">'+circRes.r.toFixed(1)+' ft</span>'+
+          '<span class="k">Slices</span><span class="v">'+circRes.n+'</span>';
+        el('detMethod').textContent='Bishop Circular';
+        el('detFS').textContent=circRes.fs.toFixed(4);
+        el('detGeo').textContent='cx='+circRes.cx.toFixed(1)+' cy='+circRes.cy.toFixed(1)+' r='+circRes.r.toFixed(1);
+      } else {
+        el('circFS').textContent='N/A';
+        el('circFS').className='fs-val na';
+        el('detMethod').textContent='—';
+        el('detFS').textContent='—';
+        el('detGeo').textContent='No valid circular surface found';
+      }
+
+      el('status').textContent='Done';
+      draw(p, slope, wedgeRes, circRes);
+    }, 50);
+  }
+
+  el('runBtn').addEventListener('click', run);
+  el('resetBtn').addEventListener('click', function(){
+    el('slopeH').value=20;el('slopeBeta').value=34;el('soilGamma').value=135;
+    el('soilC').value=0;el('soilPhi').value=34;el('crestW').value=40;el('toeW').value=20;
+    el('wtDepth').value=100;
+    updateLabels(); run();
+  });
+
+  updateLabels();
+  run();
+})();
+</script>
+</body>
+</html>
