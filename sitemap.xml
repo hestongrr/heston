@@ -76,6 +76,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://thebigpicture.tech/blog/git-for-geotechnical-engineering.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://thebigpicture.tech/og-image.png</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

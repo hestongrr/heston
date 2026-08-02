@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git for Geotechnical Engineering: Version Control That Survives a Project — Heston Norcott, E.I.</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/blog/git-for-geotechnical-engineering.html">
+<meta name="description" content="A practical how-to on using git for geotechnical work: one repo per project, branch for revisions, tag stamped deliverables, and never lose the data-figure-report trio again.">
+<meta property="og:title" content="Git for Geotechnical Engineering">
+<meta property="og:description" content="Version control that survives a project — the git workflow I actually use for geotech data, figures, and reports.">
+<meta property="og:url" content="https://thebigpicture.tech/blog/git-for-geotechnical-engineering.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --accent:#0E6C77; --accent-ink:#fff; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px}
+  h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  h2{font-size:19px;margin:28px 0 10px}
+  p{font-size:15px;margin:0 0 14px;color:var(--ink)}
+  a{color:var(--accent)}
+  .back{font-family:var(--mono);font-size:12px;display:inline-block;margin-bottom:20px}
+  ul{font-size:15px;margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:6px}
+  pre{background:#171A18;color:#e7eae6;border-radius:8px;padding:14px 16px;font-size:13px;overflow-x:auto;line-height:1.5;margin:0 0 14px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  pre code{background:none;border:0;padding:0;color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/blog/">&larr; Blog</a>
+<h1>Git for Geotechnical Engineering: Version Control That Survives a Project</h1>
+<div class="meta">August 2, 2026 &middot; Heston Norcott, E.I.</div>
+
+<p>Geotechnical deliverables are a revision problem wearing an engineering costume. A boring log gets corrected, a bearing capacity calc changes with a revised groundwater elevation, and suddenly the report is "Final_Rev3_FINAL_v2.docx." Then the client asks which version matches the stamped set &mdash; and nobody can answer.</p>
+
+<p>Git exists to make that question impossible to ask. This is the workflow I use for geotech work: one repo per project, branch for revisions, tag every stamped deliverable, and never lose the pair between the data and the figure. It's not a developer habit bolted onto engineering &mdash; it's the audit trail your QA should already be demanding.</p>
+
+<h2>One Repo Per Project</h2>
+<p>A project is a natural unit: the borings, the lab data, the analysis, the figures, and the report all change together and get reviewed together. Put them in one repo so a commit is always a complete, reviewable state of the whole project.</p>
+<pre><code>cd ~/projects/hotel-parcel-17
+git init
+git add .
+git commit -m "Initial: borings, lab data, and report skeleton"</code></pre>
+
+<h2>Commit Like You'll Defend It in a Lawsuit</h2>
+<p>Every commit should be one logical change, with a message that names the data and the action. Six months later, <code>git log</code> is your memory &mdash; make it legible.</p>
+<pre><code>git add boring-logs/BH-01.csv
+git commit -m "Add SPT data for BH-01"
+
+git add analysis/settlement.py settlement.xlsx
+git commit -m "Fix settlement calc: use measured GW depth, not assumed"</code></pre>
+<p>Atomic commits matter here more than in software: when a figure and a calculation disagree later, you want to be able to isolate exactly which change introduced the difference.</p>
+
+<h2>Branch for a Revision, Tag for a Stamp</h2>
+<p>When the review comes back, don't edit in place. Make a branch for the revision so the submitted set stays intact and untouched, and keep working forward.</p>
+<pre><code>git checkout -b rev-02
+# ...address reviewer comments, commit as you go...</code></pre>
+<p>And the one habit I'd push hardest: <strong>tag the exact commit you stamped and submitted.</strong> A tag is a bookmark you can return to forever &mdash; the reproduction of what left your desk.</p>
+<pre><code>git tag stamped-2026-08-01
+git push origin stamped-2026-08-01</code></pre>
+<p>When the client asks "which version did we review?" the answer is a tag name, not a folder full of <code>FINAL_v2</code> files.</p>
+
+<h2>Never Lose the Data-Figure Pair</h2>
+<p>The figure must always be reproducible from the numbers. Keep the CSV/GeoJSON and the script that made the figure in the same repo, and the figure becomes a derived artifact instead of a hand-edited drawing.</p>
+<pre><code>git diff analysis/settlement.py          # what changed in the calc
+git blame boring-logs/BH-01.csv | head  # who entered which SPT value, line by line</code></pre>
+
+<h2>Undoing Mistakes (Without Panic)</h2>
+<p>The commands that rescue you when a file goes sideways &mdash; and none of them require you to have made a backup:</p>
+<pre><code>git restore analysis/settlement.py        # discard edits, keep history
+git stash                                 # park half-done work, clean tree
+git stash pop                             # bring it back
+git revert &lt;commit&gt;                       # safe undo: a new commit that un-does one
+git log --oneline --all                   # find the state you want</code></pre>
+
+<h2>Push to a Private Remote</h2>
+<p>Client data belongs in a <em>private</em> repository &mdash; GitHub/GitLab private repos are free, and the remote doubles as an off-site backup. This site's repo is public; every project repo stays private.</p>
+<pre><code>git remote add origin git@github.com:you/hotel-parcel-17.git
+git push -u origin main
+git pull</code></pre>
+
+<h2>Keep Binaries Out, Keep Data In</h2>
+<p>A .gitignore tells git what never belongs in the repo. For geotech: generated files, giant rasters, and anything reproducible. In: CSVs, GeoJSON, scripts, and the final PDF.</p>
+<pre><code>.venv/
+*.tif
+*.bak
+__pycache__/
+report-output/</code></pre>
+
+<h2>The One Workflow to Adopt</h2>
+<p>Everything that leaves your desk is tagged. Every change is a commit with a legible message. Every figure is reproducible from the data beside it. That's not overhead &mdash; that's the audit trail your discipline deserves, and it costs nothing but good habits.</p>
+
+<p>This is one piece of the stack I run every day &mdash; see the <a href="/my-stack.html">full stack</a> and the <a href="/engineering-on-linux.html">Linux field guide</a>. I build custom engineering automation for contract; if a workflow is eating hours a week, <a href="/#contact">let's talk</a>.</p>
+
+</div>
+</body>
+</html>
