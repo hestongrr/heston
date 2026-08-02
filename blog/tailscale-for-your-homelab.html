@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tailscale for Your Homelab: A Private Network That Just Works — Heston Norcott, E.I.</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/blog/tailscale-for-your-homelab.html">
+<meta name="description" content="How Tailscale replaces port forwarding for the home server: a private mesh network over WireGuard, SSH from anywhere, game servers that reach everyone, and client data that never leaves your hardware.">
+<meta property="og:title" content="Tailscale for Your Homelab">
+<meta property="og:description" content="A private network that just works — Tailscale instead of port forwarding, for SSH, admin panels, game servers, and data that stays on your box.">
+<meta property="og:url" content="https://thebigpicture.tech/blog/tailscale-for-your-homelab.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --accent:#0E6C77; --accent-ink:#fff; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px}
+  h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  h2{font-size:19px;margin:28px 0 10px}
+  p{font-size:15px;margin:0 0 14px;color:var(--ink)}
+  a{color:var(--accent)}
+  .back{font-family:var(--mono);font-size:12px;display:inline-block;margin-bottom:20px}
+  ul{font-size:15px;margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:6px}
+  pre{background:#171A18;color:#e7eae6;border-radius:8px;padding:14px 16px;font-size:13px;overflow-x:auto;line-height:1.5;margin:0 0 14px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  pre code{background:none;border:0;padding:0;color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/blog/">&larr; Blog</a>
+<h1>Tailscale for Your Homelab: A Private Network That Just Works</h1>
+<div class="meta">August 2, 2026 &middot; Heston Norcott, E.I.</div>
+
+<p>You built the home server. Now everything lives on it &mdash; the files, the web tools, the game worlds, the admin panels. The moment you want to reach it from anywhere else, you hit the classic wall: do you open ports to the whole internet, or just accept being unable to get in from outside?</p>
+
+<p>Neither. Tailscale is a private network that rides on top of the internet &mdash; no port forwarding, no exposing your boxes, and it works from any connection on earth. It's the difference between your homelab being <em>in</em> your house and being <em>yours</em>.</p>
+
+<h2>What It Actually Is</h2>
+<p>Tailscale is a mesh VPN built on WireGuard. Every machine you install it on joins your <strong>tailnet</strong> &mdash; a private network where each device gets its own stable address, whether it's on your couch, at a client site, or behind a hotel's NAT. There's no hub you route through and nothing exposed to the public internet. It's the fastest way I know to make "my machines" reachable from anywhere without making them reachable by everyone.</p>
+
+<h2>Setup Is Two Commands</h2>
+<pre><code>curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up</code></pre>
+<p>That second command opens a login link. Authenticate once, and the device appears in your tailnet &mdash; and only after <em>you</em> approve it, if you want. From then on the box answers by its tailscale name and IP from any device in your tailnet:</p>
+<pre><code>tailscale status        # every device in your tailnet
+tailscale ip -4         # this machine's stable tailnet IP
+ssh heston@dadbox       # from anywhere</code></pre>
+
+<h2>What It Fixes at Home</h2>
+<p>Here's the real payoff. My house runs <strong>three separate modems</strong> &mdash; two ISPs, a Wi-Fi LAN and a wired LAN that can't see each other properly. LAN-discovery games were failing because a machine on the Wi-Fi network simply couldn't reach one on the wired network. That whole class of problem vanishes on a tailnet: devices join by address, not by "which router's subnet am I in," so a game server on one network is reachable from every machine, on every network, at once.</p>
+<ul>
+<li><strong>Admin panels</strong> &mdash; the monitoring dashboards bind to the tailnet, not the internet. Present when you need them, invisible to everyone else.</li>
+<li><strong>Game and media servers</strong> &mdash; LAN games stop caring which modem you're behind.</li>
+<li><strong>SSH</strong> &mdash; no public port 22, no brute-force noise, no key worries beyond your own.</li>
+</ul>
+
+<h2>For Devices That Can't Run Tailscale</h2>
+<p>Printers, old NAS boxes, IoT &mdash; they'll never join a tailnet. You advertise <em>their</em> subnet into yours instead, and the tailnet routes to them privately:</p>
+<pre><code>tailscale up --advertise-routes=192.168.12.0/24</code></pre>
+<p>Approve the routes in the admin console once, and those devices are reachable from your tailnet like everything else &mdash; still not exposed to the internet.</p>
+
+<h2>The Security Posture That Costs Nothing</h2>
+<p>Tailscale doesn't ask you to trust it &mdash; it gives you the levers and lets you be strict:</p>
+<ul>
+<li><strong>Device approval</strong> &mdash; new devices don't join your tailnet until you let them in.</li>
+<li><strong>Key expiry</strong> &mdash; machines re-authenticate on a schedule you set, so a forgotten laptop doesn't stay in forever.</li>
+<li><strong>ACLs</strong> &mdash; you control exactly which device may talk to which other device, down to the port.</li>
+<li><strong>Two-factor on your identity</strong> &mdash; your tailnet is only as strong as the account that governs it.</li>
+</ul>
+
+<h2>For Engineering Work</h2>
+<p>This is why I keep it in the stack. The files and tools that matter &mdash; project data, the analysis scripts, the web calculators &mdash; live on my hardware and are reachable only by my tailnet. That's the privacy posture a client should expect: <strong>their data stays on your box, and your box is a lock you hold the key to.</strong> No third-party SaaS ever sees a byte of it.</p>
+
+<p>One honest limit: Tailscale is a network, not a privacy exit. It doesn't hide your traffic or change where you appear to be &mdash; it's for reaching <em>your</em> machines, and it's very good at exactly that.</p>
+
+<p>Tailscale is one piece of the stack I run daily &mdash; see the <a href="/my-stack.html">full stack</a> and the <a href="/engineering-on-linux.html">Linux field guide</a>. If your firm has a data-handling workflow that deserves this kind of control, <a href="/#contact">let's talk</a>.</p>
+
+</div>
+</body>
+</html>
