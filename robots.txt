@@ -6,5 +6,6 @@
 
 User-agent: *
 Allow: /
+Disallow: /stats/
 
 Sitemap: https://thebigpicture.tech/sitemap.xml
