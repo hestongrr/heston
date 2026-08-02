@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker for Your Homelab: Self-Hosting Without the Fear — Heston Norcott, E.I.</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/blog/docker-for-your-homelab.html">
+<meta name="description" content="How to self-host without turning your server into a museum of half-remembered installs: containers, Docker Compose as the recipe for every service, volumes, updates, and backups.">
+<meta property="og:title" content="Docker for Your Homelab">
+<meta property="og:description" content="Containers and Docker Compose — the way to run a dozen services on one box without them breaking each other.">
+<meta property="og:url" content="https://thebigpicture.tech/blog/docker-for-your-homelab.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --accent:#0E6C77; --accent-ink:#fff; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px}
+  h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  h2{font-size:19px;margin:28px 0 10px}
+  p{font-size:15px;margin:0 0 14px;color:var(--ink)}
+  a{color:var(--accent)}
+  .back{font-family:var(--mono);font-size:12px;display:inline-block;margin-bottom:20px}
+  ul{font-size:15px;margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:6px}
+  pre{background:#171A18;color:#e7eae6;border-radius:8px;padding:14px 16px;font-size:13px;overflow-x:auto;line-height:1.5;margin:0 0 14px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  pre code{background:none;border:0;padding:0;color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/blog/">&larr; Blog</a>
+<h1>Docker for Your Homelab: Self-Hosting Without the Fear</h1>
+<div class="meta">August 2, 2026 &middot; Heston Norcott, E.I.</div>
+
+<p>The old way of self-hosting went like this: install a service directly on the server, then install the next one, and the next &mdash; each one demanding its own runtime, its own database, its own idea of which Python version should win. Six months later the machine is a museum of half-remembered installs, one upgrade breaks two unrelated services, and rebuilding the whole box is a weekend you don't want.</p>
+
+<p>Docker fixes that by making every service a <strong>container</strong>: an isolated app with its own filesystem and dependencies, described by a file you can read, version, and re-run on a fresh machine. It's the difference between a server you administer and a server you <em>declare</em>.</p>
+
+<h2>The Mental Model</h2>
+<ul>
+<li><strong>Image</strong> &mdash; the recipe: OS, runtime, app, baked in.</li>
+<li><strong>Container</strong> &mdash; one running instance of an image. Start, stop, throw away, start again.</li>
+<li><strong>Compose file</strong> &mdash; the whole service in text: which image, which ports, which folders hold its data.</li>
+</ul>
+<p>That last one is the trick. A service stops being a sequence of install commands and becomes a small text file you keep in git.</p>
+
+<h2>One Service, One Compose File</h2>
+<p>A service lives in its own folder with a <code>compose.yaml</code>. Mine look like this:</p>
+<pre><code>services:
+  web:
+    image: my-app:latest
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./data:/app/data        # data lives OUTSIDE the container
+    restart: unless-stopped</code></pre>
+<p>And that's the whole deployment:</p>
+<pre><code>docker compose up -d        # start (build or pull first if needed)
+docker compose ps           # is it running?
+docker compose logs -f      # what is it saying?
+docker compose down         # stop and remove</code></pre>
+<p>Re-running <code>up -d</code> after an edit is idempotent: Compose figures out what changed and recreates only what needs it. There's no "reinstall everything and hope."</p>
+
+<h2>Data Lives Outside the Container</h2>
+<p>Containers are disposable &mdash; that's their strength and their trap. Anything you care about must be on a <strong>volume or bind mount</strong> on the host, never inside the container's own filesystem. A container can be deleted and recreated at will; the folder on your disk is what survives.</p>
+<pre><code>volumes:
+  - ./data:/app/data</code></pre>
+<p>This is also what makes backups sane: back up the <code>data</code> folders, not the containers.</p>
+
+<h2>Why One Server Can Run Twenty Services</h2>
+<p>Each container brings its own dependencies, so nothing fights over the host's runtime. A broken container is stopped and removed &mdash; it never drags the host or its neighbors down with it. And a fresh box isn't a rebuild, it's a restore: <code>git clone</code> the compose files, point them at the data, <code>docker compose up -d</code>. Done.</p>
+
+<h2>Updates and the Honest Limits</h2>
+<pre><code>docker compose pull          # fetch newer images
+docker compose up -d         # recreate with them</code></pre>
+<p>Three honest caveats, because self-hosting is still hosting:</p>
+<ul>
+<li><strong>Containers aren't a firewall.</strong> A port you publish is a port on the internet. Publish only what must be public; keep the rest on your private tailnet (see <a href="/blog/tailscale-for-your-homelab.html">the Tailscale post</a>).</li>
+<li><strong>The host still needs patching.</strong> Containers isolate apps; they don't patch the kernel underneath them.</li>
+<li><strong>Disks fill.</strong> Logs and images grow without asking. Watch disk space, and prune images you're not running.</li>
+</ul>
+
+<p>Docker Compose is the backbone of my <a href="/my-stack.html">stack</a> &mdash; every self-hosted service, including the vault I cover next, runs this way. If your firm's tooling deserves the same kind of discipline, <a href="/#contact">let's talk</a>.</p>
+
+</div>
+</body>
+</html>
