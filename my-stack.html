@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Stack: The Tools I Actually Run &mdash; Heston Norcott</title>
+<meta name="description" content="The reference page for the stack behind this site and my work: Ubuntu, QGIS, Python, Docker, Tailscale, three.js, local AI &mdash; what I run, why, and the exact commands to run it yourself.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/my-stack.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My Stack: The Tools I Actually Run">
+<meta property="og:description" content="A working engineer's honest stack &mdash; Ubuntu, QGIS, Python, Docker, Tailscale, three.js, local AI &mdash; with the commands to run it yourself.">
+<meta property="og:url" content="https://thebigpicture.tech/my-stack.html">
+<meta name="theme-color" content="#0c1a1c">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:64px 22px 56px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(34px,6vw,54px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero .sub{max-width:64ch;font-size:clamp(15.5px,2vw,19px);color:#b9cbc9;margin:20px 0 0}
+  .hero .sub b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:56px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(23px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:70ch;margin:0 0 30px;font-size:15.5px}
+
+  .why{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 30px}
+  .why h3{margin:0 0 12px;font-size:19px;letter-spacing:-.01em}
+  .why p{color:var(--muted);font-size:15px;line-height:1.62;margin:0 0 12px;max-width:76ch}
+  .why p:last-child{margin-bottom:0}
+  .why b{color:var(--ink)}
+
+  .stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card h3{margin:0 0 4px;font-size:17px;letter-spacing:-.01em}
+  .card h3 span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:6px}
+  .card .app{font-family:var(--mono);font-size:13px;color:var(--accent);margin-bottom:8px}
+  .card p{margin:0 0 10px;color:var(--muted);font-size:14.2px;line-height:1.58}
+  .card p:last-child{margin-bottom:0}
+  .card .cmd{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:10px;display:block;
+    overflow-x:auto;color:var(--ink)}
+
+  .note{background:var(--panel-2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+    padding:16px 20px;margin:20px 0;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .note b{color:var(--ink)}
+  .note.flag{border-left-color:#c99b4d}
+
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    text-align:left;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+  td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td:first-child{font-weight:600}
+  td.muted{color:var(--muted)}
+
+  .cta-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:36px;text-align:center}
+  .cta-box h2{font-size:clamp(21px,2.8vw,27px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);max-width:56ch;margin:0 auto 22px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:8px;padding:11px 18px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);transition:.15s;
+    display:inline-flex;align-items:center;gap:7px;margin:0 5px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  .btn.solid:hover{filter:brightness(1.08);color:var(--accent-ink)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="./index.html">Heston Norcott<b>.</b></a>
+  <span class="links">
+    <a href="./index.html#tools">Work</a>
+    <a href="./learn.html">Learn</a>
+    <a href="./diagrams.html">Diagrams</a>
+    <a href="./index.html#services" class="hideS">Services</a>
+    <a href="./index.html#contact">Hire me</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Reference &middot; The stack behind this site &middot; 2026</p>
+  <h1>My Stack: The Tools I Actually Run</h1>
+  <p class="sub">Everything on this site &mdash; the engineering, the 3-D models, the maps, the
+    narration, the analytics &mdash; runs on a stack I own end to end: one Linux box, open tooling,
+    and a browser for delivery. This page is the honest map: what each piece does, why it earns its
+    place, and the exact command to set it up yourself.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="why">
+    <h3>The one rule: run as much as possible, own as much as possible</h3>
+    <p>My work is geotechnical engineering, so the serious Windows-only suites (gINT, Slide, Civil 3D)
+      still exist in my life. But the <b>other 90% of the discipline</b> runs better on open tooling
+      &mdash; and it has one huge advantage: the whole pipeline is inspectable, scriptable, and
+      reproducible. No licensing games, no black-box solver, no deadline surprise.</p>
+    <p>Two delivery principles run through everything: <b>client data stays on my hardware</b> (local
+      AI, not someone else's API), and <b>deliverables run in the browser</b> (so a reviewer never
+      needs my OS to open my work).</p>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">1 &middot; The platform</p>
+  <h2 class="sec">One Linux machine does the work</h2>
+  <p class="sec-intro">A single Ubuntu box is both my workstation and my server &mdash; desktop when I
+    need a screen, headless services when I don't. One machine to patch, one machine to back up, and
+    a shell to automate the whole thing.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">Ubuntu 24.04 LTS</span>
+      <h3>Workstation + server in one</h3>
+      <p>Five-year LTS support, the NVIDIA driver a package away, and Python as a first-class citizen.
+        The desktop talks to the same services the house uses, so nothing is ever "the other box".</p>
+      <code class="cmd">sudo apt update &amp;&amp; sudo apt upgrade</code>
+    </div>
+    <div class="card">
+      <span class="app">Docker + Compose</span>
+      <h3>Services, isolated</h3>
+      <p>Every self-hosted service runs as a container with its config in one <code>compose</code>
+        file. Restart a service without touching the host; rebuild one without breaking the rest.</p>
+      <code class="cmd">docker compose up -d</code>
+    </div>
+    <div class="card">
+      <span class="app">systemd</span>
+      <h3>The scheduler and babysitter</h3>
+      <p>Timers run the daily jobs &mdash; analytics, backups, monitoring &mdash; on schedule, and
+        service units keep the web tools alive across reboots. No cron hacks, no "it stopped
+        overnight".</p>
+      <code class="cmd">systemctl --user list-timers</code>
+    </div>
+    <div class="card">
+      <span class="app">Git</span>
+      <h3>Every project is versioned</h3>
+      <p>The site, the scripts, the engineering data &mdash; all in git, so a deliverable can be
+        diffed, rolled back, and reproduced. This site ships straight from a git push.</p>
+      <code class="cmd">git push origin main</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">2 &middot; Engineering</p>
+  <h2 class="sec">The dirt stack</h2>
+  <p class="sec-intro">The same data flows through GIS, Python, and a spreadsheet &mdash; each in the
+    job it's actually good at. The figure is always generated from the same numbers the analysis used,
+    so it can't disagree with the computation.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">QGIS</span>
+      <h3>GIS &amp; site mapping</h3>
+      <p>Borehole locations, parcel and ROW boundaries, geologic units, deliverables as GeoJSON that a
+        land-development team can drop straight into their own GIS.</p>
+      <code class="cmd">sudo apt install qgis</code>
+    </div>
+    <div class="card">
+      <span class="app">Python + NumPy / SciPy / Pandas</span>
+      <h3>Real computation</h3>
+      <p>Finite-difference wave propagation, flow-net solutions, classification logic, and the data
+        plumbing that joins a lab sheet to a report. The engine behind this site's calculators.</p>
+      <code class="cmd">python3 -m venv .venv &amp;&amp; ./.venv/bin/pip install numpy scipy pandas</code>
+    </div>
+    <div class="card">
+      <span class="app">GeoPandas / Shapely / Pyproj</span>
+      <h3>Spatial data that stays spatial</h3>
+      <p>Reproject, buffer, and clip site data in code &mdash; no hand-tracing in a GUI, no coordinate
+        drift between the map and the model.</p>
+      <code class="cmd">pip install geopandas shapely pyproj rasterio</code>
+    </div>
+    <div class="card">
+      <span class="app">LibreOffice Calc</span>
+      <h3>Reviewable arithmetic</h3>
+      <p>Bearing capacity, settlement, QC logs &mdash; the tabulated work a client expects to audit
+        line by line. Opens native <code>.xlsx</code> without round-trip corruption.</p>
+      <code class="cmd">sudo apt install libreoffice-calc</code>
+    </div>
+    <div class="card">
+      <span class="app">Matplotlib</span>
+      <h3>Figures that don't lie</h3>
+      <p>Pressure diagrams, grading curves, N-value plots &mdash; generated from the computation's
+        output, so the drawing is a claim about the data, not a sketch of it.</p>
+      <code class="cmd">pip install matplotlib</code>
+    </div>
+    <div class="card">
+      <span class="app">FreeCAD + Gmsh</span>
+      <h3>Geometry when it's not a map</h3>
+      <p>Parametric 3-D site geometry and mesh generation for the models that turn into figures,
+        IFC, or 3-D scenes.</p>
+      <code class="cmd">sudo apt install freecad gmsh</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">3 &middot; The web</p>
+  <h2 class="sec">Deliverables in the browser</h2>
+  <p class="sec-intro">This site is a static site served by a tiny Python service. The engineering
+    tools are client-side &mdash; pure HTML, CSS, and JavaScript &mdash; so a reviewer can open the
+    same calculator I used, on any machine that ships a browser.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">HTML + CSS + vanilla JS</span>
+      <h3>No framework tax</h3>
+      <p>Static pages, hand-written, versioned in git. Fast, auditable, and it has a ten-year lifespan
+        instead of a framework's release cadence.</p>
+      <code class="cmd">python3 -m http.server 8801</code>
+    </div>
+    <div class="card">
+      <span class="app">three.js</span>
+      <h3>3-D in the browser</h3>
+      <p>Subdivision build sequences, site models, and drill-rig animation &mdash; real-time 3-D that
+        needs no install and no GPU license.</p>
+      <code class="cmd">npm install three</code>
+    </div>
+    <div class="card">
+      <span class="app">uvicorn (Python backend)</span>
+      <h3>The tiny serving layer</h3>
+      <p>A minimal ASGI app serves the site and the API. Logs rotate, timers refresh the analytics,
+        and it reads straight from disk &mdash; a push to git is a deploy.</p>
+      <code class="cmd">uvicorn backend:app --port 7700</code>
+    </div>
+    <div class="card">
+      <span class="app">GoAccess</span>
+      <h3>Self-hosted analytics</h3>
+      <p>Real traffic stats, generated from my own logs on my own box &mdash; no third-party trackers
+        feeding a business I don't control.</p>
+      <code class="cmd">goaccess access.log -o report.html --log-format=COMBINED</code>
+    </div>
+    <div class="card">
+      <span class="app">cloudflared</span>
+      <h3>Quick tunnels for previews</h3>
+      <p>One command exposes a local page to the internet on a throwaway URL &mdash; how a client gets
+        a live preview of their site before it ever ships.</p>
+      <code class="cmd">cloudflared tunnel --url http://localhost:8801</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">4 &middot; The homelab</p>
+  <h2 class="sec">Ops you can read like a recipe</h2>
+  <p class="sec-intro">One home server runs the self-hosted services. Because it's my own hardware,
+    I control the ports, the logs, and the data &mdash; and I can rebuild any piece of it from a
+    compose file.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">Docker Compose</span>
+      <h3>Declared, not administered</h3>
+      <p>Each service's whole life is in a <code>compose.yaml</code> &mdash; image, volumes, ports,
+        env. A fresh box is a <code>git clone</code> plus <code>docker compose up</code> away.</p>
+      <code class="cmd">docker compose config --services</code>
+    </div>
+    <div class="card">
+      <span class="app">Tailscale</span>
+      <h3>A private network that behaves</h3>
+      <p>Zero-config VPN between my machines &mdash; game servers, SSH, and admin panels reachable
+        only by my tailnet, no port-forwarding to the internet.</p>
+      <code class="cmd">sudo tailscale up</code>
+    </div>
+    <div class="card">
+      <span class="app">Prometheus + Grafana + Loki</span>
+      <h3>Metrics and logs in one place</h3>
+      <p>What the services are doing, in graphs; what they said, in logs. A dead node or a pegged disk
+        shows up before a user notices.</p>
+      <code class="cmd">curl localhost:9100/metrics | head</code>
+    </div>
+    <div class="card">
+      <span class="app">Uptime-Kuma</span>
+      <h3>The dead-man's switch</h3>
+      <p>Pings every public and internal service, and alerts when something stops answering. Cheap
+        insurance for a one-person ops team.</p>
+    </div>
+  </div>
+  <div class="note"><b>The privacy line:</b> the homelab is deliberately private &mdash; internal
+    addresses, service names, and credentials never make it to this page. The pattern is open; the
+    specifics stay behind the tailnet.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">5 &middot; Media &amp; AI</p>
+  <h2 class="sec">Local generation, no uploads</h2>
+  <p class="sec-intro">The 3-D videos and narration on this site are produced on my hardware: the
+    scenes render in a headless browser, the voice is synthesized locally, and the AI that reads
+    project documents never leaves my box.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">ffmpeg</span>
+      <h3>Every frame, composed</h3>
+      <p>Captures the rendered scenes and assembles the final video &mdash; the same tool a studio
+        uses, available as one package.</p>
+      <code class="cmd">sudo apt install ffmpeg</code>
+    </div>
+    <div class="card">
+      <span class="app">edge-tts</span>
+      <h3>Narration without a booth</h3>
+      <p>Generates clean voiceover locally from text &mdash; a script becomes audio with no recording
+        session, no upload, and complete control of pacing and rate.</p>
+      <code class="cmd">pipx install edge-tts</code>
+    </div>
+    <div class="card">
+      <span class="app">Headless Chromium</span>
+      <h3>A screen that never sleeps</h3>
+      <p>Renders the 3-D scenes offscreen for capture &mdash; same engine a user would see, producing
+        frames at full resolution without tying up a monitor.</p>
+    </div>
+    <div class="card">
+      <span class="app">Ollama (local LLMs)</span>
+      <h3>AI on my own GPU</h3>
+      <p>Project documents, site records, and engineering text get read by models running on my
+        hardware &mdash; the work product stays with the client, never in a third party's logs.</p>
+      <code class="cmd">ollama run llama3.2</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">6 &middot; The honest boundary</p>
+  <h2 class="sec">What still runs on Windows</h2>
+  <p class="sec-intro">Open tooling doesn't cover everything in geotech yet. The boundary is explicit
+    so it's never a surprise at deadline time.</p>
+  <table>
+    <tr><th>Software</th><th>Status on Linux</th><th>Workaround</th></tr>
+    <tr><td>gINT (geotechnical data management)</td><td class="muted">No native version</td>
+      <td>Windows box / VM, with the data files in git-versioned CSV</td></tr>
+    <tr><td>Slide / LPile (slope &amp; pile analysis)</td><td class="muted">Windows-only</td>
+      <td>Windows box, or hand calculations in Python for verification</td></tr>
+    <tr><td>MicroStation / Civil 3D</td><td class="muted">Windows-only</td>
+      <td>Deliverables via Windows; geometry moves as DXF/IFC and survives the trip</td></tr>
+    <tr><td>Bluebeam (PDF markup)</td><td class="muted">Windows-only</td>
+      <td>Web-based PDF markup for review cycles</td></tr>
+  </table>
+  <div class="note">The split I actually live by: <b>anything that must run on Windows runs on
+    Windows</b>, and everything else runs on open tooling with a real automation loop. That's not a
+    compromise &mdash; it's a designed boundary.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="cta-box">
+    <h2>Use the stack, or see what it produces.</h2>
+    <p>The engineering calculators on this site run in the browser &mdash; the same code that runs on
+      my desk. And the Learn hub teaches the dirt-and-code side of it, free.</p>
+    <a class="btn solid" href="./index.html#tools">See the tools</a>
+    <a class="btn" href="./learn.html">Learn the stack</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV</span>
+  <span>Educational content only &mdash; not engineering advice for a specific project.</span>
+</div></footer>
+</body>
+</html>
