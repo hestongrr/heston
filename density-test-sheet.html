@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Density &amp; Compaction Test Sheet — Nuclear Method | Free</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/density-test-sheet.html">
+<meta name="description" content="Free nuclear gauge density & compaction test report generator. Enter wet density and moisture readings; get dry density, % compaction, and pass/fail versus the spec — printable. Built by a geotechnical engineer.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Density & Compaction Test Sheet — Nuclear Method">
+<meta property="og:description" content="Enter wet density and moisture readings; get dry density, % compaction, and pass/fail versus the spec — printable report sheet.">
+<meta property="og:url" content="https://thebigpicture.tech/density-test-sheet.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Density & Compaction Test Sheet",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/density-test-sheet.html",
+  "description": "Free nuclear density & compaction test report generator: wet density and moisture readings to dry density, % compaction, and pass/fail.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#E7EAE7; --panel:#F6F7F4; --panel-2:#EEF0EC; --ink:#1A1E1B; --muted:#586360;
+    --line:#D2D8D2; --line-strong:#BEC5BE; --accent:#0E6C77; --accent-ink:#ffffff;
+    --signal:#B23A2E; --field:#FFFFFF; --field-line:#C7CEC7;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --radius:9px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#101312; --panel:#191D1B; --panel-2:#1F2421; --ink:#E7EAE6; --muted:#9AA39D;
+      --line:#2A302C; --line-strong:#39413B; --accent:#39B2BA; --accent-ink:#052220;
+      --signal:#E26A5C; --field:#12100E; --field-line:#343B36;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#E7EAE7; --panel:#F6F7F4; --panel-2:#EEF0EC; --ink:#1A1E1B; --muted:#586360;
+    --line:#D2D8D2; --line-strong:#BEC5BE; --accent:#0E6C77; --accent-ink:#ffffff;
+    --signal:#B23A2E; --field:#FFFFFF; --field-line:#C7CEC7;
+  }
+  :root[data-theme="dark"]{
+    --bg:#101312; --panel:#191D1B; --panel-2:#1F2421; --ink:#E7EAE6; --muted:#9AA39D;
+    --line:#2A302C; --line-strong:#39413B; --accent:#39B2BA; --accent-ink:#052220;
+    --signal:#E26A5C; --field:#12100E; --field-line:#343B36;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.45}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 22px 60px}
+  header.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:22px}
+  .brand b{color:var(--accent)}
+  .tagline{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.02em}
+  .byline{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .byline b{color:var(--ink);font-weight:600}
+  .app{display:grid;grid-template-columns:370px 1fr;gap:22px;align-items:start}
+  @media (max-width:900px){.app{grid-template-columns:1fr}}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px 18px}
+  .panel + .panel{margin-top:16px}
+  .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+  .sec-h h2{font-size:12px;text-transform:uppercase;letter-spacing:.13em;margin:0;
+    color:var(--muted);font-weight:700}
+  .sec-h .rule{flex:1;height:1px;background:var(--line)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld.wide{grid-column:1/-1}
+  label{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--muted)}
+  input,select,textarea{font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--field);border:1px solid var(--field-line);border-radius:6px;
+    padding:7px 8px;width:100%}
+  textarea{resize:vertical;min-height:38px;line-height:1.35}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);
+    outline-offset:1px;border-color:var(--accent)}
+  input[type=number]{font-variant-numeric:tabular-nums}
+
+  table.editor{width:100%;border-collapse:collapse}
+  table.editor th{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;
+    padding:0 6px 6px}
+  table.editor td{padding:3px 4px;vertical-align:top}
+  table.editor td:first-child{padding-left:0}
+  .row-del{border:1px solid var(--field-line);background:transparent;color:var(--muted);
+    border-radius:6px;cursor:pointer;width:28px;height:32px;font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .row-del:hover{border-color:var(--signal);color:var(--signal)}
+
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.03em;cursor:pointer;
+    border-radius:7px;padding:8px 12px;border:1px solid var(--field-line);
+    background:var(--panel-2);color:var(--ink);transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.add{width:100%;margin-top:8px;border-style:dashed}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+    font-weight:600}
+  .btn.primary:hover{filter:brightness(1.08);color:var(--accent-ink)}
+  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:2px}
+
+  .stage{position:sticky;top:18px}
+  .stage-inner{background:
+      linear-gradient(var(--line) 1px,transparent 1px) 0 0/22px 22px,
+      linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/22px 22px,
+      var(--panel);
+    background-blend-mode:normal;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;overflow:auto}
+  .stage-inner svg{display:block;width:100%;height:auto;
+    filter:drop-shadow(0 6px 20px rgba(0,0,0,.16))}
+  .hint{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;
+    display:flex;gap:8px;align-items:center}
+  .hint .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    header.top,.controls,.hint{display:none}
+    .app{display:block}
+    .stage-inner{border:0;background:#fff;padding:0}
+    .stage-inner svg{filter:none;width:100%}
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="brand">Density&nbsp;&amp;&nbsp;Compaction <b>Test Sheet</b></div>
+    </div>
+    <div class="tagline">Nuclear gauge field reporting &middot; ASTM D6938 &middot; % compaction</div>
+    <div class="byline">built by <b>Heston Norcott</b> &middot; Geotechnical Engineer (E.I.) &middot; <a href="/boring-log-generator.html" style="color:inherit;text-decoration:underline">boring log</a> &middot; <a href="/uscs-soil-classification-calculator.html" style="color:inherit;text-decoration:underline">USCS calculator</a></div>
+  </header>
+
+  <div class="app">
+    <div class="controls">
+      <div class="panel">
+        <div class="sec-h"><h2>Project &amp; test</h2><span class="rule"></span></div>
+        <div class="grid2" id="metaGrid"></div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>Compaction spec</h2><span class="rule"></span></div>
+        <div class="grid2" id="specGrid"></div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>Gauge readings</h2><span class="rule"></span></div>
+        <table class="editor">
+          <thead><tr>
+            <th style="width:70px">Wet &rho; (pcf)</th><th style="width:64px">w (%)</th>
+            <th style="width:30px"></th>
+          </tr></thead>
+          <tbody id="readBody"></tbody>
+        </table>
+        <button class="btn add" id="addRead">+ Add reading</button>
+      </div>
+
+      <div class="panel">
+        <div class="sec-h"><h2>Export</h2><span class="rule"></span></div>
+        <div class="actions">
+          <button class="btn primary" id="dlPng">Download PNG</button>
+          <button class="btn" id="printBtn">Print</button>
+          <button class="btn" id="resetBtn">Reset to demo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-inner">
+        <div id="sheet"></div>
+      </div>
+      <div class="hint"><span class="dot"></span> Edit any field on the left &mdash; dry density, % compaction, and pass/fail recalculate live. Export a crisp PNG or print the sheet for the field file.</div>
+    </div>
+  </div>
+</div>
+
+<div style="width:100%;max-width:900px;margin:16px auto 34px;padding:14px 16px;border:1px dashed var(--accent);border-radius:10px;background:var(--panel);font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--muted)">
+  <b style="color:var(--ink)">This is a capability demo.</b> It shows the kind of engineering software I build on contract &mdash; production and firm-customized versions are commissioned work. Need one built for your team's workflow? <a href="https://thebigpicture.tech/#contact" style="color:var(--accent)">Let's talk &rarr;</a>
+</div>
+
+<script>
+"use strict";
+/* ---------- initial state (echoes a real Vegas fill test) ---------- */
+function demo(){return{
+  meta:{
+    project:"Sunridge Subdivision \u2014 Phase 3", location:"N. Rainbow Blvd & W. Craig Rd, Las Vegas, NV",
+    testNo:"D-103", date:"2026-07-31", tech:"H. Norcott, E.I.", firm:"Heston Norcott Consulting",
+    method:"Nuclear \u2014 ASTM D6938", gauge:"Troxler 3440 \u00b7 #T8123"
+  },
+  spec:{
+    maxDry:"129.4", omc:"8.6", req:"95", tol:"1.0",
+    point:"TP-12", station:"Sta. 5+80 @ 22 ft LT", layer:"Lift 3 of 5", depth:"12 in",
+    uscs:"GW-GM", material:"Well-graded gravelly sand with silt, brown, moist, dense, < 2 in."
+  },
+  reads:[
+    {wet:"137.2",w:"8.9"},{wet:"136.5",w:"8.4"},
+    {wet:"138.0",w:"9.2"},{wet:"136.8",w:"8.1"}
+  ]
+};}
+let S = demo();
+
+/* ---------- helpers ---------- */
+const _mc = document.createElement("canvas").getContext("2d");
+function wrap(text,maxW,font){
+  _mc.font=font; const words=(text||"").split(/\s+/); const lines=[]; let line="";
+  for(const w of words){
+    const t=line?line+" "+w:w;
+    if(_mc.measureText(t).width>maxW && line){lines.push(line);line=w;}
+    else line=t;
+  }
+  if(line)lines.push(line); return lines.length?lines:[""];
+}
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:null;};
+
+/* ---------- the density-test SVG sheet ---------- */
+function buildSVG(){
+  const m=S.meta, sp=S.spec;
+  const reads=S.reads
+    .map(r=>({wet:num(r.wet),w:num(r.w)})).filter(r=>r.wet!=null||r.w!=null)
+    .map(r=>{
+      const dry=r.wet!=null&&r.w!=null? r.wet/(1+(r.w)/100) : null;
+      const md=num(sp.maxDry), req=num(sp.req);
+      const pct=(dry!=null&&md)? dry/md*100 : null;
+      const dev=(r.w!=null&&num(sp.omc)!=null)? r.w-num(sp.omc) : null;
+      const tol=num(sp.tol);
+      const pass=(pct!=null&&req!=null)? pct>=req : null;
+      return {wet:r.wet,w:r.w,dry,pct,dev,pass,tol};
+    });
+
+  /* geometry — landscape sheet */
+  const W=780, padX=24;
+  const FS='font-family:ui-monospace,Menlo,Consolas,monospace';
+  const paper="#FBF9F4", band="#F1ECE0", inkP="#23262A", lineP="#C8C1B1",
+        mutedP="#6B6456", red="#B23A2E", green="#1F6F3F", blue="#2E6FB0";
+  const P=[];
+  const lbl=(x,y,t,col)=>`<text x="${x}" y="${y}" style="${FS}" font-size="7.5" letter-spacing=".8" fill="${col||mutedP}">${t}</text>`;
+  const val=(x,y,t,col)=>`<text x="${x}" y="${y}" style="${FS}" font-size="11" fill="${col||inkP}">${esc(t)}</text>`;
+  const cell=(x,y,w,h)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${lineP}" stroke-width=".8"/>`;
+  const cLbl=(x,y,t,valStr,col)=>lbl(x+5,y+10,t)+val(x+5,y+24,valStr,col);
+
+  /* sheet */
+  const H=560;
+  P.push(`<rect x="1" y="1" width="${W-2}" height="${H-2}" fill="${paper}" stroke="${lineP}" stroke-width="1.5"/>`);
+  P.push(`<rect x="1" y="1" width="${W-2}" height="50" fill="${band}"/>`);
+
+  /* title */
+  P.push(`<text x="${padX}" y="24" style="${FS}" font-size="15" font-weight="700" fill="${inkP}">DENSITY &amp; COMPACTION TEST REPORT</text>`);
+  P.push(`<text x="${padX}" y="40" style="font-family:Helvetica Neue,Arial,sans-serif" font-size="9" letter-spacing="1.6" fill="${mutedP}">NUCLEAR METHOD \u00b7 ASTM D6938 \u00b7 FOR FIELD USE</text>`);
+  P.push(`<text x="${W-padX}" y="24" text-anchor="end" style="font-family:Helvetica Neue,Arial,sans-serif" font-size="10.5" letter-spacing="1.5" fill="${mutedP}">GEOTECHNICAL ENGINEERING</text>`);
+  P.push(`<text x="${W-padX}" y="40" text-anchor="end" style="${FS}" font-size="9" fill="${mutedP}">Report ${esc(m.testNo||"\u2014")}</text>`);
+
+  /* row 1 — job info (6 cells) */
+  const cw1=120, cw2=244, gap=4;
+  const cx=[padX, padX+cw1+gap, padX+cw1+cw2+gap*2, padX+cw1+cw2+cw1+gap*3];
+  const r1y=56, r1h=44;
+  const wids=[cw1,cw2,cw1,cw2,cw1,cw1];
+  const cells=[
+    ["PROJECT",m.project],["LOCATION",m.location],["TEST NO.",m.testNo],
+    ["DATE",m.date],["TECHNICIAN",m.tech],["FIRM",m.firm]
+  ];
+  let x=cx[0];
+  cells.forEach((c,i)=>{
+    P.push(cell(x,r1y,wids[i],r1h));
+    P.push(cLbl(x,r1y,c[0],c[1]));
+    x+=wids[i]+gap;
+  });
+  P.push(`<line x1="0" y1="${r1y+r1h}" x2="${W}" y2="${r1y+r1h}" stroke="${lineP}"/>`);
+
+  /* row 2 — method + gauge + location (6 cells) */
+  const r2y=r1y+r1h, r2h=44;
+  const cells2=[
+    ["METHOD",m.method],["GAUGE SERIAL",m.gauge],["TEST POINT",sp.point],
+    ["STATION / OFFSET",sp.station],["LAYER / LIFT",sp.layer],["DEPTH",sp.depth]
+  ];
+  x=cx[0];
+  cells2.forEach((c,i)=>{
+    P.push(cell(x,r2y,wids[i],r2h));
+    P.push(cLbl(x,r2y,c[0],c[1]));
+    x+=wids[i]+gap;
+  });
+  P.push(`<line x1="0" y1="${r2y+r2h}" x2="${W}" y2="${r2y+r2h}" stroke="${lineP}"/>`);
+
+  /* row 3 — spec + material */
+  const r3y=r2y+r2h, r3h=56;
+  const cells3=[
+    ["USCS",sp.uscs],["MAT'L DESCRIPTION",sp.material],["MAX DRY DENSITY",sp.maxDry?sp.maxDry+" pcf":""],
+    ["OPTIMUM MOISTURE",sp.omc?sp.omc+" %":""],["REQUIRED COMPACTION",sp.req?sp.req+" %":""],
+    ["MOISTURE TOLERANCE",sp.tol?sp.tol+" %":""]
+  ];
+  x=cx[0];
+  cells3.forEach((c,i)=>{
+    const w=i===1?cw2:wids[i];
+    P.push(cell(x,r3y,w,r3h));
+    P.push(lbl(x+5,r3y+10,c[0]));
+    if(i===1){ wrap(c[1],w-14,'10.5px ui-monospace,Menlo,Consolas,monospace').slice(0,2).forEach((ln,k)=>{
+        P.push(val(x+5,r3y+24+k*14,ln));
+      });
+    } else { P.push(val(x+5,r3y+24,c[1], (i>=3&&c[1]?blue:inkP))); }
+    x+=w+gap;
+  });
+  P.push(`<line x1="0" y1="${r3y+r3h}" x2="${W}" y2="${r3y+r3h}" stroke="${lineP}"/>`);
+
+  /* readings table */
+  const tY=r3y+r3h, tH=Math.max(60, reads.length*26+24);
+  P.push(cell(padX,tY,W-padX*2,tH));
+  P.push(lbl(padX+5,tY+10,"GAUGE READINGS &amp; RESULTS \u2014 DENSITY (wet &rarr; dry)"));
+  const cols=[["#",34],["WET DENSITY (pcf)",120],["MOISTURE w (%)",104],["DRY DENSITY (pcf)",120],
+              ["% COMPACTION",116],["w vs OMC (%)",104],["RESULT",90]];
+  let tx=padX;
+  const th=tY+32;
+  cols.forEach(([t,w])=>{
+    P.push(`<line x1="${tx}" y1="${th-14}" x2="${tx}" y2="${th-14}" stroke="none"/>`);
+    P.push(`<text x="${tx+4}" y="${th-6}" style="${FS}" font-size="8" letter-spacing=".4" fill="${mutedP}">${t}</text>`);
+    tx+=w;
+  });
+  P.push(`<line x1="${padX}" y1="${th}" x2="${W-padX}" y2="${th}" stroke="${lineP}"/>`);
+  reads.forEach((r,i)=>{
+    const ry=th+4+i*24;
+    const dryStr=r.dry!=null? r.dry.toFixed(1):"\u2014";
+    const pctStr=r.pct!=null? r.pct.toFixed(1)+" %":"\u2014";
+    const devStr=r.dev!=null? (r.dev>0?"+":"")+r.dev.toFixed(1):"\u2014";
+    const resCol=(r.pass==null)?mutedP:(r.pass?green:red);
+    const resTxt=(r.pass==null)?"\u2014":(r.pass?"PASS":"FAIL");
+    const devCol=(r.dev!=null&&r.tol!=null&&Math.abs(r.dev)>r.tol)?red:inkP;
+    let vx=padX;
+    P.push(val(vx+2,ry+10,i+1));
+    vx+=cols[0][1];
+    P.push(val(vx+4,ry+10,r.wet!=null?Number(r.wet).toFixed(1):"\u2014"));
+    vx+=cols[1][1];
+    P.push(val(vx+4,ry+10,r.w!=null?Number(r.w).toFixed(1):"\u2014"));
+    vx+=cols[2][1];
+    P.push(val(vx+4,ry+10,dryStr,blue));
+    vx+=cols[3][1];
+    P.push(val(vx+4,ry+10,pctStr,blue));
+    vx+=cols[4][1];
+    P.push(val(vx+4,ry+10,devStr,devCol));
+    vx+=cols[5][1];
+    P.push(`<text x="${vx+4}" y="${ry+10}" style="${FS}" font-size="10.5" font-weight="700" fill="${resCol}">${resTxt}</text>`);
+    if(i<reads.length-1) P.push(`<line x1="${padX}" y1="${ry+16}" x2="${W-padX}" y2="${ry+16}" stroke="${lineP}" stroke-width=".5"/>`);
+  });
+  const tB=tY+tH;
+
+  /* summary + sketch + signatures */
+  const sY=tB+10, sH=Math.max(86, reads.length?0:0);
+  const bottomY=H-8;
+  const leftW=W-padX*2;
+  const sketchH=54;
+  P.push(cell(padX,sY,leftW,sketchH));
+  P.push(lbl(padX+5,sY+10,"LOCATION SKETCH \u2014 show station, offset, and reference" ));
+
+  const sy2=sY+sketchH+6;
+  const sumH=40;
+  P.push(cell(padX,sy2,leftW,sumH));
+  const md=num(sp.maxDry), omc=num(sp.omc), req=num(sp.req);
+  const ok=reads.filter(r=>r.pass===true).length, bad=reads.filter(r=>r.pass===false).length;
+  const summary=`Spec: ${req!=null?req:"\u2014"}% of max dry density (${md!=null?md+" pcf":"\u2014"} @ ${omc!=null?omc+"%":"\u2014"} OMC).  Readings: ${reads.length} point${reads.length===1?"":"s"} \u2014 ${ok} pass / ${bad} fail.`;
+  P.push(`<text x="${padX+5}" y="${sy2+18}" style="${FS}" font-size="10" fill="${inkP}">${esc(summary)}</text>`);
+  P.push(`<text x="${padX+5}" y="${sy2+33}" style="${FS}" font-size="10" font-weight="700" fill="${bad?red:(reads.length?green:mutedP)}">${bad?"NOT IN COMPLIANCE":(reads.length?"IN COMPLIANCE WITH COMPACTION SPECIFICATION":"NO READINGS")}</text>`);
+
+  /* signatures */
+  const sigY=bottomY-72, sigH=68;
+  P.push(cell(padX,sigY,leftW,sigH));
+  P.push(lbl(padX+5,sigY+10,"CERTIFICATION"));
+  const sigs=[["COMPUTED BY",m.tech],["CHECKED BY",""],["CERTIFIED BY","RGN No. 00000"]];
+  const sigW=(leftW-8-14)/3;
+  sigs.forEach((s,i)=>{
+    const sx=padX+5+i*(sigW+7);
+    P.push(`<line x1="${sx}" y1="${sigY+34}" x2="${sx+sigW}" y2="${sigY+34}" stroke="${inkP}" stroke-width=".9"/>`);
+    P.push(lbl(sx,sigY+26,s[0]));
+    P.push(`<text x="${sx}" y="${sigY+47}" style="${FS}" font-size="8.5" fill="${mutedP}">${esc(s[1])}</text>`);
+    P.push(lbl(sx,sigY+56,"DATE"));
+  });
+
+  /* footer */
+  const fY=H-22;
+  P.push(`<line x1="0" y1="${H-34}" x2="${W}" y2="${H-34}" stroke="${lineP}"/>`);
+  P.push(`<text x="${padX}" y="${fY}" style="${FS}" font-size="8.5" fill="${mutedP}">Dry density = wet / (1 + w/100).  Nuclear gauge per ASTM D6938 \u2014 gauge calibration current within 30 days.  % compaction vs max dry density (AASHTO T-99/T-180).</text>`);
+  P.push(`<text x="${W-padX}" y="${fY}" text-anchor="end" style="${FS}" font-size="8.5" fill="${mutedP}">Density Test Sheet \u00b7 built by Heston Norcott (E.I.)</text>`);
+  P.push(`<text x="${W-padX}" y="${fY+13}" text-anchor="end" style="${FS}" font-size="8.5" fill="${mutedP}">Demonstration tool \u2014 not for construction.</text>`);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Density and compaction test report">${P.join("")}</svg>`;
+}
+
+function renderSheet(){ document.getElementById("sheet").innerHTML=buildSVG(); }
+
+/* ---------- controls ---------- */
+const $=id=>document.getElementById(id);
+const el=(t,a,txt)=>{const e=document.createElement(t);if(a)for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;};
+
+function field(grp,key,label,type){
+  const f=el("div",{class:"fld"});
+  f.appendChild(el("label",null,label));
+  let inp;
+  if(key==="method"){
+    inp=el("select");
+    ["Nuclear \u2014 ASTM D6938","Sand cone \u2014 ASTM D1556","Rubber balloon \u2014 ASTM D2167"]
+      .forEach(u=>{const o=el("option",{value:u},u);if(S.meta.method===u)o.selected=true;inp.appendChild(o);});
+  }else{
+    inp=el("input",{type:type||"text",value:S.meta[key]||""});
+  }
+  inp.addEventListener("input",e=>{S.meta[key]=e.target.value;renderSheet();});
+  inp.addEventListener("change",e=>{S.meta[key]=e.target.value;renderSheet();});
+  f.appendChild(inp); grp.appendChild(f);
+}
+function buildMeta(){
+  const g=$("metaGrid");g.innerHTML="";
+  [["project","Project",null,true],["location","Location",null,true],
+   ["testNo","Test no.","",false],["date","Date","text",false],
+   ["tech","Technician","",false],["firm","Firm / company","",false],
+   ["method","Test method",null,true],["gauge","Gauge serial","",false]]
+  .forEach(([k,l,t,wide])=>{
+    const f=el("div",{class:"fld"+(wide?" wide":"")});
+    f.appendChild(el("label",null,l));
+    let inp;
+    if(k==="method"){
+      inp=el("select");
+      ["Nuclear \u2014 ASTM D6938","Sand cone \u2014 ASTM D1556","Rubber balloon \u2014 ASTM D2167"]
+        .forEach(u=>{const o=el("option",{value:u},u);if(S.meta.method===u)o.selected=true;inp.appendChild(o);});
+    }else{
+      inp=el("input",{type:t||"text",value:S.meta[k]||""});
+    }
+    inp.addEventListener("input",e=>{S.meta[k]=e.target.value;renderSheet();});
+    inp.addEventListener("change",e=>{S.meta[k]=e.target.value;renderSheet();});
+    f.appendChild(inp); g.appendChild(f);
+  });
+}
+function buildSpec(){
+  const g=$("specGrid");g.innerHTML="";
+  [["maxDry","Max dry density (pcf)","number",false],["omc","Optimum moisture (%)","number",false],
+   ["req","Required compaction (%)","number",false],["tol","Moisture tolerance (&plusmn;%)","number",false],
+   ["point","Test point","",false],["station","Station / offset","",false],
+   ["layer","Layer / lift","",false],["depth","Depth","",false],
+   ["uscs","USCS","",false],["material","Material description","",true]]
+  .forEach(([k,l,t,wide])=>{
+    const f=el("div",{class:"fld"+(wide?" wide":"")});
+    f.appendChild(el("label",null,l));
+    const inp=el("input",{type:t||"text",value:S.spec[k]||""});
+    inp.addEventListener("input",e=>{S.spec[k]=e.target.value;renderSheet();});
+    inp.addEventListener("change",e=>{S.spec[k]=e.target.value;renderSheet();});
+    f.appendChild(inp); g.appendChild(f);
+  });
+}
+function buildReads(){
+  const b=$("readBody");b.innerHTML="";
+  S.reads.forEach((r,i)=>{
+    const tr=el("tr");
+    const t1=el("td");const w1=el("input",{type:"number",step:"0.1",value:r.wet});
+    w1.addEventListener("input",e=>{r.wet=e.target.value;renderSheet();});t1.appendChild(w1);tr.appendChild(t1);
+    const t2=el("td");const w2=el("input",{type:"number",step:"0.1",value:r.w});
+    w2.addEventListener("input",e=>{r.w=e.target.value;renderSheet();});t2.appendChild(w2);tr.appendChild(t2);
+    const t3=el("td");const del=el("button",{class:"row-del",title:"Remove"},"\u00d7");
+    del.addEventListener("click",()=>{S.reads.splice(i,1);buildReads();renderSheet();});t3.appendChild(del);tr.appendChild(t3);
+    b.appendChild(tr);
+  });
+}
+function buildAll(){buildMeta();buildSpec();buildReads();renderSheet();}
+
+$("addRead").addEventListener("click",()=>{
+  const last=S.reads[S.reads.length-1];
+  S.reads.push({wet:(last?last.wet:"136.0"),w:(last?last.w:"8.5")});
+  buildReads();renderSheet();
+});
+$("resetBtn").addEventListener("click",()=>{S=demo();buildAll();});
+$("printBtn").addEventListener("click",()=>window.print());
+
+$("dlPng").addEventListener("click",()=>{
+  const svg=document.querySelector("#sheet svg");
+  const vb=svg.viewBox.baseVal, scale=2;
+  const xml=new XMLSerializer().serializeToString(svg);
+  const img=new Image();
+  const blob=new Blob([xml],{type:"image/svg+xml;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    c.width=vb.width*scale; c.height=vb.height*scale;
+    const g=c.getContext("2d");
+    g.fillStyle="#FBF9F4"; g.fillRect(0,0,c.width,c.height);
+    g.drawImage(img,0,0,c.width,c.height);
+    URL.revokeObjectURL(url);
+    c.toBlob(bl=>{
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(bl);
+      a.download=(S.meta.testNo||"density-test").replace(/\s+/g,"_")+".png";
+      a.click();
+    },"image/png");
+  };
+  img.onerror=()=>alert("Export failed \u2014 try again.");
+  img.src=url;
+});
+
+buildAll();
+</script>
+</body>
+</html>

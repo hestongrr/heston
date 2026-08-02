@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuclear Density Gauge 3D — Safe vs. Test Position | Heston Norcott</title>
+<meta name="description" content="Interactive 3D model of a nuclear density gauge (Cs-137 + Am-241/Be) showing safe vs. test position, shielded source, backscatter detectors, and the rod driven into compacted fill. Built by Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/nuke-gauge.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nuclear Density Gauge 3D — Safe vs. Test Position | Heston Norcott">
+<meta property="og:description" content="Interactive 3D model of a nuclear density gauge: source rod in safe and test position, lead shield, backscatter detectors, and the borehole in compacted fill.">
+<meta property="og:url" content="https://thebigpicture.tech/nuke-gauge.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Nuclear Density Gauge 3D Model",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/nuke-gauge.html",
+  "description": "Interactive 3D model of a nuclear density gauge showing safe vs. test source position, shielding, detectors, and compaction testing on engineered fill.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#0b1016; --panel:rgba(14,20,27,.86); --line:#26313c; --ink:#e8eef2; --muted:#8598a5;
+    --accent:#4fd0d8; --warn:#e0a62a;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}html,body{margin:0;height:100%}
+  body{background:linear-gradient(#141d27 0%,#0b1016 55%,#080c11 100%);color:var(--ink);
+    font-family:var(--sans);overflow:hidden}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:fixed;z-index:5;font-family:var(--mono)}
+  .title{top:16px;left:18px}
+  .title .brand{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.01em}
+  .title .brand b{color:var(--accent)}
+  .title .sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .title a{color:var(--muted);text-decoration:none}
+  .title a:hover{color:var(--accent)}
+  .legend{top:16px;right:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:13px 15px;backdrop-filter:blur(8px);max-width:236px}
+  .legend h4{margin:0 0 9px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .legend .row{display:flex;align-items:center;gap:8px;font-size:11.5px;margin-bottom:5px;color:var(--ink)}
+  .legend .sw{width:16px;height:11px;border-radius:2px;flex:none;border:1px solid rgba(255,255,255,.12)}
+  .legend .note{font-size:10px;color:var(--muted);margin-top:9px;line-height:1.45}
+  .panel{bottom:16px;left:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px);display:flex;gap:16px;
+    align-items:center;flex-wrap:wrap}
+  .panel .ctl{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+  .panel .ctl .k{color:var(--ink);font-family:var(--sans);font-size:11.5px;min-width:104px}
+  input[type=range]{accent-color:var(--accent);width:120px}
+  .panel label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink);cursor:pointer}
+  .panel input[type=checkbox]{accent-color:var(--accent)}
+  .hint{bottom:18px;right:16px;font-size:10.5px;color:var(--muted)}
+  @media (max-width:700px){.legend{display:none}.hint{display:none}.panel .ctl .k{min-width:0}}
+  #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;color:var(--muted);z-index:9}
+</style>
+
+<canvas id="c"></canvas>
+<div id="load">building gauge model&hellip;</div>
+
+<div class="hud title">
+  <div class="brand">Nuclear Density Gauge &middot; <b>3D Model</b></div>
+  <div class="sub">Cs-137 + Am-241/Be &middot; compaction testing &middot; <a href="/">thebigpicture.tech</a></div>
+</div>
+
+<div class="hud legend">
+  <h4>Gauge</h4>
+  <div class="row"><span class="sw" style="background:#3a423c"></span>Housing (body/lid)</div>
+  <div class="row"><span class="sw" style="background:#d9a62a"></span>Safety yellow (handle/trim)</div>
+  <div class="row"><span class="sw" style="background:#9aa0a6"></span>Source rod &amp; base plate</div>
+  <div class="row"><span class="sw" style="background:#8f8f96"></span>Lead shield</div>
+  <div class="row"><span class="sw" style="background:#ff8a3c"></span>Source capsule (Cs-137)</div>
+  <div class="row"><span class="sw" style="background:#b9b4ab"></span>Detector tubes</div>
+  <h4 style="margin-top:12px">Site</h4>
+  <div class="row"><span class="sw" style="background:#cbb992"></span>Compacted engineered fill</div>
+  <div class="row"><span class="sw" style="background:#8a6a3c"></span>Native ground</div>
+  <div class="note">drive source rod into the fill to read density &amp; moisture<br>rays shown are illustrative, not to scale</div>
+</div>
+
+<div class="hud panel">
+  <div class="ctl"><span class="k">Source rod</span>
+    <input type="range" id="rod" min="0" max="100" step="1" value="0">
+    <span id="rodLbl" style="min-width:44px;text-align:right">safe</span></div>
+  <label><input type="checkbox" id="cut"> cutaway</label>
+  <label><input type="checkbox" id="rays" disabled> rays</label>
+  <label><input type="checkbox" id="spin" checked> auto-rotate</label>
+</div>
+<div class="hud hint">drag to orbit &middot; scroll to zoom</div>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script>
+"use strict";
+let renderer,scene,camera,controls,gauge,rodGrp,shield,source,lcd,raysGrp,door,inGrp;
+let rodT=0,rodTarget=0,raysOn=false,cut=false;
+
+const C={body:0x3a423c,lid:0x2b312e,yel:0xd9a62a,steel:0x9aa0a6,plate:0x6f6a5e,
+  lcd:0x5df0d0,btn:0x1d2124,shield:0x8f8f96,src:0xff8a3c,det:0xb9b4ab,
+  pcb:0x1f6f3f,bat:0x2e4a55,fill:0xcbb992,native:0x8a6a3c};
+const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign(
+  {color:c,roughness:.6,metalness:.05,envMapIntensity:.6},o||{}));
+
+function box(w,h,d,x,y,z,c,o){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c,o));
+  m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; return m;
+}
+function cyl(rTop,rBot,h,x,y,z,c,o){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(rTop,rBot,h,24),mat(c,o));
+  m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; return m;
+}
+
+function buildGauge(){
+  const g=new THREE.Group();
+  // ---- body ----
+  g.add(box(14,8,11,0,5,0,C.body,{roughness:.55}));
+  g.add(box(15.4,1.2,12.4,0,1.4,0,C.body,{roughness:.55}));       // lower skirt
+  g.add(box(13.4,1.6,10.4,0,9.6,0,C.lid,{roughness:.5}));         // top lid
+  // rubber corner bumpers
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    g.add(box(1.6,1.1,1.6,sx*6.6,1.1,sz*5.0,0x14181b,{roughness:.95}));
+  // safety-yellow trim bands + handle posts
+  g.add(box(14.2,1.0,11.2,0,8.4,0,C.yel,{roughness:.45}));
+  g.add(box(2.0,3.2,2.0,-4.8,12.6,4.4,C.yel,{roughness:.45}));
+  g.add(box(2.0,3.2,2.0,4.8,12.6,4.4,C.yel,{roughness:.45}));
+  g.add(box(14.4,1.3,2.0,0,14.2,4.4,C.yel,{roughness:.45}));      // carry bar
+  // ---- base plate ----
+  g.add(box(17,0.9,13,0,0.45,0,C.plate,{roughness:.35,metalness:.5}));
+  g.add(cyl(0.55,0.55,2.6,5,0.9,0,0x20252a));                     // rod guide hole
+  // ---- source rod housing (side socket) ----
+  g.add(cyl(1.5,1.5,9.5,5,5.75,0,0x2c3136,{roughness:.4,metalness:.3}));
+  g.add(cyl(1.35,1.35,0.6,5,10.2,0,C.yel,{roughness:.4}));        // housing cap
+  // ---- control panel on front face ----
+  g.add(box(7.6,2.2,0.8,0.5,4.2,5.8,0x171b1f,{roughness:.5}));    // panel bezel
+  g.add(box(3.4,1.3,0.3,1.9,4.9,6.2,0x0a1a17,{roughness:.4}));    // LCD recess
+  lcd=box(3.0,0.95,0.2,1.9,4.9,6.4,0x06241e,
+    {emissive:C.lcd,emissiveIntensity:.5,roughness:.3});
+  g.add(lcd);
+  for(let k=0;k<6;k++) g.add(cyl(0.28,0.28,0.35,-2.2+(k%3)*1.1,3.6+Math.floor(k/3)*1.4,6.15,C.btn));
+  g.add(cyl(0.5,0.5,0.4,-3.3,4.9,6.1,C.yel,{roughness:.4}));      // big key
+  // radiation trefoil decal
+  const tr=new THREE.Group();
+  for(let k=0;k<3;k++){const m=box(2.0,0.5,0.15,0,0,k===0?0:0);
+    m.rotation.y=k===0?0:Math.PI/3*k + (k===1?Math.PI/3:0);
+    m.position.set(0,0,0); tr.add(m);}
+  tr.position.set(-4.6,2.6,5.7);
+  g.add(tr);
+  // ---- internals (cutaway) ----
+  inGrp=new THREE.Group(); inGrp.visible=false;
+  shield=cyl(2.4,2.6,3.6,5,2.2,0,C.shield,{roughness:.35,metalness:.7}); shield.castShadow=false;
+  inGrp.add(shield);
+  source=cyl(0.9,0.9,1.0,5,2.2,0,C.src,{emissive:0xff5c1a,emissiveIntensity:.5,roughness:.4}); source.castShadow=false;
+  inGrp.add(source);
+  for(const sz of[-2.2,2.2]) inGrp.add(cyl(0.5,0.5,5.6,1.4,1.6,sz,C.det,{roughness:.35,metalness:.5}));
+  inGrp.add(box(5.6,0.2,3.6,-1.6,3.6,0,C.pcb,{roughness:.5}));
+  inGrp.add(cyl(0.75,0.75,3.2,-2.8,2.4,1.6,C.bat));
+  inGrp.add(box(2.2,2.6,2.0,2.4,5.4,0,0x23282c,{roughness:.5}));   // electronics block
+  g.add(inGrp);
+  // cutaway door (lower front panel) — hidden in cutaway mode
+  door=box(12.6,3.4,0.5,0.6,2.2,5.9,C.body,{roughness:.55}); door.castShadow=true;
+  g.add(door);
+  // ---- source rod assembly ----
+  rodGrp=new THREE.Group(); rodGrp.position.set(5,1,0);
+  rodGrp.add(cyl(0.85,0.85,9.0,0,4.5,0,C.steel,{roughness:.35,metalness:.55}));
+  rodGrp.add(cyl(0.42,0.85,0.8,0,0.4,0,0x7d7d74,{roughness:.4,metalness:.5}));   // pointed tip
+  rodGrp.add(cyl(1.25,1.25,0.7,0,9.2,0,C.yel,{roughness:.45}));                 // lock flange
+  g.add(rodGrp);
+  // rays (illustrative gamma backscatter paths)
+  raysGrp=new THREE.Group(); raysGrp.visible=false;
+  const R=mat(0x6ff2ff,{emissive:0x4fd0d8,emissiveIntensity:1.4,transparent:true,opacity:.8,roughness:.3});
+  const ray=(ax,ay,az,bx,by,bz)=>{
+    const dx=bx-ax,dy=by-ay,dz=bz-az,L=Math.hypot(dx,dy,dz);
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,L,6),R);
+    m.position.set((ax+bx)/2,(ay+by)/2,(az+bz)/2);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),
+      new THREE.Vector3(dx,dy,dz).normalize());
+    raysGrp.add(m);};
+  ray(5,1.5,-.6, 6,-4,3); ray(5,1.5,.6, 4,-4,-3);
+  ray(5,1.5,0, 8,-5,0);  ray(5,1.5,-.2, 2,-4.5,2); ray(5,1.5,.2, 3,-4,-2);
+  ray(5,2.2,0, 1.4,1.6,-2.2); ray(5,2.2,0, 1.4,1.6,2.2);  // backscatter to detectors
+  g.add(raysGrp);
+  return g;
+}
+
+function buildGround(){
+  const grp=new THREE.Group();
+  const fill=box(44,4,40,0,-2,0,C.fill,{roughness:.95});
+  fill.receiveShadow=true; grp.add(fill);
+  const nat=box(48,10,44,0,-9,0,C.native,{roughness:.97});
+  nat.receiveShadow=true; grp.add(nat);
+  const hole=cyl(1.05,1.05,13,5,-4.5,0,0x0a0d10,{roughness:1}); hole.castShadow=false; hole.receiveShadow=false;
+  grp.add(hole);
+  const mark=new THREE.Mesh(new THREE.RingGeometry(3.2,3.6,32),
+    new THREE.MeshBasicMaterial({color:0xe8eef2,side:THREE.DoubleSide,transparent:true,opacity:.8}));
+  mark.rotation.x=-Math.PI/2; mark.position.set(5,0.02,0); grp.add(mark);
+  return grp;
+}
+
+function buildEnv(){
+  const c=document.createElement("canvas"); c.width=512; c.height=256;
+  const g=c.getContext("2d");
+  const gr=g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,"#d8e2ea"); gr.addColorStop(.5,"#aab6bf");
+  gr.addColorStop(1,"#6e7a83");
+  g.fillStyle=gr; g.fillRect(0,0,512,256);
+  const s=new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(400,32,16),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.BackSide})));
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const env=pmrem.fromScene(s).texture;
+  pmrem.dispose();
+  return env;
+}
+
+function init(){
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,1200);
+  camera.position.set(30,20,34);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08;
+  controls.target.set(0,4,0); controls.maxPolarAngle=Math.PI*0.52;
+  controls.minDistance=12; controls.maxDistance=120;
+  controls.autoRotate=true; controls.autoRotateSpeed=0.6;
+  scene.add(new THREE.HemisphereLight(0xd8ecff,0x3a2f28,0.8));
+  const sun=new THREE.DirectionalLight(0xfff1dd,1.05);
+  sun.position.set(26,34,18); scene.add(sun);
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.left=-30; sun.shadow.camera.right=30;
+  sun.shadow.camera.top=30; sun.shadow.camera.bottom=-30;
+  sun.shadow.camera.near=2; sun.shadow.camera.far=120;
+  sun.shadow.bias=-0.0004;
+  const rim=new THREE.DirectionalLight(0x4fd0d8,0.35); rim.position.set(-22,10,-20); scene.add(rim);
+  scene.add(new THREE.AmbientLight(0x404850,0.25));
+  scene.environment=buildEnv();
+  scene.add(buildGround());
+  gauge=buildGauge(); scene.add(gauge);
+  resize(); window.addEventListener("resize",resize);
+  document.getElementById("load").style.display="none";
+  document.getElementById("rod").addEventListener("input",e=>{
+    rodTarget=+e.target.value/100;
+    document.getElementById("rodLbl").textContent=rodTarget>0.5?"test":"safe";
+  });
+  document.getElementById("cut").addEventListener("change",e=>{
+    cut=e.target.checked; door.visible=!cut; inGrp.visible=cut;
+  });
+  document.getElementById("rays").addEventListener("change",e=>{raysOn=e.target.checked;});
+  document.getElementById("spin").addEventListener("change",e=>controls.autoRotate=e.target.checked);
+  loop();
+}
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+function loop(){
+  requestAnimationFrame(loop);
+  rodT+=(rodTarget-rodT)*0.08;
+  rodGrp.position.y=1-rodT*10.5;
+  const out=rodT>0.92;
+  raysGrp.visible=out&&raysOn;
+  document.getElementById("rays").disabled=!out;
+  lcd.material.emissiveIntensity=0.35+(out?Math.sin(performance.now()/220)*0.4+0.55:0);
+  source.material.emissiveIntensity=rodT>0.5?1.2:0.35;
+  controls.update(); renderer.render(scene,camera);
+}
+
+init();
+</script>

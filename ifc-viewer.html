@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IFC / BIM Viewer — Open-Source Web Viewer | Heston Norcott</title>
+<meta name="description" content="Open-source IFC/BIM web viewer built on web-ifc (MIT) and three.js. Load a building model in-browser — no proprietary viewer required. Open any .ifc file locally. Built by Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/ifc-viewer.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="IFC / BIM Viewer — Open-Source Web Viewer | Heston Norcott">
+<meta property="og:description" content="Open-source IFC/BIM web viewer built on web-ifc and three.js. Open .ifc models in your browser — no proprietary viewer required.">
+<meta property="og:url" content="https://thebigpicture.tech/ifc-viewer.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "IFC / BIM Viewer",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/ifc-viewer.html",
+  "description": "Open-source IFC/BIM web viewer built on web-ifc (MIT) and three.js. Parses and renders IFC building models in the browser, including your own .ifc files, with sectioning and entity statistics.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#0b1016; --panel:rgba(14,20,27,.86); --line:#26313c; --ink:#e8eef2; --muted:#8598a5;
+    --accent:#4fd0d8; --warn:#e0a62a;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}html,body{margin:0;height:100%}
+  body{background:linear-gradient(#141d27 0%,#0b1016 55%,#080c11 100%);color:var(--ink);
+    font-family:var(--sans);overflow:hidden}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:fixed;z-index:5;font-family:var(--mono)}
+  .title{top:16px;left:18px}
+  .title .brand{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.01em}
+  .title .brand b{color:var(--accent)}
+  .title .sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .title a{color:var(--muted);text-decoration:none}
+  .title a:hover{color:var(--accent)}
+  .legend{top:16px;right:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:13px 15px;backdrop-filter:blur(8px);max-width:250px;min-width:196px}
+  .legend h4{margin:0 0 9px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .legend .row{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-size:11.5px;margin-bottom:4px;color:var(--ink)}
+  .legend .row .n{color:var(--accent)}
+  .legend .note{font-size:10px;color:var(--muted);margin-top:9px;line-height:1.45}
+  .panel{bottom:16px;left:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px);display:flex;gap:16px;
+    align-items:center;flex-wrap:wrap}
+  .panel .ctl{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+  .panel .ctl .k{color:var(--ink);font-family:var(--sans);font-size:11.5px;min-width:96px}
+  input[type=range]{accent-color:var(--accent);width:120px}
+  .panel label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink);cursor:pointer}
+  .panel input[type=checkbox]{accent-color:var(--accent)}
+  .btn{background:rgba(79,208,216,.08);border:1px solid var(--line);color:var(--ink);
+    border-radius:7px;font-family:var(--mono);font-size:11px;padding:6px 10px;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.on{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:#06131a;border-color:var(--accent)}
+  .fileWrap{position:relative;overflow:hidden}
+  .fileWrap input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+  .hint{bottom:18px;right:16px;font-size:10.5px;color:var(--muted)}
+  @media (max-width:760px){.legend{display:none}.hint{display:none}.panel .ctl .k{min-width:0}}
+  #load{position:fixed;inset:0;display:flex;flex-direction:column;gap:10px;
+    align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;
+    color:var(--muted);z-index:9;background:rgba(8,12,17,.55)}
+  #load .bar{width:220px;height:3px;background:#1c262f;border-radius:2px;overflow:hidden}
+  #load .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+  #load .err{color:#ff8a8a;max-width:460px;text-align:center;font-size:11px;line-height:1.5}
+</style>
+
+<canvas id="c"></canvas>
+<div id="load"><div id="loadTxt">starting web-ifc&hellip;</div><div class="bar"><i id="loadBar"></i></div><div id="loadErr"></div></div>
+
+<div class="hud title">
+  <div class="brand">IFC / BIM Viewer &middot; <b>Open-Source</b></div>
+  <div class="sub">web-ifc (MIT) + three.js &middot; sample models &middot; <a href="/">thebigpicture.tech</a></div>
+</div>
+
+<div class="hud legend">
+  <h4>Model &mdash; <span id="modName" style="color:var(--accent)">…</span></h4>
+  <div id="types"></div>
+  <div class="note" id="stats"></div>
+</div>
+
+<div class="hud panel">
+  <div class="btnWrap">
+    <button class="btn on" id="mGeo">Foundations</button>
+    <button class="btn" id="mHouse">Open House</button>
+    <button class="btn" id="mExample">Example Bldg</button>
+  </div>
+  <div class="fileWrap btn" style="padding:5px 10px" title="Open any .ifc from your computer">open .ifc file
+    <input type="file" id="file" accept=".ifc,application/octet-stream">
+  </div>
+  <div class="ctl"><span class="k">Section</span>
+    <input type="range" id="sec" min="0" max="100" step="1" value="100" disabled>
+    <span id="secLbl" style="min-width:30px;text-align:right">100%</span></div>
+  <label><input type="checkbox" id="secOn" disabled> cut</label>
+  <label><input type="checkbox" id="spin" checked> auto-rotate</label>
+</div>
+<div class="hud hint">drag to orbit &middot; scroll to zoom</div>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script src="/lib/web-ifc/web-ifc-api-iife.js"></script>
+<script>
+"use strict";
+let renderer,scene,camera,controls,model,planeObj,sectionPlane;
+let api=null,curModel=null,material=null,bbox=null,initModel="house";
+
+const PAL=[[0x9c8b76,0x2a2118],[0x8f9aa4,0x1e242b],[0x7d8f7a,0x1c241b],
+  [0x9a8c5f,0x241f14],[0x77839c,0x1a2130],[0xa08a9a,0x251b24]];
+
+function frameModel(){
+  bbox=new THREE.Box3().setFromObject(model);
+  const c=bbox.getCenter(new THREE.Vector3());
+  const s=bbox.getSize(new THREE.Vector3());
+  const r=Math.max(s.x,s.y,s.z);
+  controls.target.copy(c);
+  camera.near=Math.max(r/2000,.02); camera.far=r*40;
+  camera.position.copy(c).add(new THREE.Vector3(1.4,0.9,1.35).multiplyScalar(r*1.25));
+  camera.updateProjectionMatrix();
+  controls.update();
+  const minY=c.y-s.y/2;
+  if(planeObj) scene.remove(planeObj);
+  planeObj=new THREE.Mesh(new THREE.PlaneGeometry(r*4,r*4),
+    new THREE.MeshBasicMaterial({color:0x4fd0d8,transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false}));
+  planeObj.rotation.y=Math.PI/2;
+  planeObj.position.set(c.x,minY-0.001,c.z);
+  scene.add(planeObj);
+  grid.position.y=minY-0.01;
+}
+
+function resetView(){frameModel();}
+function rebuild(){frameModel();updateStats();}
+
+function updateStats(){
+  let tris=0;
+  model.traverse(o=>{if(o.isMesh&&o.geometry.index)tris+=o.geometry.index.count/3;});
+  document.getElementById("stats").textContent=
+    "triangles "+tris.toLocaleString()+(curModel>=0?" &middot; entity mesh "+model.userData.meshCount+"":"").replace("&middot;","·")+" &middot; units: meters";
+}
+
+async function parse(data,name){
+  const load=document.getElementById("load");
+  load.style.display="flex";
+  const txt=document.getElementById("loadTxt"),bar=document.getElementById("loadBar"),
+        err=document.getElementById("loadErr");
+  err.textContent="";
+  txt.textContent="parsing IFC &middot; "+name;
+  bar.style.width="15%";
+  await new Promise(r=>setTimeout(r,30));
+  try{
+    if(curModel!==null) {api.CloseModel(curModel);curModel=null;}
+    if(model){scene.remove(model);model.geometry.dispose();model=null;}
+    curModel=api.OpenModel(new Uint8Array(data),{name:name});
+    bar.style.width="40%";
+    await new Promise(r=>setTimeout(r,10));
+    const coord=api.GetCoordinationMatrix(curModel);
+    const cm=new THREE.Matrix4().fromArray(Array.from(coord));
+    const flatMeshes=api.LoadAllGeometry(curModel);
+    bar.style.width="75%";
+    await new Promise(r=>setTimeout(r,10));
+    const pos=[],idx=[],col=[],tmpM=new THREE.Matrix4();
+    let v=null,n=null,base=0,meshCount=0;
+    const nMesh=flatMeshes.size();
+    const types={};
+    for(let i=0;i<nMesh;i++){
+      const fm=flatMeshes.get(i);
+      meshCount++;
+      try{
+        const line=api.GetLine(curModel,fm.expressID);
+        const t=line&&line.type;
+        if(t)types[t]=(types[t]||0)+1;
+      }catch(e){}
+      const gs=fm.geometries;
+      for(let j=0;j<gs.size();j++){
+        const pg=gs.get(j);
+        const g=api.GetGeometry(curModel,pg.geometryExpressID);
+        const vp=g.GetVertexData(),vs=g.GetVertexDataSize();
+        const ip=g.GetIndexData(),is=g.GetIndexDataSize();
+        v=api.GetVertexArray(vp,vs);
+        const iv=api.GetIndexArray(ip,is);
+        try{g.delete();}catch(e){}
+        tmpM.fromArray(pg.flatTransformation).premultiply(cm);
+        const iV=new THREE.Vector3(),oV=new THREE.Vector3();
+        for(let k=0;k<v.length;k+=3){
+          iV.set(v[k],v[k+1],v[k+2]).applyMatrix4(tmpM);
+          pos.push(iV.x,iV.y,iV.z);
+        }
+        const gc=pg.color;
+        let cr=0.72,cg=0.7,cb=0.72;
+        const hasC=gc&&(gc.x>0||gc.y>0||gc.z>0);
+        if(hasC){cr=gc.x;cg=gc.y;cb=gc.z;}
+        else{
+          const p=PAL[(pg.geometryExpressID>>3)%PAL.length];
+          cr=((p[0]>>16)&255)/255;cg=((p[0]>>8)&255)/255;cb=(p[0]&255)/255;
+        }
+        for(let k=0;k<v.length;k+=3){col.push(cr,cg,cb);}
+        for(let k=0;k<iv.length;k++)idx.push(iv[k]+base);
+        base+=v.length/3;
+      }
+      try{fm.delete();}catch(e){}
+    }
+    const geom=new THREE.BufferGeometry();
+    geom.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+    geom.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
+    geom.setIndex(new THREE.Uint32BufferAttribute(idx,1));
+    geom.computeVertexNormals();
+    if(material)material.dispose();
+    material=new THREE.MeshStandardMaterial({vertexColors:true,side:THREE.DoubleSide,
+      roughness:.88,metalness:.05,envMapIntensity:.55,flatShading:false,clippingPlanes:[sectionPlane]});
+    model=new THREE.Mesh(geom,material);
+    model.castShadow=true;model.receiveShadow=true;
+    model.userData.meshCount=meshCount;
+    scene.add(model);
+    const names=[];
+    for(const t in types){
+      try{const nm=api.GetNameFromTypeCode(+t).replace(/^Ifc/,"");
+        if(nm)names.push([nm,types[t]]);}catch(e){}
+    }
+    names.sort((a,b)=>b[1]-a[1]);
+    const el=document.getElementById("types");
+    el.innerHTML=names.slice(0,8).map(([nm,n])=>
+      '<div class="row"><span>'+nm+'</span><span class="n">'+n+'</span></div>').join("")||
+      '<div class="row"><span>entities</span><span class="n">'+meshCount+'</span></div>';
+    document.getElementById("modName").textContent=name.replace(/_/g," ");
+    rebuild();
+    bar.style.width="100%";
+    txt.textContent="done &middot; "+name;
+    load.style.display="none";
+    enableSec();
+  }catch(e){
+    txt.textContent="load failed";
+    err.textContent=e&&e.message?e.message:String(e);
+  }
+}
+
+function enableSec(){
+  document.getElementById("sec").disabled=false;
+  document.getElementById("secOn").disabled=false;
+}
+
+function buildEnv(){
+  const c=document.createElement("canvas"); c.width=512; c.height=256;
+  const g=c.getContext("2d");
+  const gr=g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,"#d8e2ea"); gr.addColorStop(.5,"#aab6bf"); gr.addColorStop(1,"#6e7a83");
+  g.fillStyle=gr; g.fillRect(0,0,512,256);
+  const s=new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(400,32,16),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.BackSide})));
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const env=pmrem.fromScene(s).texture;
+  pmrem.dispose();
+  return env;
+}
+
+let grid;
+function init(){
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.16;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.localClippingEnabled=true;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.02,4000);
+  camera.position.set(14,10,16);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08;
+  controls.autoRotate=true; controls.autoRotateSpeed=.7;
+  sectionPlane=new THREE.Plane(new THREE.Vector3(-1,0,0),0);
+  scene.add(new THREE.HemisphereLight(0xd8ecff,0x3a2f28,.95));
+  const sun=new THREE.DirectionalLight(0xfff1dd,1.1);
+  sun.position.set(26,34,18); scene.add(sun);
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.left=-40; sun.shadow.camera.right=40;
+  sun.shadow.camera.top=40; sun.shadow.camera.bottom=-40;
+  sun.shadow.camera.near=2; sun.shadow.camera.far=200;
+  sun.shadow.bias=-0.0004;
+  const rim=new THREE.DirectionalLight(0x4fd0d8,.35); rim.position.set(-22,10,-20); scene.add(rim);
+  scene.add(new THREE.AmbientLight(0x404850,.25));
+  scene.environment=buildEnv();
+  grid=new THREE.GridHelper(60,30,0x2a3a46,0x1b252d);
+  grid.position.y=-1;
+  scene.add(grid);
+  resize(); window.addEventListener("resize",resize);
+  document.getElementById("mGeo").addEventListener("click",()=>{setBtn("mGeo");loadUrl("models/foundations.ifc","Foundations Geotech Demo",()=>{initModel="geo";});});
+  document.getElementById("mHouse").addEventListener("click",()=>{setBtn("mHouse");loadUrl("models/ifcopenhouse.ifc","OpenHouse IFC4",()=>{initModel="house";});});
+  document.getElementById("mExample").addEventListener("click",()=>{setBtn("mExample");loadUrl("models/example.ifc","Example Building",()=>{initModel="example";});});
+  document.getElementById("file").addEventListener("change",e=>{
+    const f=e.target.files[0];
+    if(f)f.arrayBuffer().then(b=>parse(new Uint8Array(b),f.name));
+  });
+  const sec=document.getElementById("sec");
+  sec.addEventListener("input",e=>{
+    const t=+e.target.value/100;
+    document.getElementById("secLbl").textContent=t.toFixed(2)*100+"%";
+    if(model&&bbox){
+      const p=bbox.min.x+t*(bbox.max.x-bbox.min.x);
+      sectionPlane.constant=0;
+      sectionPlane.normal.set(-1,0,0);
+      sectionPlane.constant+=p;
+    }
+  });
+  document.getElementById("secOn").addEventListener("change",e=>{
+    const on=e.target.checked;
+    material.clippingPlanes=on?[sectionPlane]:[];
+  });
+  document.getElementById("spin").addEventListener("change",e=>controls.autoRotate=e.target.checked);
+  loop();
+  boot();
+}
+
+async function boot(){
+  const load=document.getElementById("load"),txt=document.getElementById("loadTxt"),
+        bar=document.getElementById("loadBar");
+  try{
+    api=new WebIFC.IfcAPI();
+    api.SetWasmPath("/lib/web-ifc/", true);
+    txt.textContent="loading web-ifc wasm&hellip;";
+    bar.style.width="60%";
+    await api.Init();
+    bar.style.width="100%";
+    await new Promise(r=>setTimeout(r,20));
+    loadUrl("models/foundations.ifc","Foundations Geotech Demo",()=>{});
+  }catch(e){
+    txt.textContent="web-ifc failed to start";
+    document.getElementById("loadErr").textContent=e&&e.message?e.message:String(e);
+  }
+}
+
+function setBtn(id){
+  ["mGeo","mHouse","mExample"].forEach(b=>document.getElementById(b).classList.toggle("on",b===id));
+}
+
+function loadUrl(url,name,cb){
+  const load=document.getElementById("load");
+  load.style.display="flex";
+  const txt=document.getElementById("loadTxt");
+  txt.textContent="downloading "+name+"&hellip;";
+  fetch(url).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" for "+url);return r.arrayBuffer();})
+    .then(b=>{cb&&cb(b);return parse(new Uint8Array(b),name);})
+    .catch(e=>{
+      txt.textContent="download failed";
+      document.getElementById("loadErr").textContent=e&&e.message?e.message:String(e);
+    });
+}
+
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+function loop(){
+  requestAnimationFrame(loop);
+  if(planeObj&&material&&material.clippingPlanes.length&&bbox){
+    planeObj.visible=true;
+  }else if(planeObj){planeObj.visible=false;}
+  controls.update(); renderer.render(scene,camera);
+}
+
+init();
+</script>

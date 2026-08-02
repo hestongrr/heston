@@ -226,26 +226,47 @@ function buildPad(){
   g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
   g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
   g.setIndex(idx); g.computeVertexNormals();
-  grp.add(new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98,side:THREE.DoubleSide})));
+  const fillMesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98,side:THREE.DoubleSide,envMapIntensity:.45}));
+  fillMesh.castShadow=true; fillMesh.receiveShadow=true;
+  grp.add(fillMesh);
 
   // ---- concrete pad cap + building sitting ON it ----
   const w=((i1-i0)/(N-1))*E, d=((j1-j0)/(N-1))*E;
   const cap=new THREE.Mesh(new THREE.BoxGeometry(w,1.1,d),
-     new THREE.MeshStandardMaterial({color:0xe3e8ec,roughness:.9}));
+     new THREE.MeshStandardMaterial({color:0xe3e8ec,roughness:.9,envMapIntensity:.8}));
+  cap.castShadow=true; cap.receiveShadow=true;
   cap.position.set(wx(pi),padY+0.55,wz(pj)); grp.add(cap);
   const bh=7;
   const bld=new THREE.Mesh(new THREE.BoxGeometry(w*0.5,bh,d*0.34),
-     new THREE.MeshStandardMaterial({color:0xcfd6db,roughness:.7,metalness:.05}));
+     new THREE.MeshStandardMaterial({color:0xcfd6db,roughness:.7,metalness:.05,envMapIntensity:.9}));
+  bld.castShadow=true; bld.receiveShadow=true;
   bld.position.set(wx(pi),padY+1.1+bh/2,wz(pj)); grp.add(bld);
   return grp;
+}
+
+function buildEnv(){                        // procedural IBL from a gradient sky
+  const c=document.createElement("canvas"); c.width=512; c.height=256;
+  const g=c.getContext("2d");
+  const gr=g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,"#8fc0e8"); gr.addColorStop(.42,"#cdbda0");
+  gr.addColorStop(.55,"#a9866a"); gr.addColorStop(1,"#6f523c");
+  g.fillStyle=gr; g.fillRect(0,0,512,256);
+  const s=new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(400,32,16),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.BackSide})));
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const env=pmrem.fromScene(s).texture;
+  pmrem.dispose();
+  return env;
 }
 
 function rebuild(){
   if(group){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
   group=new THREE.Group();
-  const wallMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,flatShading:false});
-  const terrMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide});
+  const wallMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,flatShading:false,envMapIntensity:.3});
+  const terrMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,envMapIntensity:.45});
   terrainMesh=new THREE.Mesh(buildTerrain(),terrMat);
+  terrainMesh.receiveShadow=true;
   group.add(terrainMesh);
   ["front","back","left","right"].forEach(k=>group.add(new THREE.Mesh(buildWall(edgeList(k)),wallMat)));
   group.add(new THREE.Mesh(buildBottom(),wallMat));
@@ -257,6 +278,11 @@ function init(data){
   H=data.h; N=data.n;
   renderer=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.18;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,2000);
   camera.position.set(150,120,175);
@@ -269,7 +295,14 @@ function init(data){
   scene.add(new THREE.HemisphereLight(0xbfd4e6,0x4a3b30,0.85));
   const sun=new THREE.DirectionalLight(0xfff2df,1.15);
   sun.position.set(120,180,60); scene.add(sun);
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.left=-170; sun.shadow.camera.right=170;
+  sun.shadow.camera.top=170; sun.shadow.camera.bottom=-170;
+  sun.shadow.camera.near=10; sun.shadow.camera.far=600;
+  sun.shadow.bias=-0.0004;
   scene.add(new THREE.AmbientLight(0x404850,0.35));
+  scene.environment=buildEnv();
   rebuild();
   resize(); window.addEventListener("resize",resize);
   document.getElementById("load").style.display="none";

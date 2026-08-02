@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Grade It: Earthworks — Interactive 3D Cut / Fill &amp; Compaction Game | Heston Norcott</title>
+<meta name="description" content="An interactive 3D earthworks simulator: sculpt a building pad to design elevation with cut and fill, compact each lift with a vibratory roller, and pass the nuclear density gauge test at 95% compaction — all within budget. Built by Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/grade-it.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Grade It: Earthworks — Interactive 3D Game | Heston Norcott">
+<meta property="og:description" content="Cut, fill, compact, and certify a building pad in 3D. Stay in budget, hit 95% compaction, build the foundations.">
+<meta property="og:url" content="https://thebigpicture.tech/grade-it.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Grade It: Earthworks Simulator",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/grade-it.html",
+  "description": "Interactive 3D earthworks game: cut and fill a building pad to design elevation, compact lifts to 95% with a vibratory roller, verify with a nuclear density gauge test, then place foundations.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YKDEE0DC2D');
+</script>
+</head>
+<style>
+  :root{
+    --bg:#0b1016; --panel:rgba(14,20,27,.9); --line:#26313c; --ink:#e8eef2; --muted:#8598a5;
+    --accent:#4fd0d8; --warn:#e0a62a; --good:#2fbf71; --bad:#ff4d4d;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}html,body{margin:0;height:100%}
+  body{background:linear-gradient(#141d27 0%,#0b1016 55%,#080c11 100%);color:var(--ink);
+    font-family:var(--sans);overflow:hidden}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:fixed;z-index:5;font-family:var(--mono)}
+  .title{top:16px;left:18px}
+  .title .brand{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.01em}
+  .title .brand b{color:var(--accent)}
+  .title .sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .title a{color:var(--muted);text-decoration:none}
+  .title a:hover{color:var(--accent)}
+  .card{position:absolute;top:14px;right:16px;width:262px;background:var(--panel);
+    border:1px solid var(--line);border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px)}
+  .card h4{margin:0 0 8px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .card .budget{font-size:20px;font-weight:700;color:var(--accent);margin-bottom:8px}
+  .card .budget.neg{color:var(--bad)}
+  .card .obj{font-size:11.5px;color:var(--ink);line-height:1.5;margin-bottom:10px}
+  .card .pad{font-size:11px;display:flex;justify-content:space-between;padding:2px 0;border-top:1px dashed rgba(255,255,255,.07)}
+  .card .pad b{font-weight:600}
+  .card .pad .ok{color:var(--good)} .card .pad .no{color:var(--warn)} .card .pad .bad{color:var(--bad)}
+  .card .vol{font-size:11px;color:var(--muted);padding-top:7px;display:flex;justify-content:space-between;border-top:1px solid var(--line)}
+  .tools{left:16px;bottom:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px);max-width:340px}
+  .tools .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  button{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink);background:#1a2530;
+    border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer;transition:.12s}
+  button:hover{background:#22303c;border-color:var(--accent)}
+  button.on{background:rgba(79,208,216,.16);border-color:var(--accent);color:var(--accent)}
+  button:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line)}
+  button.primary{background:var(--accent);color:#062026;border-color:var(--accent)}
+  button.primary:hover{filter:brightness(1.1)}
+  .tools .sld{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--muted);margin-bottom:8px}
+  input[type=range]{accent-color:var(--accent);width:130px}
+  .tools .pal{display:none;flex-wrap:wrap;gap:6px;margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  .tools .pal.show{display:flex}
+  .tools .pal button{font-size:11px;padding:6px 9px}
+  .tools .pal button.done{border-color:var(--good);color:var(--good)}
+  .tools .palNote{font-size:10px;color:var(--muted);margin-top:8px;border-top:1px solid var(--line);padding-top:7px}
+  .hint{right:16px;bottom:16px;font-size:10.5px;color:var(--muted);text-align:right;line-height:1.6}
+  .status{left:50%;transform:translateX(-50%);bottom:18px;background:var(--panel);
+    border:1px solid var(--line);border-radius:9px;padding:7px 14px;font-size:12px;color:var(--ink);
+    opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+  .status.show{opacity:1}
+  .overlay{position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
+    background:rgba(5,8,12,.72);backdrop-filter:blur(3px)}
+  .overlay .box{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:30px 34px;font-family:var(--mono)}
+  .overlay .big{font-family:var(--sans);font-weight:800;font-size:34px;letter-spacing:.02em;color:var(--ink)}
+  .overlay .big b{color:var(--accent)}
+  .overlay .sub{font-size:12px;color:var(--muted);margin:6px 0 18px}
+  .overlay .rules{font-size:12px;line-height:1.7;color:var(--ink);margin:0 0 16px}
+  .overlay .rules div{margin-bottom:6px}
+  .overlay .rules b{color:var(--accent)}
+  .overlay button{display:block;margin:18px auto 0;padding:11px 30px;font-size:14px}
+  .overlay .report{font-size:12px;margin:4px 0 2px}
+  .overlay .report .rrow{display:flex;justify-content:space-between;padding:6px 0;border-top:1px dashed rgba(255,255,255,.09)}
+  .overlay .report .rrow span{color:var(--muted)}
+  .overlay .report .rrow b{color:var(--ink);font-weight:600}
+  .verdict{font-family:var(--mono);font-size:17px;font-weight:700;text-align:center;margin-top:14px}
+  .verdict.pass{color:var(--good)} .verdict.fail{color:var(--bad)}
+  #stats{display:none}
+  #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;color:var(--muted);z-index:9;flex-direction:column;gap:8px}
+  #loadErr{color:var(--bad);font-size:12px;max-width:80vw;text-align:center}
+  @media (max-width:760px){.hint{display:none}.card{right:10px;width:210px}.tools{left:10px;max-width:280px}}
+</style>
+
+<canvas id="c"></canvas>
+<div id="load">building the site&hellip;<span id="loadTxt">loading</span><span id="loadErr"></span></div>
+<div id="stats"></div>
+
+<div class="hud title">
+  <div class="brand">Grade It &middot; <b>Earthworks</b></div>
+  <div class="sub">cut &middot; fill &middot; compact &middot; certify &middot; <a href="/">thebigpicture.tech</a></div>
+</div>
+
+<div class="hud card" id="jobCard">
+  <h4 id="jobName">Job 1 — Grade Pad A</h4>
+  <div class="budget" id="budget">$2,500</div>
+  <div class="obj" id="objTxt"></div>
+  <div id="padList"></div>
+  <div class="vol"><span id="cutV">cut 0.0 m³</span><span id="fillV">fill 0.0 m³</span></div>
+</div>
+
+<div class="hud tools" id="tools">
+  <div class="row">
+    <button id="mCut">Blade / Cut</button>
+    <button id="mFill">Haul / Fill</button>
+    <button id="mRoll">Roller</button>
+    <button id="mTest" disabled>Run Gauge Test</button>
+  </div>
+  <div class="sld"><span id="brushLbl">brush</span><input type="range" id="brush" min="0.5" max="2.5" step="0.25" value="1.5"></div>
+  <div class="pal" id="pal">
+    <button data-b="Mat Foundation" class="pb">Mat Foundation 0/1</button>
+    <button data-b="Footing" class="pb">Footing 0/4</button>
+    <button data-b="Column" class="pb">Column 0/4</button>
+    <button data-b="Retaining Wall" class="pb">Retaining Wall 0/1</button>
+    <button data-b="Remove" class="pb">Remove</button>
+    <div class="palNote" id="ifcNote" style="display:none"></div>
+  </div>
+</div>
+
+<div class="hud hint">left-drag paints &middot; right-drag orbits<br>wheel zooms &middot; keys 1-5 tools &middot; T test</div>
+<div class="hud status" id="statusLine"></div>
+
+<div id="start" class="overlay">
+  <div class="box">
+    <div class="big">Grade <b>It.</b></div>
+    <div class="sub">Earthworks &amp; compaction simulator — run a pad like a field engineer.</div>
+    <div class="rules">
+      <div><b>Cut</b> — blade high ground toward design elevation (EL).</div>
+      <div><b>Fill</b> — haul in low ground up to EL. Every cubic meter costs money.</div>
+      <div><b>Roller</b> — compact each lift to 95% (unlocks once you're on grade).</div>
+      <div><b>Test</b> — drive the nuclear gauge rod and certify the pad (unlocks at 95%).</div>
+      <div style="color:var(--muted)">Job 1: one pad. Job 2: build the foundations. Job 3: certify the subdivision.</div>
+    </div>
+    <button id="startBtn" class="primary">Start Job 1</button>
+  </div>
+</div>
+
+<div id="levelEnd" class="overlay" style="display:none">
+  <div class="box">
+    <div class="big">Job <b>Complete.</b></div>
+    <div class="sub" id="leTitle"></div>
+    <div class="report" id="leReport"></div>
+    <button id="nextBtn" class="primary">Next Job</button>
+  </div>
+</div>
+
+<div id="testRead" class="overlay" style="display:none">
+  <div class="box">
+    <div class="big">Gauge <b>Reading</b></div>
+    <div class="sub">ASTM D6938 — nuclear density, source rod driven into the compacted lift.</div>
+    <div class="report" id="testRows"></div>
+    <div class="verdict" id="testVerdict"></div>
+    <button id="testClose" class="primary">Close</button>
+  </div>
+</div>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script>
+"use strict";
+let renderer,scene,camera,controls,terrainGeom,terrainMesh,heights,compaction,cover;
+let V,N,S,cell; const MINH=616,MAXH=622;
+let level=1,budget=0,testsRun=0,brushRadius=1.5;
+let mode='orbit',selectedBuild=null;
+let paintDown=false,lastPX=0,lastPY=0;
+let dirty=true,statsTimer=0;
+let testInProgress=false,testT=0,gaugeGrp=null,gaugeRod=null;
+let buildEnded=false,overlayOpen=false,brokeNotified=false;
+let dozer=null,roller=null,brushRing=null;
+let pads=[],terrainGrp=null,placedGrp=null,targetGrps=[],testOngoing=false,terrainMat=null;
+const tot={cut:0,fill:0};
+
+const TOL=0.10,BRUSH_SPEED=0.7,ROLL_SPEED=30;
+const COST_CUT=9,COST_FILL=16,COST_COMP=1.2,COST_TEST=120;
+const LEVELS={
+  1:{name:"Job 1 — Grade Pad A",budget:2500},
+  2:{name:"Job 2 — Build Foundations",budget:5000,build:true},
+  3:{name:"Job 3 — Subdivision",budget:6000}
+};
+const C={
+  accent:0x4fd0d8,
+  dozer:0xe0a62a,dozerDark:0x8a6416,track:0x23262a,steel:0x9aa0a6,
+  g1:0x4a6b3a,g2:0x8a7a5c,g3:0xa5634a,
+  ok:0x2fbf71,hiB:0xffb03a,hiH:0xff4d3a,loB:0x4fb0ff,loH:0x3a5dff,
+  compB:0x3fae6a,compF:0x7a5f3a
+};
+const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.75,metalness:.05},o||{}));
+const M={
+  yel:mat(C.dozer,{roughness:.4,metalness:.12}),
+  yelD:mat(C.dozerDark,{roughness:.5,metalness:.08}),
+  trk:mat(C.track,{roughness:.85,metalness:.05}),
+  steel:mat(C.steel,{roughness:.35,metalness:.6}),
+  dark:mat(0x2c2f33,{roughness:.55,metalness:.3}),
+  rub:mat(0x191b1d,{roughness:.9,metalness:0}),
+  glass:mat(0x9fd4e4,{transparent:true,opacity:.32,roughness:.1,metalness:.2}),
+  rebar:mat(0x9a6b42,{roughness:.7,metalness:.5}),
+  rebarD:mat(0x6f4a2e,{roughness:.8,metalness:.4}),
+  blk:mat(0x101418,{roughness:.9,metalness:.1}),
+  haz:mat(0xffd27a,{emissive:0xffd27a,emissiveIntensity:1.2,roughness:.4,metalness:.3})
+};
+function mq(g,geo,pos,c,rot){
+  const m=new THREE.Mesh(geo,typeof c==='object'?c:mat(c));
+  m.position.set(pos[0],pos[1],pos[2]);
+  if(rot)m.rotation.set(rot[0],rot[1],rot[2]);
+  m.castShadow=true;m.receiveShadow=true;g.add(m);return m;
+}
+function strut(g,p1,p2,r,c){
+  const d=new THREE.Vector3().subVectors(p2,p1),L=d.length();
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,8),typeof c==='object'?c:mat(c));
+  m.position.copy(p1).add(p2).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());
+  m.castShadow=true;m.receiveShadow=true;g.add(m);return m;
+}
+function bolt(g,x,y,z){
+  mq(g,new THREE.CylinderGeometry(0.018,0.018,0.34,6),[x,y+0.17,z],M.rebar);
+  mq(g,new THREE.CylinderGeometry(0.03,0.03,0.03,6),[x,y+0.36,z],M.rebarD);
+}
+function makeTex(w,h,fn){
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;fn(cv.getContext('2d'),w,h);
+  const t=new THREE.CanvasTexture(cv);
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;
+  return t;
+}
+const concreteMap=makeTex(256,256,(g,w,h)=>{
+  g.fillStyle='#b8b6b0';g.fillRect(0,0,w,h);
+  g.globalAlpha=0.06;
+  for(let i=0;i<600;i++){
+    g.fillStyle=Math.random()<.5?'#ffffff':'#8f8d87';
+    g.fillRect(Math.random()*w,Math.random()*h,1+Math.random()*2,1+Math.random()*2);
+  }
+  g.globalAlpha=0.14;g.fillStyle='#7f7d76';
+  g.fillRect(0,h*0.38,w,2);g.fillRect(0,h*0.62,w,2);
+  g.globalAlpha=0.08;g.fillStyle='#5f5d56';
+  g.fillRect(0,h*0.5,w,1.5);
+  g.globalAlpha=1;
+  const gr=g.createLinearGradient(0,0,0,h);
+  gr.addColorStop(0,'rgba(0,0,0,.14)');gr.addColorStop(.12,'rgba(0,0,0,0)');
+  gr.addColorStop(.88,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.12)');
+  g.fillStyle=gr;g.fillRect(0,0,w,h);
+});
+function concMat(repx,repz){
+  const t=concreteMap.clone();t.needsUpdate=true;t.repeat.set(repx,repz);
+  return new THREE.MeshStandardMaterial({map:t,color:0xe8e6e0,roughness:.92,metalness:0});
+}
+const treadMap=makeTex(128,128,(g,w,h)=>{
+  g.fillStyle='#23262a';g.fillRect(0,0,w,h);
+  g.fillStyle='#101215';
+  for(let x=0;x<w;x+=20){g.fillRect(x,0,7,h);}
+  g.fillStyle='#3c4044';
+  for(let x=0;x<w;x+=20){g.fillRect(x+7,0,2,h);}
+});
+function treadMat(reps){
+  const t=treadMap.clone();t.needsUpdate=true;t.repeat.set(reps[0],reps[1]);
+  return new THREE.MeshStandardMaterial({map:t,color:0xffffff,roughness:.9,metalness:.05});
+}
+const lcdMap=makeTex(160,72,(g,w,h)=>{
+  g.fillStyle='#03120c';g.fillRect(0,0,w,h);
+  g.fillStyle='#3ce0a8';g.font='700 46px ui-monospace,Menlo,monospace';
+  g.textAlign='center';g.textBaseline='middle';
+  g.fillText('34.7',w/2,26);
+  g.fillStyle='#1d7a56';g.font='700 20px ui-monospace,monospace';
+  g.fillText('pcf',w/2,56);
+});
+
+function hash(x,y){const s=Math.sin(x*127.1+y*311.7)*43758.5453;return(s-Math.floor(s))-0.5;}
+function terH(x,z){
+  let h=619.3;
+  h+=Math.sin(x*0.55)*1.0+Math.cos(z*0.62)*0.85;
+  h+=Math.sin((x+z)*0.31)*0.8+Math.sin((x-z)*0.43)*0.55;
+  h+=hash(Math.floor(x*0.7),Math.floor(z*0.7))*0.5;
+  return Math.max(MINH,Math.min(MAXH,h));
+}
+function padDefs(level){
+  const A={name:"Pad A",x:0,z:0,w:10,d:8,el:620.0};
+  if(level===3)return[
+    {name:"Pad A",x:-9,z:-4,w:10,d:8,el:620.0},
+    {name:"Pad B",x:0,z:-4,w:10,d:8,el:620.5},
+    {name:"Pad C",x:9,z:4,w:8,d:10,el:619.5}
+  ];
+  return[A];
+}
+
+function buildHeights(){
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const x=-S/2+i*cell,z=-S/2+j*cell;
+    heights[j*V+i]=terH(x,z);
+    compaction[j*V+i]=0;
+  }
+}
+function computeCover(){
+  cover=new Int16Array(V*V).fill(-1);
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const x=-S/2+i*cell,z=-S/2+j*cell;
+    for(let p=0;p<pads.length;p++){
+      if(Math.abs(x-pads[p].x)<=pads[p].w/2&&Math.abs(z-pads[p].z)<=pads[p].d/2){cover[j*V+i]=p;break;}
+    }
+  }
+}
+function buildTerrain(){
+  const pos=new Float32Array(V*V*3),idx=[];
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i,o=k*3;
+    pos[o]=-S/2+i*cell;pos[o+1]=heights[k];pos[o+2]=-S/2+j*cell;
+  }
+  for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+    const a=j*V+i,b=a+1,c=(j+1)*V+i,d=c+1;
+    idx.push(a,b,c,b,d,c);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(V*V*3),3));
+  return g;
+}
+function groundH(x,z){
+  const f=Math.max(0,Math.min(N-1,(x+S/2)/cell)),g=Math.max(0,Math.min(N-1,(z+S/2)/cell));
+  const i=Math.floor(f),j=Math.floor(g),fx=f-i,gx=g-j;
+  const h00=heights[j*V+i],h10=heights[j*V+i+1],h01=heights[(j+1)*V+i],h11=heights[(j+1)*V+i+1];
+  return (h00*(1-fx)+h10*fx)*(1-gx)+(h01*(1-fx)+h11*fx)*gx;
+}
+function refreshMesh(){
+  const p=terrainGeom.attributes.position;
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i;
+    p.array[k*3+1]=heights[k];
+  }
+  p.needsUpdate=true;
+  terrainGeom.computeVertexNormals();
+  recolor();
+  terrainGeom.attributes.color.needsUpdate=true;
+}
+function recolor(){
+  const cols=terrainGeom.attributes.color.array,c=new THREE.Color();
+  const g1=new THREE.Color(C.g1),g2=new THREE.Color(C.g2),g3=new THREE.Color(C.g3);
+  const ok=new THREE.Color(C.ok),hiB=new THREE.Color(C.hiB),hiH=new THREE.Color(C.hiH),
+    loB=new THREE.Color(C.loB),loH=new THREE.Color(C.loH),
+    compB=new THREE.Color(C.compB),compF=new THREE.Color(C.compF);
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i,x=-S/2+i*cell,z=-S/2+j*cell,h=heights[k],pc=cover[k];
+    if(pc>=0){
+      const p=pads[pc],e=h-p.el;
+      if(p.gradeOK){
+        c.copy(compB).lerp(compF,compaction[k]/100);
+      }else if(Math.abs(e)<=TOL){
+        c.copy(ok);
+      }else if(e>0){
+        c.copy(hiB).lerp(hiH,Math.min(1,(e-TOL)/1.2));
+      }else{
+        c.copy(loB).lerp(loH,Math.min(1,(Math.abs(e)-TOL)/1.2));
+      }
+    }else{
+      const t=Math.max(0,Math.min(1,(h-MINH)/(MAXH-MINH)));
+      c.copy(g1).lerp(g2,Math.min(1,t*1.7)).lerp(g3,Math.max(0,Math.min(1,(t-0.6)/0.4)));
+    }
+    cols[k*3]=c.r;cols[k*3+1]=c.g;cols[k*3+2]=c.b;
+  }
+  terrainGeom.attributes.color.needsUpdate=true;
+}
+function padStats(p){
+  let n=0,err=0,comp=0,cut=0,fill=0;
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i;
+    if(cover[k]!==pads.indexOf(p))continue;
+    const h=heights[k],e=h-p.el;
+    n++;err+=Math.abs(e);
+    if(e>0)cut+=e;else fill+=-e;
+    comp+=compaction[k];
+  }
+  if(!n)return null;
+  const avgErr=err/n,avgComp=comp/n;
+  p.avgErr=avgErr;p.avgComp=avgComp;p.gradeOK=avgErr<=TOL;
+  p.cut=cut*cell*cell;p.fill=fill*cell*cell;
+  return {avgErr,avgComp,cut:p.cut,fill:p.fill};
+}
+
+function applyBrush(i,j,dt){
+  const R=brushRadius,rc=Math.ceil(R/cell),r2=R*R,cm=mode;
+  for(let dj=-rc;dj<=rc;dj++)for(let di=-rc;di<=rc;di++){
+    const ii=i+di,jj=j+dj;
+    if(ii<0||jj<0||ii>=V||jj>=V)continue;
+    const dx=(ii-i)*cell,dz=(jj-j)*cell,d2=dx*dx+dz*dz;
+    if(d2>r2)continue;
+    const w=Math.exp(-d2/(R*R*0.5)),k=jj*V+ii;
+    if(cm==='cut'||cm==='fill'){
+      const old=heights[k];
+      const nh=Math.max(MINH,Math.min(MAXH,old+(cm==='cut'?-1:1)*BRUSH_SPEED*w*dt));
+      heights[k]=nh;
+      budget-=Math.abs(nh-old)*cell*cell*(cm==='cut'?COST_CUT:COST_FILL);
+    }else if(cm==='roller'){
+      const pc=cover[k];
+      if(pc>=0&&Math.abs(heights[k]-pads[pc].el)<=TOL){
+        const old=compaction[k];
+        const nc=Math.min(100,old+ROLL_SPEED*w*dt);
+        compaction[k]=nc;
+        budget-=((nc-old)/100)*cell*cell*COST_COMP;
+      }
+    }
+  }
+  dirty=true;
+}
+function applyDelta(x,z,d){
+  const i=Math.round((x+S/2)/cell),j=Math.round((z+S/2)/cell);
+  if(i<0||j<0||i>=V||j>=V)return 0;
+  const R=brushRadius,rc=Math.ceil(R/cell),r2=R*R;
+  let vol=0;
+  for(let dj=-rc;dj<=rc;dj++)for(let di=-rc;di<=rc;di++){
+    const ii=i+di,jj=j+dj;
+    if(ii<0||jj<0||ii>=V||jj>=V)continue;
+    const dx=(ii-i)*cell,dz=(jj-j)*cell,d2=dx*dx+dz*dz;
+    if(d2>r2)continue;
+    const w=Math.exp(-d2/(R*R*0.5)),k=jj*V+ii;
+    const nh=Math.max(MINH,Math.min(MAXH,heights[k]+d*w));
+    vol+=(nh-heights[k])*cell*cell;
+    heights[k]=nh;
+  }
+  dirty=true;
+  return vol;
+}
+function applyComp(x,z,pct){
+  const i=Math.round((x+S/2)/cell),j=Math.round((z+S/2)/cell);
+  if(i<0||j<0||i>=V||j>=V)return;
+  const pc=cover[j*V+i];
+  if(pc<0)return;
+  compaction[j*V+i]=Math.max(compaction[j*V+i],pct);
+  dirty=true;
+}
+function brushUpdate(dt){
+  const ndc=new THREE.Vector2(lastPX/innerWidth*2-1,-(lastPY/innerHeight*2-1));
+  const ray=new THREE.Raycaster();
+  ray.setFromCamera(ndc,camera);
+  const hit=ray.intersectObject(terrainMesh,false)[0];
+  if(hit){
+    const wx=hit.point.x,wz=hit.point.z;
+    const i=Math.round((wx+S/2)/cell),j=Math.round((wz+S/2)/cell);
+    if(i>=0&&j>=0&&i<V&&j<V){
+      if(paintDown)applyBrush(i,j,dt);
+      if(budget<=0&&!brokeNotified){brokeNotified=true;toast('Over budget — work continues on credit, report will show the debt.');}
+      if(budget>0)brokeNotified=false;
+      brushRing.visible=true;
+      brushRing.position.set(wx,groundH(wx,wz)+0.03,wz);
+      if(mode==='cut'||mode==='fill')moveVehicle(dozer,wx,wz);
+      if(mode==='roller')moveVehicle(roller,wx,wz);
+      return;
+    }
+  }
+  brushRing.visible=false;
+}
+function moveVehicle(v,x,z){
+  if(!v)return;
+  v.position.x+=(x-v.position.x)*0.25;
+  v.position.z+=(z-v.position.z)*0.25;
+  v.position.y=groundH(v.position.x,v.position.z)+0.02;
+}
+function moveTo(v,x,z){
+  if(!v)return;
+  v.position.set(x,groundH(x,z)+0.02,z);
+}
+
+function buildVehicleDozer(){
+  const g=new THREE.Group();
+  // ---- track assemblies (two sides) ----
+  for(const s of[-1,1]){
+    mq(g,new THREE.BoxGeometry(0.46,0.86,4.6),[s*1.02,0.43,0],treadMat([1,1]));
+    for(let i=-2;i<=2;i++)mq(g,new THREE.BoxGeometry(0.5,0.1,0.44),[s*1.02,0.05,i*0.9],M.blk);
+    mq(g,new THREE.BoxGeometry(0.34,0.42,4.1),[s*1.02,0.55,0],M.dark);
+    mq(g,new THREE.CylinderGeometry(0.3,0.3,0.44,12),[s*1.02,0.66,1.9],M.trk,[0,0,Math.PI/2]);
+    mq(g,new THREE.CylinderGeometry(0.38,0.38,0.5,12),[s*1.02,0.78,-1.9],M.trk,[0,0,Math.PI/2]);
+    mq(g,new THREE.CylinderGeometry(0.14,0.14,0.1,8),[s*1.02,0.78,-1.9],M.dark,[0,0,Math.PI/2]);
+    for(let z=-1.4;z<=1.4;z+=0.7)mq(g,new THREE.CylinderGeometry(0.12,0.12,0.42,8),[s*1.02,0.18,z],M.dark,[0,0,Math.PI/2]);
+  }
+  // ---- main body ----
+  mq(g,new THREE.BoxGeometry(2.3,0.5,2.6),[0,1.15,0],M.yel);
+  mq(g,new THREE.BoxGeometry(1.6,0.7,1.3),[0,1.6,0.7],M.yel);
+  mq(g,new THREE.BoxGeometry(1.7,0.24,1.1),[0,1.98,0.72],M.yel,[0.28,0,0]);
+  mq(g,new THREE.BoxGeometry(1.5,0.5,0.12),[0,1.32,1.4],M.dark);
+  mq(g,new THREE.BoxGeometry(1.5,0.6,0.12),[0,1.5,-1.35],M.dark);
+  mq(g,new THREE.CylinderGeometry(0.07,0.09,1.1,8),[0.85,2.15,-0.6],M.dark);
+  mq(g,new THREE.CylinderGeometry(0.1,0.1,0.1,8),[0.85,2.72,-0.6],M.dark);
+  mq(g,new THREE.CylinderGeometry(0.14,0.14,0.5,8),[0.75,1.95,-0.15],M.steel,[Math.PI/2,0,0]);
+  // ---- cab / ROPS ----
+  mq(g,new THREE.BoxGeometry(1.15,0.12,1.3),[0,1.55,-0.55],M.dark);
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    mq(g,new THREE.CylinderGeometry(0.04,0.04,1.35,6),[sx*0.52,2.25,sz*0.55-0.55],M.steel);
+  mq(g,new THREE.BoxGeometry(1.3,0.08,1.5),[0,2.9,-0.55],M.yel);
+  mq(g,new THREE.BoxGeometry(1.0,0.95,0.04),[0,2.1,0.13],M.glass);
+  mq(g,new THREE.BoxGeometry(0.04,0.95,1.0),[0.53,2.1,-0.55],M.glass);
+  mq(g,new THREE.BoxGeometry(0.04,0.95,1.0),[-0.53,2.1,-0.55],M.glass);
+  mq(g,new THREE.BoxGeometry(1.0,0.95,0.04),[0,2.1,-1.3],M.glass);
+  mq(g,new THREE.BoxGeometry(0.4,0.35,0.4),[0,1.78,-0.45],M.rub);
+  mq(g,new THREE.CylinderGeometry(0.02,0.02,0.4,6),[0.35,1.78,-0.2],M.dark);
+  mq(g,new THREE.CylinderGeometry(0.035,0.035,0.06,8),[0.35,2.0,-0.2],M.yel);
+  mq(g,new THREE.CylinderGeometry(0.02,0.02,0.6,6),[0.62,2.32,0.05],M.steel);
+  // ---- blade ----
+  const bls=new THREE.Shape();
+  bls.moveTo(-1.8,-0.2);
+  bls.quadraticCurveTo(0,0.35,1.8,-0.2);
+  bls.lineTo(1.8,-0.28);bls.lineTo(-1.8,-0.28);bls.closePath();
+  const blGeo=new THREE.ExtrudeGeometry(bls,{depth:1.1,bevelEnabled:false});
+  blGeo.rotateX(-Math.PI/2);
+  const blade=new THREE.Mesh(blGeo,M.steel);
+  blade.position.set(0,1.0,1.75);blade.rotation.x=-0.12;
+  blade.castShadow=true;blade.receiveShadow=true;g.add(blade);
+  mq(g,new THREE.BoxGeometry(3.7,0.22,0.07),[0,0.92,1.9],M.dark,[-0.12,0,0]);
+  for(const s of[-1,1]){
+    strut(g,new THREE.Vector3(s*0.95,0.9,0.35),new THREE.Vector3(s*1.3,0.95,1.55),0.07,M.yel);
+    strut(g,new THREE.Vector3(s*0.45,1.7,0.5),new THREE.Vector3(s*0.75,1.5,1.2),0.045,M.steel);
+  }
+  strut(g,new THREE.Vector3(0,1.4,0.2),new THREE.Vector3(0,1.15,1.1),0.04,M.steel);
+  for(const s of[-1,1])mq(g,new THREE.BoxGeometry(0.16,0.07,0.05),[s*1.35,1.9,1.6],M.haz);
+  for(const s of[-1,1])mq(g,new THREE.BoxGeometry(0.09,0.05,0.09),[s*0.55,2.88,-0.6],M.haz);
+  return g;
+}
+function buildVehicleRoller(){
+  const g=new THREE.Group();
+  // ---- front drum ----
+  mq(g,new THREE.CylinderGeometry(0.7,0.7,1.9,24),[0,0.7,1.45],M.steel,[0,0,Math.PI/2]);
+  for(const s of[-1,1]){
+    mq(g,new THREE.CylinderGeometry(0.72,0.72,0.06,24),[s*0.96,0.7,1.45],M.dark,[0,0,Math.PI/2]);
+    mq(g,new THREE.CylinderGeometry(0.1,0.1,0.5,10),[s*1.25,0.7,1.45],M.steel,[0,0,Math.PI/2]);
+  }
+  mq(g,new THREE.BoxGeometry(0.07,0.4,1.9),[0,0.6,1.95],M.dark);
+  mq(g,new THREE.BoxGeometry(0.07,0.4,1.9),[0,0.6,0.95],M.dark);
+  // ---- drum yoke + water tank ----
+  for(const s of[-1,1])mq(g,new THREE.BoxGeometry(0.12,0.9,1.4),[s*1.05,1.1,1.45],M.yel);
+  mq(g,new THREE.BoxGeometry(0.9,0.28,1.5),[0,1.62,1.45],M.yel);
+  mq(g,new THREE.CylinderGeometry(0.4,0.4,1.2,14),[0,1.4,0.55],M.steel,[0,0,Math.PI/2]);
+  mq(g,new THREE.CylinderGeometry(0.07,0.07,0.06,8),[0,1.85,0.55],M.yel);
+  // ---- articulation + rear engine ----
+  mq(g,new THREE.CylinderGeometry(0.5,0.5,1.4,14),[0,1.05,0],M.dark);
+  mq(g,new THREE.BoxGeometry(1.6,1.0,1.9),[0,1.5,-1.1],M.yel);
+  mq(g,new THREE.BoxGeometry(1.5,0.6,0.1),[0,1.3,-2.05],M.dark);
+  mq(g,new THREE.CylinderGeometry(0.08,0.08,0.9,8),[0.55,2.3,-1.1],M.dark);
+  for(const s of[-1,1]){
+    mq(g,new THREE.CylinderGeometry(0.55,0.55,0.5,16),[s*0.8,0.55,-1.35],M.rub,[0,0,Math.PI/2]);
+    mq(g,new THREE.CylinderGeometry(0.16,0.16,0.54,10),[s*0.8,0.55,-1.35],M.steel,[0,0,Math.PI/2]);
+  }
+  // ---- cab ----
+  mq(g,new THREE.BoxGeometry(1.2,0.1,1.5),[0,1.9,-1.35],M.dark);
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    mq(g,new THREE.CylinderGeometry(0.035,0.035,1.0,6),[sx*0.5,2.4,sz*0.6-1.35],M.steel);
+  mq(g,new THREE.BoxGeometry(1.3,0.08,1.6),[0,2.9,-1.35],M.yel);
+  mq(g,new THREE.BoxGeometry(1.05,0.8,0.04),[0,2.4,-0.62],M.glass);
+  for(const s of[-1,1]){
+    mq(g,new THREE.CylinderGeometry(0.025,0.025,0.9,6),[s*0.85,1.8,-1.0],M.steel);
+    mq(g,new THREE.BoxGeometry(0.14,0.06,0.05),[s*0.42,2.86,-0.62],M.haz);
+  }
+  return g;
+}
+function buildGauge(){
+  const g=new THREE.Group();
+  mq(g,new THREE.BoxGeometry(0.62,0.045,0.46),[0,0.023,0],mat(0x6f6a5e,{roughness:.35,metalness:.5}));
+  mq(g,new THREE.BoxGeometry(0.66,0.14,0.5),[0,0.12,0],mat(0x3a423c,{roughness:.55}));
+  mq(g,new THREE.BoxGeometry(0.6,0.42,0.44),[0,0.31,0],mat(0x3a423c,{roughness:.55}));
+  mq(g,new THREE.BoxGeometry(0.55,0.12,0.4),[0,0.58,0],mat(0x2b312e,{roughness:.5}));
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    mq(g,new THREE.BoxGeometry(0.08,0.2,0.09),[sx*0.29,0.2,sz*0.21],mat(0x14181b,{roughness:.95}));
+  mq(g,new THREE.BoxGeometry(0.64,0.09,0.46),[0,0.24,0],mat(C.dozer,{roughness:.45}));
+  for(const sx of[-1,1])mq(g,new THREE.BoxGeometry(0.045,0.2,0.045),[sx*0.1,0.72,0.2],mat(C.dozer,{roughness:.45}));
+  mq(g,new THREE.BoxGeometry(0.3,0.04,0.04),[0,0.85,0.2],mat(C.dozer,{roughness:.45}));
+  // source rod assembly (animated group)
+  gaugeRod=new THREE.Group();
+  mq(gaugeRod,new THREE.CylinderGeometry(0.028,0.028,0.9,8),[0,0,0],mat(0x9aa0a6,{roughness:.35,metalness:.55}));
+  mq(gaugeRod,new THREE.CylinderGeometry(0.012,0.028,0.12,8),[0,-0.5,0],0x7d7d74);
+  mq(gaugeRod,new THREE.CylinderGeometry(0.05,0.05,0.07,8),[0,0.43,0],mat(C.dozer,{roughness:.45}));
+  gaugeRod.position.set(-0.16,0.02,0);
+  g.add(gaugeRod);
+  mq(g,new THREE.CylinderGeometry(0.055,0.055,0.55,10),[-0.16,0.36,0],0x2c3136);
+  mq(g,new THREE.CylinderGeometry(0.06,0.06,0.04,10),[-0.16,0.65,0],C.dozer);
+  // control panel (angled display)
+  mq(g,new THREE.BoxGeometry(0.32,0.2,0.03),[0.06,0.68,-0.1],0x171b1f,[-0.5,0,0]);
+  mq(g,new THREE.BoxGeometry(0.28,0.13,0.02),[0.06,0.7,-0.1],new THREE.MeshStandardMaterial({map:lcdMap,roughness:.3}),[-0.5,0,0]);
+  for(let k=0;k<6;k++)mq(g,new THREE.CylinderGeometry(0.017,0.017,0.02,6),[0.06-0.09+ (k%3)*0.09,0.55-Math.floor(k/3)*0.07,-0.115],0x1d2124);
+  mq(g,new THREE.CylinderGeometry(0.028,0.028,0.03,8),[0.22,0.6,-0.09],C.dozer);
+  // trefoil decal on the side
+  const tr=new THREE.Group();
+  for(let k=0;k<3;k++){const m=mq(tr,new THREE.BoxGeometry(0.05,0.14,0.012),[0,0,0],0xff8a3c);m.rotation.y=k*(Math.PI/3)+(k===1?Math.PI/3:0);}
+  tr.position.set(0.305,0.34,0.12);g.add(tr);
+  return g;
+}
+
+function makeTargetGrid(p){
+  const g=new THREE.Group();
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(p.w,p.d),
+    new THREE.MeshBasicMaterial({color:C.accent,transparent:true,opacity:0.05,depthWrite:false}));
+  plane.rotation.x=-Math.PI/2;plane.position.set(p.x,p.el,p.z);
+  const box=new THREE.Mesh(new THREE.BoxGeometry(p.w,0.02,p.d),mat(C.accent,{transparent:true,opacity:0.9}));
+  box.position.set(p.x,p.el,p.z);
+  g.add(plane,box);
+  for(const sx of[-1,1])for(const sz of[-1,1]){
+    const x=p.x+sx*p.w/2,z=p.z+sz*p.d/2;
+    const h=groundH(x,z);
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,Math.max(0.05,p.el-h),6),
+      new THREE.MeshBasicMaterial({color:C.accent}));
+    post.position.set(x,p.el-Math.max(0.05,p.el-h)/2,z);
+    g.add(post);
+  }
+  const cv=document.createElement('canvas');cv.width=256;cv.height=64;
+  const c2=cv.getContext('2d');
+  c2.fillStyle=C.accent;c2.font='700 34px ui-monospace,Menlo,monospace';
+  c2.textAlign='center';c2.textBaseline='middle';c2.fillText('EL '+p.el.toFixed(2),128,32);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false}));
+  sp.scale.set(6,1.5,1);sp.position.set(p.x,p.el+1.6,p.z);
+  g.add(sp);
+  return g;
+}
+
+function updateStats(){
+  tot.cut=0;tot.fill=0;
+  let compAll=0;
+  for(const p of pads){
+    const s=padStats(p);
+    if(s){tot.cut+=s.cut;tot.fill+=s.fill;compAll+=s.avgComp;}
+  }
+  pads._gradeOK=pads.every(p=>p.gradeOK);
+  pads._compOK=pads.every(p=>p.avgComp>=95);
+  pads._avgComp=pads.length?compAll/pads.length:0;
+}
+function rayPick(e){
+  const ndc=new THREE.Vector2(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight*2-1));
+  const ray=new THREE.Raycaster();ray.setFromCamera(ndc,camera);
+  return ray.intersectObject(terrainMesh,false)[0];
+}
+
+let ifcFound=null,ifcLoadP=null;
+const ifcMatCache={},ifcGeoCache={};
+function ifcMaterial(name){
+  if(ifcMatCache[name])return ifcMatCache[name];
+  const m={
+    'Mat Foundation':()=>concMat(5,4),
+    'Mat Anchor Bolt':()=>M.rebar,
+    'Mat Anchor Nut':()=>M.rebarD,
+    'Mat Rebar Stub':()=>M.rebar,
+    'Footing':()=>concMat(2,2),
+    'Column':()=>concMat(2,6),
+    'Column Dowel':()=>M.rebar,
+    'Retaining Wall Base':()=>concMat(6,1),
+    'Retaining Wall Stem':()=>concMat(6,2),
+    'Retaining Wall Cap':()=>concMat(6,1),
+    'Retaining Wall Weep':()=>new THREE.MeshStandardMaterial({color:0x3a3a36,roughness:.9,metalness:.1})
+  }[name];
+  return ifcMatCache[name]=m?m():new THREE.MeshStandardMaterial({color:0x9aa3a8});
+}
+function ifcGeo(key,name,data){
+  const ck=key+'|'+name;
+  if(ifcGeoCache[ck])return ifcGeoCache[ck];
+  const s=data.find(x=>x.n===name);
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(s.p,3));
+  geo.setIndex(new THREE.BufferAttribute(new Uint16Array(s.i),1));
+  geo.computeVertexNormals();
+  geo.computeBoundingSphere();
+  return ifcGeoCache[ck]=geo;
+}
+function buildFromIFC(key){
+  if(!ifcFound||!ifcFound[key])return null;
+  const g=new THREE.Group();
+  for(const s of ifcFound[key]){
+    const m=new THREE.Mesh(ifcGeo(key,s.n,ifcFound[key]),ifcMaterial(s.n));
+    m.castShadow=true;m.receiveShadow=true;
+    g.add(m);
+  }
+  g.userData.isIFC=true;
+  return g;
+}
+function loadIFCFoundations(){
+  if(ifcFound)return Promise.resolve(ifcFound);
+  if(ifcLoadP)return ifcLoadP;
+  ifcLoadP=fetch('models/foundations.json',{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(d=>{
+      const keys=['Mat Foundation','Footing','Column','Retaining Wall'];
+      if(!keys.every(k=>Array.isArray(d[k])&&d[k].length))throw new Error('missing element keys');
+      let bad=0;
+      for(const k of keys)for(const s of d[k]){
+        if(!s.n||!s.p||!s.i||s.p.length%3||s.i.length%3||s.p.length/3>65535)bad++;
+        for(let j=0;j<s.i.length;j++)if(s.i[j]>=s.p.length/3)bad++;
+      }
+      if(bad)throw new Error(bad+' malformed shapes');
+      ifcFound=d;
+      const note=document.getElementById('ifcNote');
+      if(note&&level===2)note.textContent='3D model: IFC (foundations.ifc)';
+      return d;
+    })
+    .catch(err=>{
+      ifcFound=null;ifcLoadP=null;
+      const note=document.getElementById('ifcNote');
+      if(note&&level===2)note.textContent='3D model: procedural (IFC unavailable)';
+      console.warn('IFC foundations unavailable, using procedural build:',err);
+      return null;
+    });
+  return ifcLoadP;
+}
+
+const BLD={
+  'Mat Foundation':{req:1,w:10,d:8,h:0.5,color:0x9aa3a8},
+  'Footing':{req:4,w:1.2,d:1.2,h:0.5,color:0x8b939a},
+  'Column':{req:4,w:0.4,d:0.4,h:3.0,color:0x6f767c},
+  'Retaining Wall':{req:1,w:10,d:0.4,h:2.5,color:0x9c8a6a}
+};
+function buildMat(){
+  const g=new THREE.Group(),w=pads[0].w,d=pads[0].d;
+  mq(g,new THREE.BoxGeometry(w,0.5,d),[0,0,0],concMat(w/2,d/2));
+  for(const s of[-1,1])mq(g,new THREE.BoxGeometry(w,0.08,0.06),[0,0.18,s*(d/2-0.03)],concMat(w/2,1));
+  for(const s of[-1,1])mq(g,new THREE.BoxGeometry(0.06,0.08,d),[s*(w/2-0.03),0.18,0],concMat(1,d/2));
+  for(const [rx,rz] of[[-w/2*0.6,-d/2*0.5],[w/2*0.6,d/2*0.5],[0,-d/2*0.6],[0,d/2*0.6]])
+    mq(g,new THREE.CylinderGeometry(0.02,0.02,0.5,6),[rx,0.5,rz],M.rebar);
+  for(let i=0;i<14;i++){
+    const a=i/14*Math.PI*2;
+    bolt(g,Math.sin(a)*(w/2-0.6),0.5,Math.cos(a)*(d/2-0.6));
+  }
+  return g;
+}
+function buildFooting(){
+  const g=new THREE.Group();
+  mq(g,new THREE.BoxGeometry(1.2,0.5,1.2),[0,0,0],concMat(3,1.5));
+  mq(g,new THREE.BoxGeometry(1.05,0.1,1.05),[0,0.26,0],concMat(2.5,1));
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    bolt(g,sx*0.55,0.5,sz*0.55);
+  return g;
+}
+function buildColumn(){
+  const g=new THREE.Group();
+  mq(g,new THREE.BoxGeometry(0.4,3.0,0.4),[0,1.5,0],concMat(1.5,3));
+  mq(g,new THREE.BoxGeometry(0.3,0.12,0.3),[0,3.06,0],concMat(1,1));
+  for(const sx of[-1,1])for(const sz of[-1,1])
+    mq(g,new THREE.CylinderGeometry(0.012,0.012,0.12,6),[sx*0.15,3.18,sz*0.15],M.rebar);
+  return g;
+}
+function buildWall(len){
+  const g=new THREE.Group();
+  mq(g,new THREE.BoxGeometry(len+0.5,0.5,1.0),[0,0,0],concMat(Math.max(4,len/2),1));
+  mq(g,new THREE.BoxGeometry(len,2.2,0.45),[0,1.35,0],concMat(Math.max(4,len/2),2.5));
+  mq(g,new THREE.BoxGeometry(len+0.2,0.25,0.6),[0,2.57,0],concMat(Math.max(4,len/2),1));
+  const n=Math.max(4,Math.round(len/2));
+  for(let i=0;i<n;i++){
+    const x=-len/2+0.6+i*(len-1.2)/Math.max(1,n-1);
+    mq(g,new THREE.CylinderGeometry(0.035,0.035,0.03,8),[x,0.35,0.225],0x3a3a36);
+    mq(g,new THREE.CylinderGeometry(0.025,0.025,0.2,8),[x,0.42,0.21],M.blk);
+  }
+  return g;
+}
+function countPlaced(key){
+  let n=0;for(const c of placedGrp.children)if(c.userData.placeName===key)n++;
+  return n;
+}
+function placeEl(key,wx,wz){
+  const b=BLD[key];let x=wx,z=wz,y=groundH(wx,wz),ry=0;
+  if(key==='Mat Foundation'){x=pads[0].x;z=pads[0].z;y=pads[0].el;}
+  else if(key==='Column'){y=groundH(wx,wz)+0.5;}
+  else if(key==='Retaining Wall'){
+    const P=pads[0];
+    if(Math.abs(wz-P.z)>Math.abs(wx-P.x)){
+      x=P.x;z=P.z+Math.sign(wz-P.z)*P.d/2;ry=0;
+    }else{
+      x=P.x+Math.sign(wx-P.x)*P.w/2;z=P.z;ry=Math.PI/2;
+    }
+    y=groundH(x,z);
+  }
+  let grp=buildFromIFC(key);
+  if(!grp){
+    if(key==='Mat Foundation')grp=buildMat();
+    else if(key==='Column')grp=buildColumn();
+    else if(key==='Retaining Wall')grp=buildWall(pads[0].w);
+    else grp=buildFooting();
+  }
+  grp.position.set(x,y,z);grp.rotation.y=ry;
+  grp.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  grp.userData.placeName=key;
+  placedGrp.add(grp);
+}
+function removeEl(mesh){
+  placedGrp.remove(mesh);
+  mesh.traverse(o=>{
+    if(o.geometry)o.geometry.dispose();
+    if(o.material){
+      if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());
+      else o.material.dispose();
+    }
+  });
+}
+function allReqMet(){
+  return Object.keys(BLD).every(k=>countPlaced(k)>=BLD[k].req);
+}
+function placeAllRequired(){
+  const P=pads[0],rel=[[-3.2,-2.2],[3.2,-2.2],[-3.2,2.2],[3.2,2.2]];
+  const slots={};
+  for(const k in BLD)slots[k]=0;
+  const put=(k,x,z,times)=>{for(let t=0;t<times;t++)placeEl(k,x,z);};
+  put('Mat Foundation',P.x,P.z,1);
+  for(let t=0;t<4;t++){put('Footing',P.x+rel[t][0],P.z+rel[t][1],1);put('Column',P.x+rel[t][0],P.z+rel[t][1],1);}
+  put('Retaining Wall',P.x,P.z+P.d/2,1);
+}
+
+function setMode(m,param){
+  if(overlayOpen||testInProgress)return;
+  if(m==='roller'&&!pads._gradeOK){toast('Roller locks when the pad is on grade.');return;}
+  if(m==='test'){runTest();return;}
+  mode=m;
+  if(m==='build')selectedBuild=param||selectedBuild||Object.keys(BLD)[0];
+  const paint=m==='cut'||m==='fill'||m==='roller'||m==='build'||m==='remove';
+  controls.mouseButtons=paint?
+    {LEFT:null,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}:
+    {LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};
+  if(controls.touches)controls.touches.ONE=paint?null:THREE.TOUCH.ROTATE;
+  brushRing.visible=paint;
+  const names={cut:'Blade / Cut',fill:'Haul / Fill',roller:'Roller',build:'Build',remove:'Remove'};
+  toast(m==='remove'?'Click a placed element to remove it.':(names[m]||'')+' selected.');
+  updateToolUI();
+}
+function updateToolUI(){
+  for(const id of['mCut','mFill','mRoll']){
+    const el=document.getElementById(id);
+    el.classList.toggle('on',mode===id.slice(1).toLowerCase()||(id==='mRoll'&&mode==='roller'));
+  }
+  document.getElementById('mCut').classList.toggle('on',mode==='cut');
+  document.getElementById('mFill').classList.toggle('on',mode==='fill');
+  document.getElementById('mRoll').classList.toggle('on',mode==='roller');
+  document.getElementById('mRoll').disabled=!pads._gradeOK;
+  document.getElementById('mTest').disabled=!(pads._gradeOK&&pads._compOK);
+  for(const b of document.querySelectorAll('.pb')){
+    const k=b.dataset.b;
+    b.classList.toggle('on',mode==='build'&&selectedBuild===k||(mode==='remove'&&k==='Remove'));
+  }
+  document.getElementById('brush').disabled=mode!=='cut'&&mode!=='fill'&&mode!=='roller';
+  document.getElementById('brushLbl').textContent='brush '+brushRadius.toFixed(2)+' m';
+}
+
+let toastTimer=null;
+function toast(msg){
+  const s=document.getElementById('statusLine');
+  s.textContent=msg;s.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>s.classList.remove('show'),2600);
+}
+
+function runTest(sync){
+  if(testInProgress)return;
+  updateStats();
+  if(!(pads._gradeOK&&pads._compOK)){toast('Grade the pad and compact to 95% first.');return;}
+  testInProgress=true;testT=0;testOngoing=false;
+  if(gaugeRod)gaugeRod.position.y=0.02;
+  budget-=COST_TEST;testsRun++;
+  const gx=pads.reduce((a,p)=>a+p.x,0)/pads.length,gz=pads.reduce((a,p)=>a+p.z,0)/pads.length;
+  moveTo(gaugeGrp,gx,gz);
+  gaugeGrp.visible=true;
+  if(sync){
+    finishTest();
+    return;
+  }
+  toast('Source rod down — counting&hellip;');
+}
+function updateTest(dt){
+  testT+=dt;
+  if(testT<1.2){
+    const k=Math.min(1,testT/1.2);
+    if(gaugeRod)gaugeRod.position.y=0.02-0.45*k;
+  }else if(!testOngoing){
+    finishTest();
+  }
+}
+function finishTest(){
+  testOngoing=true;
+  updateStats();
+  const rows=pads.map(p=>{
+    const ok=p.avgComp>=95;
+    return `<div class="rrow"><span>${p.name} — ${p.el.toFixed(1)} EL &middot; ${p.avgComp.toFixed(1)}% compacted</span><b class="${ok?'ok':'bad'}">${ok?'PASS':'FAIL'}</b></div>`;
+  }).join('');
+  document.getElementById('testRows').innerHTML=rows;
+  document.getElementById('testVerdict').textContent='PAD CERTIFIED — '+pads._avgComp.toFixed(1)+'% average compaction (req. ≥ 95%)';
+  document.getElementById('testVerdict').className='verdict pass';
+  document.getElementById('testRead').style.display='flex';
+  overlayOpen=true;
+  testOngoing=false;
+  testInProgress=false;
+}
+function closeReadout(){
+  document.getElementById('testRead').style.display='none';
+  overlayOpen=false;
+  if(level!==2){
+    setTimeout(()=>openLevelEnd(),350);
+  }
+}
+
+function jobReport(){
+  const rows=[
+    ['Earthwork cut',tot.cut.toFixed(1)+' m³'],
+    ['Earthwork fill',tot.fill.toFixed(1)+' m³'],
+    ['Avg. compaction',pads._avgComp.toFixed(1)+' %'],
+    ['Compaction tests',testsRun+' run(s)'],
+    ['Budget used','$'+budget.toLocaleString()],
+    ['Result','PASS']
+  ];
+  if(level===2)Object.keys(BLD).forEach(k=>rows.push([k,countPlaced(k)+' / '+BLD[k].req]));
+  return rows.map(r=>`<div class="rrow"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
+}
+function openLevelEnd(){
+  overlayOpen=true;
+  document.getElementById('leTitle').textContent=LEVELS[level].name+' — complete.';
+  document.getElementById('leReport').innerHTML=jobReport();
+  const nb=document.getElementById('nextBtn');
+  if(level===1){nb.textContent='Next: Build Foundations';}
+  else if(level===2){nb.textContent='Next: Subdivision';}
+  else{nb.textContent='Replay Job 1';}
+  document.getElementById('levelEnd').style.display='flex';
+}
+function nextLevel(){
+  overlayOpen=false;
+  document.getElementById('levelEnd').style.display='none';
+  if(level===3){resetGame();return;}
+  startLevel(level+1,level===1);
+}
+
+function startLevel(n,reuseTerrain){
+  level=n;
+  document.getElementById('jobName').textContent=LEVELS[n].name;
+  document.getElementById('start').style.display='none';
+  overlayOpen=false;
+  let S2=S/2;
+  if(!reuseTerrain){
+    while(terrainGrp.children.length)terrainGrp.remove(terrainGrp.children[0]);
+    for(const g of targetGrps)terrainGrp.remove(g);
+    targetGrps.length=0;
+    pads=padDefs(n);
+    S=n===3?40:24;N=n===3?80:48;cell=S/N;V=N+1;
+    S2=S/2;
+    heights=new Float32Array(V*V);compaction=new Float32Array(V*V);
+    buildHeights();computeCover();
+    if(terrainGeom)terrainGeom.dispose();
+    terrainGeom=buildTerrain();
+    if(terrainMesh)terrainGrp.remove(terrainMesh);
+    terrainMesh=new THREE.Mesh(terrainGeom,terrainMat);
+    terrainMesh.castShadow=true;terrainMesh.receiveShadow=true;
+    terrainGrp.add(terrainMesh);
+    for(const p of pads)targetGrps.push(makeTargetGrid(p));
+    for(const g of targetGrps)terrainGrp.add(g);
+    while(placedGrp.children.length)placedGrp.remove(placedGrp.children[0]);
+    if(dozer)moveTo(dozer,pads[0].x-S2*0.34,pads[0].z);
+    if(roller)moveTo(roller,pads[0].x-S2*0.34,pads[0].z+2.5);
+    gaugeGrp.visible=false;
+    const base=pads[0].el;
+    sun.position.set(S2*0.55,base+S2*0.75,S2*0.4);
+    const hb=S*0.9;
+    sun.shadow.camera.left=-hb;sun.shadow.camera.right=hb;
+    sun.shadow.camera.top=hb;sun.shadow.camera.bottom=-hb;
+    sun.shadow.camera.far=hb*3;
+  }
+  budget=LEVELS[n].budget;
+  testsRun=0;buildEnded=false;
+  updateStats();dirty=true;refreshMesh();
+  updateToolUI();
+  const cy=n===3?618:619.5;
+  camera.position.set(n===3?38:26,(pads[0].el||620)+(n===3?30:22),n===3?44:30);
+  controls.target.set(0,cy,0);
+  controls.maxDistance=n===3?150:90;
+  controls.update();
+  document.getElementById('pal').classList.toggle('show',LEVELS[n].build);
+  document.getElementById('pal').style.display=LEVELS[n].build?'flex':'none';
+  const ifcNote=document.getElementById('ifcNote');
+  if(ifcNote){
+    ifcNote.style.display=LEVELS[n].build?'block':'none';
+    if(LEVELS[n].build)ifcNote.textContent=ifcFound?'3D model: IFC (foundations.ifc)':'3D model: procedural (IFC unavailable)';
+  }
+  const obj={
+    1:'Grade Pad A to EL 620.00 (±0.10 m), compact ≥ 95%, then run the nuclear test.',
+    2:'Certify Pad A, then place all foundation elements. No budget constraint.',
+    3:'Grade all three pads to their design EL, compact to ≥ 95%, pass the nuclear test.'
+  }[n];
+  document.getElementById('objTxt').textContent=obj;
+  toast(LEVELS[n].name+' — '+(n===1?'grade the blue pad to its elevation.':n===2?'place every element.':'certify all three pads.'));
+}
+function resetGame(){
+  level=1;overlayOpen=false;
+  document.getElementById('levelEnd').style.display='none';
+  document.getElementById('testRead').style.display='none';
+  document.getElementById('start').style.display='flex';
+  startLevel(1);
+}
+
+function updateHUD(){
+  updateStats();
+  const b=document.getElementById('budget');
+  b.textContent='$'+Math.max(0,budget).toLocaleString();
+  b.classList.toggle('neg',budget<0);
+  document.getElementById('cutV').textContent='cut '+tot.cut.toFixed(1)+' m³';
+  document.getElementById('fillV').textContent='fill '+tot.fill.toFixed(1)+' m³';
+  document.getElementById('padList').innerHTML=pads.map(p=>{
+    const g=p.gradeOK?'ok':(p.avgErr>TOL*3?'bad':'no');
+    const c=p.avgComp>=95?'ok':(p.avgComp>0?'no':'bad');
+    return `<div class="pad"><span>${p.name} · EL ${p.el.toFixed(1)}</span><b class="${g}">${p.gradeOK?'GRADED':p.avgErr.toFixed(2)+' m off'}</b></div>`+
+      `<div class="pad"><span>&nbsp;&nbsp;compaction</span><b class="${c}">${p.avgComp.toFixed(0)}%</b></div>`;
+  }).join('');
+  updateToolUI();
+  if(level===2&&!buildEnded&&allReqMet()){
+    buildEnded=true;
+    setTimeout(openLevelEnd,700);
+  }
+  document.getElementById('stats').textContent=
+    `L${level}|mode=${mode}|budget=${Math.round(budget)}|`+
+    pads.map(p=>`${p.name}:err=${p.avgErr.toFixed(3)}:ok=${p.gradeOK?1:0}:comp=${p.avgComp.toFixed(1)}`).join(';')+
+    `|gradeOK=${pads._gradeOK?1:0}|compOK=${pads._compOK?1:0}|test=${testsRun}`;
+}
+
+function isPaint(){return mode==='cut'||mode==='fill'||mode==='roller';}
+function loop(t){
+  requestAnimationFrame(loop);
+  window.__frames=(window.__frames||0)+1;
+  const dt=Math.min(0.05,(t-lastT)/1000);lastT=t;
+  if(!overlayOpen){
+    if(testInProgress)updateTest(dt);
+    else if(isPaint())brushUpdate(dt);
+  }
+  if(brushRing)brushRing.visible=brushRing.visible&&!overlayOpen;
+  if(dirty&&terrainGeom){dirty=false;refreshMesh();}
+  controls.update();
+  renderer.render(scene,camera);
+  statsTimer+=dt;
+  if(statsTimer>0.15){statsTimer=0;updateHUD();}
+}
+let lastT=performance.now();
+
+function buildEnv(){
+  const cv=document.createElement('canvas');cv.width=512;cv.height=256;
+  const g=cv.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,'#d8e2ea');gr.addColorStop(.5,'#aab6bf');gr.addColorStop(1,'#6e7a83');
+  g.fillStyle=gr;g.fillRect(0,0,512,256);
+  const s=new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(400,32,16),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.BackSide})));
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const env=pmrem.fromScene(s).texture;
+  pmrem.dispose();return env;
+}
+let sun;
+function init(){
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,2000);
+  camera.position.set(26,642,30);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=.08;
+  controls.target.set(0,619.5,0);
+  controls.maxPolarAngle=Math.PI*0.55;
+  controls.minDistance=8;controls.maxDistance=90;
+  scene.add(new THREE.HemisphereLight(0xd8ecff,0x3a2f28,0.8));
+  sun=new THREE.DirectionalLight(0xfff1dd,1.1);
+  sun.position.set(14,638,10);scene.add(sun);
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.near=2;sun.shadow.camera.far=200;
+  sun.shadow.bias=-0.0004;
+  scene.add(new THREE.DirectionalLight(0x4fd0d8,0.3).translateX(-14).translateZ(-12));
+  scene.add(new THREE.AmbientLight(0x404850,0.25));
+  scene.environment=buildEnv();
+
+  terrainGrp=new THREE.Group();scene.add(terrainGrp);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(300,300),mat(0x3d3626,{roughness:1}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=614.5;ground.receiveShadow=true;
+  scene.add(ground);
+  placedGrp=new THREE.Group();scene.add(placedGrp);
+
+  const ringGeo=new THREE.RingGeometry(0.8*brushRadius,brushRadius,40);
+  brushRing=new THREE.Mesh(ringGeo,new THREE.MeshBasicMaterial({color:C.accent,side:THREE.DoubleSide,transparent:true,opacity:0.75,depthTest:false}));
+  brushRing.rotation.x=-Math.PI/2;brushRing.visible=false;scene.add(brushRing);
+
+  dozer=buildVehicleDozer();scene.add(dozer);
+  roller=buildVehicleRoller();scene.add(roller);
+  gaugeGrp=buildGauge();gaugeGrp.visible=false;scene.add(gaugeGrp);
+
+  terrainMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,metalness:0});
+  startLevel(1,false);
+  loadIFCFoundations();
+  resize();
+  window.addEventListener('resize',resize);
+
+  const canvas=renderer.domElement;
+  canvas.addEventListener('pointerdown',e=>{
+    if(overlayOpen||testInProgress)return;
+    canvas.setPointerCapture(e.pointerId);
+    lastPX=e.clientX;lastPY=e.clientY;
+    if(mode==='build'||mode==='remove'){
+      const hit=rayPick(e);
+      if(!hit)return;
+      if(mode==='remove'){
+        const rem=new THREE.Raycaster().intersectObjects(placedGrp.children,false)[0];
+        if(rem){removeEl(rem.object);toast('Removed '+(rem.object.userData.placeName||'element')+'.');return;}
+      }else{
+        if(level!==2){toast('The build phase unlocks in Job 2.');return;}
+        const P=pads[0],wx=hit.point.x,wz=hit.point.z;
+        if(Math.abs(wx-P.x)<=P.w/2+0.5&&Math.abs(wz-P.z)<=P.d/2+0.5){
+          placeEl(selectedBuild,wx,wz);
+          toast((selectedBuild||'Element')+' placed ('+countPlaced(selectedBuild)+' / '+BLD[selectedBuild].req+').');
+        }
+        return;
+      }
+    }
+    paintDown=true;
+  });
+  canvas.addEventListener('pointermove',e=>{lastPX=e.clientX;lastPY=e.clientY;});
+  const end=()=>{paintDown=false;};
+  canvas.addEventListener('pointerup',end);
+  canvas.addEventListener('pointercancel',end);
+
+  document.getElementById('startBtn').addEventListener('click',()=>{overlayOpen=false;document.getElementById('start').style.display='none';toast('Grade the pad to EL 620.00 — cut high, fill low.');});
+  document.getElementById('nextBtn').addEventListener('click',nextLevel);
+  document.getElementById('testClose').addEventListener('click',closeReadout);
+  document.getElementById('mCut').addEventListener('click',()=>setMode('cut'));
+  document.getElementById('mFill').addEventListener('click',()=>setMode('fill'));
+  document.getElementById('mRoll').addEventListener('click',()=>setMode('roller'));
+  document.getElementById('mTest').addEventListener('click',()=>runTest());
+  document.getElementById('brush').addEventListener('input',e=>{
+    brushRadius=+e.target.value;
+    brushRing.geometry.dispose();
+    brushRing.geometry=new THREE.RingGeometry(0.8*brushRadius,brushRadius,40);
+    updateToolUI();
+  });
+  for(const b of document.querySelectorAll('.pb')){
+    b.addEventListener('click',()=>{
+      if(level!==2){toast('The build phase unlocks in Job 2.');return;}
+      if(b.dataset.b==='Remove'){setMode('remove');}
+      else setMode('build',b.dataset.b);
+    });
+  }
+  window.addEventListener('keydown',e=>{
+    if(overlayOpen&&e.key!=='Enter')return;
+    const map={1:'cut',2:'fill',3:'roller',4:'build',5:'remove'};
+    if(map[e.key])setMode(map[e.key]);
+    if(e.key==='t'||e.key==='T')runTest();
+    if(e.key==='[')brushRadius=Math.max(0.5,brushRadius-0.25);
+    if(e.key===']')brushRadius=Math.min(2.5,brushRadius+0.25);
+  });
+
+  document.getElementById('load').style.display='none';
+  document.getElementById('loadTxt').textContent='done';
+  requestAnimationFrame(loop);
+
+  window.__game={
+    mode:()=>mode,
+    setMode,brush:r=>{brushRadius=r;updateToolUI();},
+    h:(x,z)=>groundH(x,z),
+    cut:(x,z,d)=>applyDelta(x,z,-Math.abs(d)),
+    fill:(x,z,d)=>applyDelta(x,z,Math.abs(d)),
+    compact:(x,z,p)=>applyComp(x,z,p),
+    autoGrade:pct=>{
+      for(const p of pads)for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+        const k=j*V+i;
+        if(cover[k]>=0)heights[k]+=(pads[cover[k]].el-heights[k])*pct;
+      }
+      dirty=true;
+    },
+    autoCompact:pct=>{
+      for(let j=0;j<V;j++)for(let i=0;i<V;i++)if(cover[j*V+i]>=0)compaction[j*V+i]=pct;
+      dirty=true;
+    },
+    test:sync=>runTest(sync),
+    place:(k,x,z)=>placeEl(k,x,z),
+    placeAll:()=>placeAllRequired(),
+    count:(k)=>countPlaced(k),
+    loadIfc:()=>loadIFCFoundations(),
+    ifc:()=>ifcFound?Object.fromEntries(Object.entries(ifcFound).map(([k,v])=>[k,v.length])):null,
+    info:()=>{
+      updateStats();updateHUD();
+      return {level,budget,testsRun,gradeOK:pads._gradeOK,compOK:pads._compOK,
+        avgComp:pads._avgComp,pads:pads.map(p=>({name:p.name,el:p.el,err:p.avgErr,comp:p.avgComp,ok:p.gradeOK})),
+        cut:tot.cut,fill:tot.fill,mode,selectedBuild};
+    },
+    start:()=>{document.getElementById('start').style.display='none';overlayOpen=false;},
+    reset:()=>{resetGame();document.getElementById('start').style.display='none';overlayOpen=false;}
+  };
+}
+function resize(){
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+}
+try{init();}catch(err){
+  document.getElementById('loadTxt').textContent='failed';
+  document.getElementById('loadErr').textContent=String(err&&err.stack||err);
+}
+</script>
+</body>
+</html>
