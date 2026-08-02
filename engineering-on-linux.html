@@ -1,0 +1,366 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineering on Ubuntu Linux &mdash; How a Geotechnical Engineer Runs the Job | Heston Norcott</title>
+<meta name="description" content="A working geotechnical engineer's practical guide to running the job on Ubuntu Linux: QGIS, Python, 3-D site models, and applied AI for AEC — what runs, what doesn't, and how to set it up.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/engineering-on-linux.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Engineering on Ubuntu Linux">
+<meta property="og:description" content="A practical field guide to running geotechnical &amp; civil engineering work on Ubuntu Linux.">
+<meta property="og:url" content="https://thebigpicture.tech/engineering-on-linux.html">
+<meta name="theme-color" content="#0c1a1c">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:64px 22px 56px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(34px,6vw,54px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero .sub{max-width:64ch;font-size:clamp(15.5px,2vw,19px);color:#b9cbc9;margin:20px 0 0}
+  .hero .sub b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:56px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(23px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:70ch;margin:0 0 30px;font-size:15.5px}
+
+  .why{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 30px}
+  .why h3{margin:0 0 12px;font-size:19px;letter-spacing:-.01em}
+  .why p{color:var(--muted);font-size:15px;line-height:1.62;margin:0 0 12px;max-width:76ch}
+  .why p:last-child{margin-bottom:0}
+  .why b{color:var(--ink)}
+
+  .stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card h3{margin:0 0 4px;font-size:17px;letter-spacing:-.01em}
+  .card h3 span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:6px}
+  .card .app{font-family:var(--mono);font-size:13px;color:var(--accent);margin-bottom:8px}
+  .card p{margin:0 0 10px;color:var(--muted);font-size:14.2px;line-height:1.58}
+  .card p:last-child{margin-bottom:0}
+  .card .cmd{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:10px;display:block;
+    overflow-x:auto;color:var(--ink)}
+
+  .note{background:var(--panel-2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+    padding:16px 20px;margin:20px 0;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .note b{color:var(--ink)}
+  .note.flag{border-left-color:#c99b4d}
+
+  .steps{counter-reset:step;list-style:none;margin:0;padding:0}
+  .steps li{position:relative;padding:14px 0 14px 56px;border-bottom:1px solid var(--line);
+    color:var(--muted);font-size:15px;line-height:1.55}
+  .steps li:last-child{border-bottom:none}
+  .steps li::before{counter-increment:step;content:counter(step);
+    position:absolute;left:0;top:13px;width:34px;height:34px;border-radius:50%;
+    background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-size:13px;
+    display:flex;align-items:center;justify-content:center;font-weight:700}
+  .steps b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    text-align:left;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+  td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td:first-child{font-weight:600}
+  td.muted{color:var(--muted)}
+
+  .cta-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:36px;text-align:center}
+  .cta-box h2{font-size:clamp(21px,2.8vw,27px);margin:0 0 10px;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);max-width:56ch;margin:0 auto 22px;font-size:15px}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:8px;padding:11px 18px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);transition:.15s;
+    display:inline-flex;align-items:center;gap:7px;margin:0 5px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+  .btn.solid:hover{filter:brightness(1.08);color:var(--accent-ink)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="./index.html">Heston Norcott<b>.</b></a>
+  <span class="links">
+    <a href="./index.html#tools">Work</a>
+    <a href="./learn.html">Learn</a>
+    <a href="./diagrams.html">Diagrams</a>
+    <a href="./index.html#services" class="hideS">Services</a>
+    <a href="./index.html#contact">Hire me</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Field guide &middot; Ubuntu 24.04 &middot; Written by a practicing geotechnical engineer</p>
+  <h1>Engineering on Ubuntu Linux</h1>
+  <p class="sub">I do geotechnical and civil engineering on a Linux desktop every day &mdash; site
+    characterization, soil classification, seepage and slope analysis, 3-D site models, and applied
+    AI over project documents. This page is the honest map of what runs on Ubuntu, what it costs to
+    set up, and what &mdash; still, in 2026 &mdash; stubbornly does not. No hype, no gaming.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="why">
+    <h3>Why run an engineering workstation on Linux?</h3>
+    <p>The serious engineering suites (gINT, Slide, LPile, and friends) are Windows-first, and that's
+      a real constraint, not a marketing line &mdash; I keep a Windows box for the few things that
+      won't leave it. But the <b>other 90% of the discipline</b> &mdash; the maps, the data, the
+      computations, the figures, the writing, the AI &mdash; runs better on Linux: no licensing games,
+      a shell and a package manager for a real automation loop, Python as a first-class citizen, and
+      an open AI stack that keeps client data on your machine instead of someone else's server.</p>
+    <p>This is the stack I actually run. Every piece is one I've used on paid work, and every
+      command below is one that lives in my own setup.</p>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">1 &middot; The baseline</p>
+  <h2 class="sec">Start with Ubuntu 24.04 LTS and the GPU driver</h2>
+  <p class="sec-intro">Almost everything below is a package away. Two non-negotiables: the NVIDIA
+    driver (for the 3-D and local-AI workloads), and Flatpak for the apps that aren't in the apt
+    repos.</p>
+  <ol class="steps">
+    <li><b>Install Ubuntu 24.04 LTS</b> &mdash; the 5-year LTS support cycle beats chasing a release
+      calendar mid-project.</li>
+    <li><b>Install the proprietary NVIDIA driver</b> &mdash; <code>sudo ubuntu-drivers install</code>.
+      Needed for Blender, Godot, and running local LLMs at usable speed on the GPU.</li>
+    <li><b>Enable Flatpak</b> &mdash; <code>sudo apt install flatpak</code> and the Flathub remote.
+      This is how I get current versions of the GUI engineering apps without waiting on distro repos.</li>
+    <li><b>Install Python tooling</b> &mdash; <code>sudo apt install python3 python3-pip git</code>,
+      then keep project environments isolated (<code>venv</code> or <code>micromamba</code>) so a
+      geotech package upgrade can't quietly break a working script.</li>
+  </ol>
+  <div class="note">A headless machine that only runs services doesn't need the desktop at all &mdash;
+    I keep a separate lightweight server (Docker + K3s) that runs the web tools and AI services, and
+    the desktop workstation just talks to it.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">2 &middot; Mapping &amp; site data</p>
+  <h2 class="sec">QGIS is the workhorse</h2>
+  <p class="sec-intro">Site maps, boring locations, geologic mapping, and deliverables as GeoJSON
+    that engineering and land-development teams can actually consume. This is the closest thing on
+    this list to a drop-in replacement for the Windows GIS default.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">QGIS</span>
+      <h3>GIS &amp; site mapping</h3>
+      <p>Borehole and test-pit locations, parcel and right-of-way boundaries, geologic units, and
+        publishing site maps to GeoJSON/GPKG. The projection handling and print-layout system are
+        genuinely production-grade.</p>
+      <code class="cmd">sudo apt install qgis</code>
+    </div>
+    <div class="card">
+      <span class="app">GeoJSON / GPKG</span>
+      <h3>Portable project data</h3>
+      <p>Keep engineering site data as GeoJSON next to the report so a client or reviewer can drop it
+        straight into their own GIS. Versionable in git like any other project deliverable.</p>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">3 &middot; Computation &amp; analysis</p>
+  <h2 class="sec">Spreadsheets for the record, Python for the analysis</h2>
+  <p class="sec-intro">Two layers, deliberately separated: LibreOffice for the hand-checked,
+    reviewable arithmetic a client expects to see, and Python for the computations that a spreadsheet
+    shouldn't be trusted with.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">LibreOffice Calc</span>
+      <h3>Reviewable arithmetic</h3>
+      <p>Bearing capacity, settlement, unit weights, QC logs &mdash; the tabulated work that has to
+        be auditable line by line. Opens native <code>.xlsx</code> without round-trip corruption.</p>
+      <code class="cmd">sudo apt install libreoffice-calc</code>
+    </div>
+    <div class="card">
+      <span class="app">Python + NumPy/SciPy</span>
+      <h3>Real computation</h3>
+      <p>Finite-difference wave propagation (my cavity-detection work is pure NumPy), flow-net
+        solutions, classification decision trees, and any solver a spreadsheet would turn into an
+        unreadable mess.</p>
+      <code class="cmd">pip install numpy scipy</code>
+    </div>
+    <div class="card">
+      <span class="app">Matplotlib</span>
+      <h3>Figures that don't lie</h3>
+      <p>Pressure diagrams, grading curves, N-value plots &mdash; generated from the same numbers the
+        analysis used, so the figure can't disagree with the computation.</p>
+      <code class="cmd">pip install matplotlib</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">4 &middot; Drawings &amp; figures</p>
+  <h2 class="sec">Vector figures, raster edits, and PDF delivery</h2>
+  <div class="stack">
+    <div class="card">
+      <span class="app">Inkscape</span>
+      <h3>Vector technical figures</h3>
+      <p>Cross-sections, stratigraphy callouts, diagram callouts &mdash; SVG, which also means the
+        figures can be generated from code and stay consistent across a report.</p>
+      <code class="cmd">flatpak install flathub org.inkscape.Inkscape</code>
+    </div>
+    <div class="card">
+      <span class="app">GIMP</span>
+      <h3>Raster cleanup</h3>
+      <p>Scan touch-up, site-photo annotation, and anything that arrives as a raster that needs to
+        leave as one.</p>
+      <code class="cmd">sudo apt install gimp</code>
+    </div>
+    <div class="card">
+      <span class="app">LibreOffice Writer</span>
+      <h3>Reports &amp; PDF delivery</h3>
+      <p>The report body, exported to PDF for submittal. Same reviewable-arithmetic rule as Calc:
+        tables and text stay in one auditable document.</p>
+      <code class="cmd">sudo apt install libreoffice-writer</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">5 &middot; 3-D site models</p>
+  <h2 class="sec">Terrain, stratigraphy, and build sequences</h2>
+  <p class="sec-intro">Site models built from real USGS elevation data &mdash; the kind that make a
+    design review actually understand the ground before anyone moves dirt.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">Blender</span>
+      <h3>3-D site &amp; subsurface modeling</h3>
+      <p>Terrain surfaces from elevation grids, cut-face stratigraphy, grading pads, and rendered
+        build-sequence frames. Also the mesh side of the pipeline that feeds the browser tools.</p>
+      <code class="cmd">sudo apt install blender</code>
+    </div>
+    <div class="card">
+      <span class="app">Godot</span>
+      <h3>Interactive 3-D model viewers</h3>
+      <p>Walkable viewers for site and subsurface models &mdash; a <code>.glb</code>/<code>.gltf</code>
+        drop-in viewer that lets reviewers explore a model instead of staring at a static render.</p>
+      <code class="cmd">flatpak install flathub org.godotengine.Godot</code>
+    </div>
+    <div class="card">
+      <span class="app">FFmpeg</span>
+      <h3>Render sequences to video</h3>
+      <p>Turns a frame-by-frame build sequence (excavation, fill, foundation) into a deliverable the
+        client can actually sit through.</p>
+      <code class="cmd">sudo apt install ffmpeg</code>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">6 &middot; Applied AI for engineering</p>
+  <h2 class="sec">Local models, because client data shouldn't leave the machine</h2>
+  <p class="sec-intro">The engineering-safe way to use AI: models that run on your own GPU, over
+    your own documents, with the verification habits that keep a wrong answer off a drawing. See
+    <a href="./learn-ai-01-what-ai-is-good-at.html">what AI is actually good at in engineering</a>.</p>
+  <div class="stack">
+    <div class="card">
+      <span class="app">Ollama</span>
+      <h3>Local LLMs</h3>
+      <p>Report drafting, spec review, and memo Q&amp;A with the model running on the workstation GPU
+        &mdash; no project data sent anywhere. This is the guardrail, not the selling point.</p>
+      <code class="cmd">curl -fsSL https://ollama.com/install.sh | sh</code>
+    </div>
+    <div class="card">
+      <span class="app">Local RAG over project docs</span>
+      <h3>Answers grounded in your files</h3>
+      <p>Retrieve from your own geotech reports, specs, and notes before the model answers, so the
+        response cites the source and you can verify it &mdash; the only way AI belongs in the
+        workflow at all.</p>
+    </div>
+    <div class="card">
+      <span class="app">TRELLIS image&rarr;3-D</span>
+      <h3>Site photos to 3-D</h3>
+      <p>Turns a photograph into a textured mesh for quick conceptual models of an exposed face or
+        borrow-pit condition &mdash; draft-grade geometry, not survey-grade, and labeled as such.</p>
+    </div>
+  </div>
+  <div class="note flag">The rule that keeps this safe: <b>AI drafts, the engineer verifies.</b> Every
+    number a model produces gets checked against a hand calculation or an independent method before
+    it reaches anything with a project number on it.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <p class="sec-label">7 &middot; The honest limits</p>
+  <h2 class="sec">What still won't run on Linux</h2>
+  <p class="sec-intro">Being straight about this is the whole point of the page. If a specific
+    proprietary geotech suite is required by your client, Linux is not the hill to die on.</p>
+  <table>
+    <tr><th>Software</th><th>Status on Linux</th><th>Workaround</th></tr>
+    <tr><td>gINT (geotechnical data management)</td><td class="muted">No native version</td>
+      <td>Windows box / VM with the data files in git-versioned CSV</td></tr>
+    <tr><td>Slide / LPile (slope &amp; pile analysis)</td><td class="muted">Windows-only</td>
+      <td>Windows box, or run the hand calculations in Python for verification</td></tr>
+    <tr><td>MicroStation / Civil 3D</td><td class="muted">Windows-only</td>
+      <td>Deliverables still go out via Windows; geometry moves as DXF/IFC and survives the trip</td></tr>
+    <tr><td>Bluebeam (PDF markup)</td><td class="muted">Windows-only</td>
+      <td>PDF mark-up on Linux with web-based tools; fine for review cycles</td></tr>
+  </table>
+  <div class="note">The split I actually live by: <b>anything that must run on Windows runs on
+    Windows</b>, and everything else runs on Ubuntu with a proper automation loop. The boundary is
+    explicit, documented, and never a surprise at deadline time.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="cta-box">
+    <h2>Every tool on this site runs in the browser.</h2>
+    <p>Because the deliverable should never depend on your OS. The calculators and simulators on this
+      site &mdash; soil classification, slope stability, cavity detection &mdash; run entirely in the
+      browser, on any machine that ships one.</p>
+    <a class="btn solid" href="./index.html#tools">See the tools</a>
+    <a class="btn" href="./learn.html">Learn the engineering</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Heston Norcott &middot; Geotechnical Engineer, E.I. &middot; Las Vegas, NV</span>
+  <span>Educational content only &mdash; not engineering advice for a specific project.</span>
+</div></footer>

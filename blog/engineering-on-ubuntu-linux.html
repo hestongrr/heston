@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Run My Engineering Work on Ubuntu Linux — Here's How — Heston Norcott, E.I.</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/blog/engineering-on-ubuntu-linux.html">
+<meta name="description" content="A geotechnical engineer's honest account of running the job on Ubuntu Linux: QGIS, Python, 3-D site models, and local AI — what works, what doesn't, and how I split the difference with Windows.">
+<meta property="og:title" content="I Run My Engineering Work on Ubuntu Linux — Here's How">
+<meta property="og:description" content="The real stack: QGIS, Python, 3-D site models, local AI — and the Windows-only tools I still keep around.">
+<meta property="og:url" content="https://thebigpicture.tech/blog/engineering-on-ubuntu-linux.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#ECEEEB; --panel:#F7F8F5; --ink:#171A18; --muted:#586360; --line:#D6DBD6; --accent:#0E6C77; --accent-ink:#fff; --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace; --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+  .wrap{max-width:680px;margin:0 auto;padding:40px 22px}
+  h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  h2{font-size:19px;margin:28px 0 10px}
+  p{font-size:15px;margin:0 0 14px;color:var(--ink)}
+  a{color:var(--accent)}
+  .back{font-family:var(--mono);font-size:12px;display:inline-block;margin-bottom:20px}
+  ul{font-size:15px;margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:4px}
+  .note{background:var(--panel);border-left:3px solid var(--accent);padding:14px 18px;font-size:14px;margin:0 0 14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/blog/">&larr; Blog</a>
+<h1>I Run My Engineering Work on Ubuntu Linux &mdash; Here's How</h1>
+<div class="meta">August 2, 2026 &middot; Heston Norcott, E.I.</div>
+
+<p>People assume a geotechnical engineer's desktop has to be Windows. CAD, gINT, slope software, Bluebeam &mdash; that's the ecosystem the discipline grew up on, and nobody's pretending it doesn't exist. But I do the other 90% of the work on Ubuntu, and I've stopped treating that as a quirk and started treating it as an advantage.</p>
+
+<p>The honest version: <strong>some proprietary geotech software still won't leave Windows</strong>, so I keep a Windows machine for those specific things. Everything else &mdash; the maps, the data, the computation, the figures, the writing, the AI &mdash; lives on Linux, where I have a shell, a package manager, and a Python that actually belongs to the machine.</p>
+
+<h2>The Stack</h2>
+
+<ul>
+<li><strong>QGIS</strong> for site mapping &mdash; boring locations, geologic units, parcels, and deliverables as GeoJSON that a client's GIS can read without conversion ceremonies. This one is a genuine drop-in replacement.</li>
+<li><strong>LibreOffice Calc</strong> for the reviewable arithmetic &mdash; bearing capacity, settlement, unit weights &mdash; the tabulated work that has to be audited line by line. It opens native <code>.xlsx</code> without mangling it.</li>
+<li><strong>Python with NumPy and SciPy</strong> for the computation a spreadsheet shouldn't be trusted with &mdash; including my master's-thesis finite-difference wave propagation work, which is pure NumPy.</li>
+<li><strong>Inkscape and GIMP</strong> for vector figures and raster cleanup. My technical figures are generated from code, so a figure can't disagree with the calculation it came from.</li>
+<li><strong>Blender, Godot, and FFmpeg</strong> for 3-D site models &mdash; terrain from real USGS elevation, stratigraphy in the cut faces, and rendered build sequences delivered as video.</li>
+<li><strong>Local AI (Ollama + RAG)</strong> for report drafting and spec review, running on my own GPU. The reason that matters: <strong>client data stays on the machine</strong>. No project number is ever sent to a third-party server.</li>
+</ul>
+
+<h2>What Still Runs on Windows</h2>
+
+<p>Being straight about this is the whole point. gINT, Slide, LPile, Civil 3D, MicroStation, Bluebeam &mdash; no native Linux versions, and I don't pretend otherwise. The boundary is explicit and documented: <strong>anything that must run on Windows runs on Windows</strong>, and everything else runs on Ubuntu with a proper automation loop. It's never a surprise at deadline time.</p>
+
+<h2>Why This Beats The Spreadsheet-Only Workflow</h2>
+
+<p>On Windows, my tools were islands. The boring log lived in one program, the settlement calc in another, and getting a number from one to the other meant copy-paste. On Linux, they're all reachable from one shell &mdash; I can read field data, run a classification, generate the log, and drop the result into a report without re-entering anything by hand.</p>
+
+<p>The difference isn't the operating system. It's the <strong>automation loop</strong> that Linux makes trivial, and that a desktop with no shell never offered.</p>
+
+<h2>Learn the Setup</h2>
+
+<p>I wrote up the full field guide &mdash; every package, every command, and the honest limits table &mdash; in <a href="/engineering-on-linux.html">Engineering on Ubuntu Linux</a>. It's free, it's specific, and it's the setup I actually run on paid work.</p>
+
+<p>And because a deliverable should never depend on your OS, every tool on this site runs in the browser: <a href="/boring-log-generator.html">boring logs</a>, <a href="/slope-stability.html">slope stability</a>, <a href="/cavity-detection-sim.html">surface-wave cavity detection</a> &mdash; on Windows, macOS, or Linux, no install required.</p>
+
+<p>I build custom engineering automation tools for contract. If your team has a workflow that's eating hours every week, <a href="/#contact">let's talk</a>.</p>
+
+</div>
+</body>
+</html>
