@@ -15,6 +15,7 @@ and no build step.
 | **[Red Rock 3D Site Model](https://thebigpicture.tech/redrock-3d.html)**<br>`redrock-3d.html` | Real USGS elevation data of Red Rock Canyon, Nevada, rendered as an interactive 3-D site block — terrain surface, subsurface stratigraphy in the cut faces, and a graded building pad with engineered fill. Three.js, terrain data embedded. |
 | **[Boring Log Generator](https://thebigpicture.tech/boring-log-generator.html)**<br>`boring-log-generator.html` | Enter soil strata, SPT N-values and groundwater depth; renders a professional USCS boring log with hatch patterns and an SPT plot, exportable to PNG. |
 | **[SoilBox](https://thebigpicture.tech/soilbox.html)**<br>`soilbox.html` | A falling-sand physics toy running real soil behavior — sand slumps to its angle of repose, cohesive mud stands steeper, water seeks its level — with the underlying soil mechanics documented on the page. |
+| **[USCS Classification — Python port](uscs-classify/)**<br>`uscs-classify/` | The ASTM D2487 algorithm from the calculator above, ported to Python and contributed to the open-source [`groundhog`](https://github.com/snakesonabrain/groundhog) geotechnical library (GPL-3.0) — classify a soil from sieve and Atterberg data, with the full decision path returned for traceability. |
 
 ## Diagram library — `pe-diagrams/`
 
@@ -48,5 +49,12 @@ Available for contract and expert work — details and contact at
 
 ## License
 
-© Heston Norcott. All rights reserved. Source is published for review and demonstration.
-Contact me for licensing or custom builds.
+Dual-licensed by scope — see [`LICENSING.md`](LICENSING.md) and [`LICENSE`](LICENSE).
+
+- **GPL-3.0-only:** the USCS soil-classification logic — the ASTM D2487
+  algorithm in [`uscs-soil-classification-calculator.html`](uscs-soil-classification-calculator.html)
+  and its Python port in [`uscs-classify/`](uscs-classify/), which is
+  contributed to the open-source `groundhog` geotechnical library.
+- **All rights reserved:** everything else — the other tools, models, diagrams,
+  and content — remains © Heston Norcott, published for review and
+  demonstration. Contact for licensing or custom builds.
