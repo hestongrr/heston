@@ -146,13 +146,13 @@ class Test_USCSClassify(unittest.TestCase):
         self.assertTrue(result['Fine grained'])
 
     def test_validation_out_of_range(self):
-        self.assertRaises(
-            ValueError,
-            uscs_classify.uscs_classify,
-            percent_passing_200=101.0,
-            percent_passing_4=70.0,
-            d60=2.0, d30=0.5, d10=0.1,
-            liquid_limit=35.0, plastic_limit=20.0)
+        with self.assertWarns(UserWarning):
+            result = uscs_classify.uscs_classify(
+                percent_passing_200=101.0,
+                percent_passing_4=70.0,
+                d60=2.0, d30=0.5, d10=0.1,
+                liquid_limit=35.0, plastic_limit=20.0)
+        self.assertIsNone(result['Group symbol'])
 
 
 if __name__ == "__main__":
