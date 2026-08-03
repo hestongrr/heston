@@ -18,8 +18,17 @@ The following are licensed under the **GNU General Public License v3.0**
 distribution under its terms:
 
 - **The USCS soil-classification logic** — the ASTM D2487 classification
-  algorithm in [`uscs-soil-classification-calculator.html`](uscs-soil-classification-calculator.html)
-  and its Python port in [`uscs-classify/`](uscs-classify/).
+  algorithm in [`uscs-classify.js`](uscs-classify.js) and its Python port in
+  [`uscs-classify/`](uscs-classify/).
+
+The algorithm lives in its own file on purpose. It used to sit inline in
+[`uscs-soil-classification-calculator.html`](uscs-soil-classification-calculator.html),
+which carried a whole-file `GPL-3.0-only` marker — but that page also loads a
+third-party analytics tag and is otherwise reserved work, so a file-level GPL
+claim over it was wrong in both directions: it over-claimed the page, and it
+handed anyone redistributing the file an embedded analytics ID they could not
+sublicense. Splitting the algorithm out makes the licence boundary exactly the
+algorithm. **The page itself is not GPL.**
 
 This code is contributed to the open-source geotechnical Python library
 [`groundhog`](https://github.com/snakesonabrain/groundhog) (GPL-3.0), which

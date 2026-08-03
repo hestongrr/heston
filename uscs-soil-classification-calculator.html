@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <!--
-SPDX-License-Identifier: GPL-3.0-only
+© Heston Norcott. All rights reserved.
 
-The ASTM D2487 soil-classification logic in this file is free software under
-the GNU General Public License v3.0. See LICENSING.md and LICENSE. All other
-files in this repository remain © Heston Norcott, all rights reserved.
+This page is NOT under the GPL. The ASTM D2487 classification logic it calls is,
+and lives in its own file: uscs-classify.js (SPDX: GPL-3.0-only). Keeping the
+algorithm in a separate file is deliberate — it means the free-software licence
+covers exactly the algorithm, and not this page's markup, styling, or the
+third-party analytics tag it loads. See LICENSING.md.
 -->
 <html lang="en">
 <head>
@@ -253,92 +255,27 @@ files in this repository remain © Heston Norcott, all rights reserved.
   <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> · <a href="/">thebigpicture.tech</a> · <a href="/boring-log-generator.html">boring log generator</a> · <a href="/slope-stability.html">slope stability</a></span>
 </div></footer>
 
+<!-- the GPL-3.0 ASTM D2487 algorithm — the only GPL code this page uses -->
+<script src="./uscs-classify.js"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
 const IN = ["p200","p4","d60","d30","d10","ll","pl","org"];
 
+// Thin DOM adapter. The ASTM D2487 logic itself lives in uscs-classify.js, which is
+// the GPL-3.0 part of this project; this page is not GPL. See LICENSING.md.
 function classify(){
-  const p200=+$("p200").value, p4=+$("p4").value;
-  const D60=+$("d60").value, D30=+$("d30").value, D10=+$("d10").value;
-  const LL=+$("ll").value, PL=+$("pl").value, organic=$("org").checked;
-  const PI = LL - PL;
-  const steps = [];
-  let sym="—", name="Enter values", warn="";
+  const r = classifyUSCS({
+    p200: $("p200").value, p4: $("p4").value,
+    D60:  $("d60").value,  D30: $("d30").value, D10: $("d10").value,
+    LL:   $("ll").value,   PL:  $("pl").value,  organic: $("org").checked,
+  });
 
-  const Aline = 0.73*(LL-20);
-  const Uline = 0.9*(LL-8);
-
-  if (p200 >= 50){
-    // ---------- FINE-GRAINED ----------
-    steps.push(["#200", `<b>${p200}%</b> passing ≥ 50% → <b>fine-grained</b>`]);
-    steps.push(["PI", `LL ${LL} − PL ${PL} = <b>PI ${PI.toFixed(1)}</b>`]);
-    steps.push(["A-line", `PI = 0.73(${LL} − 20) = <b>${Aline.toFixed(1)}</b> — sample is
-                 <b>${PI>=Aline?"above":"below"}</b> it`]);
-    const high = LL >= 50;
-    steps.push(["LL = 50", `LL ${LL} → <b>${high?"high (H)":"low (L)"}</b> plasticity`]);
-    if (organic){
-      sym = high ? "OH" : "OL";
-      name = high ? "Organic clay or organic silt (high plasticity)"
-                  : "Organic clay or organic silt (low plasticity)";
-      steps.push(["organic", "Marked organic → O prefix"]);
-    } else if (!high && PI>=4 && PI<=7 && PI>=Aline){
-      sym="CL-ML"; name="Silty clay";
-      steps.push(["dual", "PI between 4 and 7 and above A-line → borderline <b>CL-ML</b>"]);
-    } else if (PI >= Aline && PI >= 7){
-      sym = high?"CH":"CL"; name = high?"Fat clay":"Lean clay";
-    } else {
-      sym = high?"MH":"ML"; name = high?"Elastic silt":"Silt";
-    }
-    if (PI > Uline && LL>0)
-      warn = "⚠ This point plots ABOVE the U-line. Real soils don't — re-check the lab results.";
-  } else {
-    // ---------- COARSE-GRAINED ----------
-    steps.push(["#200", `<b>${p200}%</b> passing &lt; 50% → <b>coarse-grained</b>`]);
-    const coarse = 100 - p200;                    // total coarse fraction
-    const retained4_total = 100 - p4;             // retained on #4, of total
-    const pctOfCoarse = coarse>0 ? (retained4_total/coarse)*100 : 0;
-    const gravel = pctOfCoarse > 50;
-    steps.push(["#4", `${retained4_total.toFixed(1)}% of the sample retained on #4 =
-      <b>${pctOfCoarse.toFixed(1)}% of the coarse fraction</b> → <b>${gravel?"GRAVEL (G)":"SAND (S)"}</b>
-      <em>(split is on the coarse fraction, not the total)</em>`]);
-    const G = gravel?"G":"S";
-    const base = gravel?"gravel":"sand";
-    const Cu = D10>0 ? D60/D10 : 0;
-    const Cc = (D60>0&&D10>0) ? (D30*D30)/(D60*D10) : 0;
-    const cuMin = gravel?4:6;
-    const wellGraded = Cu>=cuMin && Cc>=1 && Cc<=3;
-    const fineIsClay = PI>=Aline && PI>=7;
-
-    if (p200 < 5){
-      steps.push(["fines", `${p200}% &lt; 5% → clean, grade it`]);
-      steps.push(["Cu / Cc", `Cu = ${Cu.toFixed(1)} (needs ≥ ${cuMin}) · Cc = ${Cc.toFixed(2)}
-        (needs 1–3) → <b>${wellGraded?"well graded":"poorly graded"}</b>`]);
-      sym = G + (wellGraded?"W":"P");
-      name = (wellGraded?"Well-graded ":"Poorly graded ") + base;
-    } else if (p200 <= 12){
-      steps.push(["fines", `${p200}% is in the <b>5–12% band → DUAL SYMBOL</b>`]);
-      steps.push(["Cu / Cc", `Cu = ${Cu.toFixed(1)} · Cc = ${Cc.toFixed(2)} →
-        ${wellGraded?"well graded":"poorly graded"}`]);
-      steps.push(["fines type", `PI ${PI.toFixed(1)} vs A-line ${Aline.toFixed(1)} →
-        ${fineIsClay?"clayey (C)":"silty (M)"}`]);
-      sym = G + (wellGraded?"W":"P") + "-" + G + (fineIsClay?"C":"M");
-      name = (wellGraded?"Well-graded ":"Poorly graded ") + base +
-             (fineIsClay?" with clay":" with silt");
-    } else {
-      steps.push(["fines", `${p200}% &gt; 12% → fines govern the symbol`]);
-      steps.push(["fines type", `PI ${PI.toFixed(1)} vs A-line ${Aline.toFixed(1)} →
-        ${fineIsClay?"clayey (C)":"silty (M)"}`]);
-      sym = G + (fineIsClay?"C":"M");
-      name = (fineIsClay?"Clayey ":"Silty ") + base;
-    }
-  }
-
-  $("sym").textContent = sym;
-  $("nm").textContent  = name;
-  const w=$("warn"); w.hidden=!warn; w.textContent=warn;
-  $("steps").innerHTML = steps.map(s=>`<li><span class="k">${s[0]}</span><span class="v">${s[1]}</span></li>`).join("");
-  drawChart(LL, PI, p200>=50);
+  $("sym").textContent = r.sym;
+  $("nm").textContent  = r.name;
+  const w = $("warn"); w.hidden = !r.warn; w.textContent = r.warn;
+  $("steps").innerHTML = r.steps.map(s=>`<li><span class="k">${s[0]}</span><span class="v">${s[1]}</span></li>`).join("");
+  drawChart(+$("ll").value, r.PI, r.isFine);
 }
 
 // The chart is styled width:100%, so the 720x440 backing store gets stretched by the

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<!--
+© Heston Norcott. All rights reserved.
+
+This describes what the site actually does, verified against the running code
+(portfolio-backend/backend.py) rather than written from a template. If the site's
+data handling changes, change this page too.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy — Heston Norcott</title>
+<meta name="robots" content="index, follow">
+<meta name="description" content="What thebigpicture.tech collects, why, who it goes to, and how to have it deleted. Plain language, no boilerplate.">
+<link rel="canonical" href="https://thebigpicture.tech/privacy.html">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff; --red:#B23A2E;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;--red:#E26A5C;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;--red:#B23A2E;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;--red:#E26A5C;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  nav.top{border-bottom:1px solid var(--line);background:var(--panel)}
+  nav.top .wrap{display:flex;align-items:center;gap:16px;height:54px}
+  nav .name{font-weight:800;font-size:15px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:18px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted);text-decoration:none}
+  header.hd{padding:34px 0 6px}
+  h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+  header.hd p{color:var(--muted);max-width:68ch;margin:0;font-size:15.5px}
+  .prose{max-width:72ch;margin:26px 0 10px}
+  .prose h2{font-size:20px;letter-spacing:-.01em;margin:32px 0 8px}
+  .prose h3{font-size:15px;margin:20px 0 4px}
+  .prose p,.prose li{font-size:15px}
+  .prose code{font-family:var(--mono);font-size:13px;background:var(--panel-2);padding:1px 5px;border-radius:4px}
+  /* the table must scroll inside its own box rather than pushing the page sideways */
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:440px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:20px 0}
+  .box.accent{border-color:var(--accent);border-style:dashed}
+  .box h3{margin-top:0}
+  .meta{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  footer{border-top:1px solid var(--line);margin-top:34px;padding:22px 0}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+</style>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YKDEE0DC2D');
+</script>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <a class="name" href="/">Heston <b>Norcott</b></a>
+  <span class="links">
+    <a href="/#tools">Tools</a>
+    <a href="/projects.html">Projects</a>
+    <a href="/resume.html">Resume</a>
+    <a href="/privacy.html" style="color:var(--accent)">Privacy</a>
+  </span>
+</div></nav>
+
+<header class="hd"><div class="wrap">
+  <h1>Privacy</h1>
+  <p>What this site collects, why, who else sees it, and how to have it deleted.
+     Written against what the code actually does — not a template.</p>
+  <p class="meta">Last updated 3 August 2026 · thebigpicture.tech</p>
+</div></header>
+
+<div class="wrap"><div class="prose">
+
+<h2>The short version</h2>
+<p>This is a one-person engineering portfolio. I collect three things: anonymous usage
+statistics, standard web server logs, and whatever you type into the contact form.
+I don't sell anything to anybody, there are no advertising trackers, and no profile of
+you is built or shared.</p>
+
+<h2>What is collected</h2>
+
+<div class="tablewrap"><table>
+  <tr><th>What</th><th>Where it goes</th><th>Why</th></tr>
+  <tr>
+    <td><b>Google Analytics 4</b><br>Pages viewed, approximate region, device and browser type. Sets cookies.</td>
+    <td>Google (property <code>G-YKDEE0DC2D</code>)</td>
+    <td>To see which tools people actually use, so I know what to build next.</td>
+  </tr>
+  <tr>
+    <td><b>Server logs</b><br>Timestamp, <b>IP address</b>, page requested, response code, referring page, browser user-agent.</td>
+    <td>Stays on my own server. Nothing is sent anywhere.</td>
+    <td>Running the site, spotting errors, and blocking the constant automated attacks every public server gets.</td>
+  </tr>
+  <tr>
+    <td><b>Contact form</b><br>Name, email, company (optional), what you're interested in, your message — and the IP it was sent from.</td>
+    <td>Stored on my server, <b>and forwarded to a private Discord channel I own</b> so I see it quickly.</td>
+    <td>To answer you.</td>
+  </tr>
+</table></div>
+
+<div class="box accent">
+  <h3>The part worth calling out</h3>
+  <p>Contact-form messages are forwarded through <b>Discord</b>, which means the contents
+  of your enquiry pass through a third-party service, not just my server. If you'd rather
+  that didn't happen, email me directly at
+  <a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> instead of using
+  the form. That reaches me the same way with one fewer party involved.</p>
+</div>
+
+<h2>The tools themselves don't send your data anywhere</h2>
+<p>Every calculator, viewer, and 3D tool on this site runs <b>entirely in your browser</b>.
+Soil data, borehole values, slope geometry, and any <code>.ifc</code> model you open in the
+BIM viewer are processed locally on your own machine. None of it is uploaded, stored, or
+seen by me. If you close the tab, it's gone.</p>
+<p>That's a deliberate design decision, not an accident — engineering inputs are often
+confidential, and the safest way to handle a client's numbers is to never receive them.</p>
+
+<h2>Cookies</h2>
+<p>The only cookies set are Google Analytics ones, used to tell repeat visits from new
+ones. There are no advertising or cross-site tracking cookies. You can block them with
+your browser's settings, a content blocker, or Google's
+<a href="https://tools.google.com/dlpage/gaoptout" rel="noopener" target="_blank">opt-out add-on</a>,
+and every tool on the site will keep working normally.</p>
+
+<h2>How long things are kept</h2>
+<p>Server logs rotate automatically and old ones are overwritten. Contact-form messages are
+kept as long as the conversation is useful. If you want yours deleted sooner, ask and
+I'll do it.</p>
+
+<h2>Your data, your call</h2>
+<p>Email <a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> and I will,
+without arguing about it: tell you what I hold about you, correct it, delete it, or send
+it to you. If you're in the UK, EU, or California, you have these rights by law; you have
+them here regardless of where you live.</p>
+
+<h2>Children</h2>
+<p>This site is aimed at practising engineers and students. It isn't directed at children
+and I don't knowingly collect anything from them.</p>
+
+<h2>Changes</h2>
+<p>If what the site does changes, this page changes with it, and the date at the top moves.</p>
+
+<div class="box">
+  <p style="margin:0"><b>Questions, or want something removed?</b>
+  <a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> · 702-204-0407</p>
+</div>
+
+</div></div>
+
+<footer><div class="wrap">
+  <span>&copy; Heston Norcott · Geotechnical Engineer (E.I.)</span>
+  <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> ·
+        <a href="/">thebigpicture.tech</a></span>
+</div></footer>
+
+</body>
+</html>
