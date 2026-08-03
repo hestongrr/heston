@@ -341,16 +341,31 @@ function classify(){
   drawChart(LL, PI, p200>=50);
 }
 
+// The chart is styled width:100%, so the 720x440 backing store gets stretched by the
+// browser — blurry before you even count HiDPI. Size the buffer to the real displayed
+// pixel count and scale the context, keeping all drawing maths in 720x440 logical space.
+const PC_W = 720, PC_H = 440;
+function fitChart(c){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const disp = c.clientWidth || PC_W;
+  const s = Math.max(1, Math.min(3, (disp / PC_W) * dpr));
+  const bw = Math.round(PC_W * s), bh = Math.round(PC_H * s);
+  if(c.width !== bw || c.height !== bh){ c.width = bw; c.height = bh; }
+  const x = c.getContext("2d");
+  x.setTransform(s, 0, 0, s, 0, 0);   // must come after any width/height write
+  return x;
+}
+
 function drawChart(LL, PI, isFine){
-  const c=$("pc"), x=c.getContext("2d");
+  const c=$("pc"), x=fitChart(c);
   const cs=getComputedStyle(document.documentElement);
   const ink=cs.getPropertyValue("--ink").trim()||"#171A18";
   const mut=cs.getPropertyValue("--muted").trim()||"#586360";
   const acc=cs.getPropertyValue("--accent").trim()||"#0E6C77";
   const red=cs.getPropertyValue("--red").trim()||"#B23A2E";
   const line=cs.getPropertyValue("--line").trim()||"#D6DBD6";
-  x.clearRect(0,0,c.width,c.height);
-  const L=54, R=c.width-16, T=16, B=c.height-40;
+  x.clearRect(0,0,PC_W,PC_H);
+  const L=54, R=PC_W-16, T=16, B=PC_H-40;
   const px=ll=>L+(ll/100)*(R-L), py=pi=>B-(pi/60)*(B-T);
 
   x.strokeStyle=line; x.lineWidth=1; x.fillStyle=mut; x.font="11px sans-serif";

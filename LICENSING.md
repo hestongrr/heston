@@ -4,6 +4,13 @@ This repository is **dual-licensed** by scope. Most of it is all-rights-reserved
 portfolio work; a small, explicitly marked subset is free software under the
 GNU General Public License version 3.
 
+This file covers **outbound licensing of the code written here**. For the
+third-party open-source libraries this site redistributes — three.js,
+OrbitControls, simplex-noise, and web-ifc — with their authors, versions,
+licenses, and upstream sources, see [`THIRD-PARTY.md`](THIRD-PARTY.md). Note
+that web-ifc is MPL-2.0, which carries stronger obligations than the MIT
+licenses covering the rest.
+
 ## GPL-3.0 — the contributable code
 
 The following are licensed under the **GNU General Public License v3.0**

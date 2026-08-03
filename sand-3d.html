@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sand3D — Angle of Repose &amp; OSHA Excavation Safety | Heston Norcott</title>
+<meta name="description" content="Interactive 3D sand with real angle-of-repose behavior, tied to OSHA 29 CFR 1926 Subpart P excavation safety — Type C soil, 1.5H:1V slopes, shoring, and silica. Built by Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/sand-3d.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sand3D — Angle of Repose &amp; OSHA Excavation Safety | Heston Norcott">
+<meta property="og:description" content="Interactive 3D sand with real angle-of-repose behavior, tied to OSHA excavation safety.">
+<meta property="og:url" content="https://thebigpicture.tech/sand-3d.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Sand3D — Angle of Repose & OSHA Excavation Safety",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/sand-3d.html",
+  "description": "Interactive 3D sand with angle-of-repose behavior tied to OSHA 29 CFR 1926 Subpart P excavation safety.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#0a0e12; --panel:#12181e; --panel-2:#182029; --ink:#e8eef2; --muted:#7f929e;
+    --line:#222c36; --accent:#e8b64f; --accent-ink:#2a1d04; --warn:#ff8a5c; --danger:#ff5c5c;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#1a1410,#0a0e12);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 14px 40px}
+  .top{width:100%;max-width:1120px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .brand b{color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .home{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
+  .home:hover{color:var(--accent)}
+  .stage{width:100%;max-width:1120px;display:grid;grid-template-columns:1.55fr 1fr;gap:12px}
+  @media (max-width:860px){.stage{grid-template-columns:1fr}}
+  .view{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;
+    box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  canvas#c{width:100%;height:460px;display:block;border-radius:6px;background:#05080b;
+    cursor:crosshair;touch-action:none}
+  @media (max-width:860px){canvas#c{height:340px}}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .btn{font-family:var(--mono);font-size:12px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--ink);border-radius:7px;padding:8px 12px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.on{border-color:var(--accent);background:rgba(232,182,79,.12);color:var(--accent)}
+  .ctl{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  input[type=range]{accent-color:var(--accent);width:110px}
+  .spacer{flex:1}
+  .readout{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .read{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);background:var(--panel-2);
+    border-radius:7px;padding:7px 10px;color:var(--muted)}
+  .read b{color:var(--ink)}
+  .panel{display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card h3{margin:0 0 8px;font-size:13px;letter-spacing:.02em;text-transform:uppercase;
+    font-family:var(--mono);color:var(--accent)}
+  .card p,.card li{font-size:12.5px;line-height:1.55;color:var(--muted);margin:0 0 6px}
+  .card p b{color:var(--ink)}
+  .card ul{margin:0;padding-left:16px}
+  .osha{border-color:rgba(255,140,92,.45);background:linear-gradient(180deg,rgba(255,140,92,.07),rgba(255,140,92,.02) 60%,var(--panel))}
+  .osha h3{color:var(--warn)}
+  .dyn{font-family:var(--mono);font-size:12px;border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  .dyn .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+  .dyn .k{color:var(--muted)}
+  .dyn .v{color:var(--ink)}
+  .dyn .v.bad{color:var(--danger);font-weight:700}
+  .dyn .v.good{color:#7bd88f}
+  .hint{width:100%;max-width:1120px;font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    margin-top:12px;line-height:1.6}
+  .hint b{color:var(--ink)}
+  .disc{width:100%;max-width:1120px;margin-top:14px;padding:12px 16px;border:1px dashed var(--line);
+    border-radius:10px;font-size:12px;color:var(--muted);line-height:1.5}
+  .disc b{color:var(--ink)}
+  .disc .osha-legal{color:var(--warn)}
+</style>
+
+<div class="top">
+  <span class="brand">Sand<b>3D</b></span>
+  <span class="tag">angle of repose &middot; OSHA excavation safety &middot; geotech edition</span>
+  <a class="home" href="/">&larr; thebigpicture.tech</a>
+</div>
+
+<div class="stage">
+  <div class="view">
+    <canvas id="c"></canvas>
+    <div class="controls">
+      <div class="ctl">sand type</div>
+      <div class="ctl">loose
+        <input type="range" id="repose" min="26" max="42" value="34" step="1"> dense
+      </div>
+      <span class="ctl" id="reposeLbl">34&deg; — OSHA Type C (1.5H:1V)</span>
+      <div class="spacer"></div>
+      <button class="btn" id="dump">Dump truck</button>
+      <button class="btn" id="clear">Clear</button>
+    </div>
+    <div class="readout">
+      <span class="read">grains <b id="gCount">0</b></span>
+      <span class="read">pile height <b id="pileH">0.00</b> ft</span>
+      <span class="read">measured slope <b id="meas">—</b></span>
+      <span class="read" id="trend" style="display:none">trending steeper — danger</span>
+
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h3>OSHA 29 CFR 1926 — Subpart P (Excavations)</h3>
+      <p>Sand is <b>Type C soil</b> &mdash; cohesionless and granular. OSHA's maximum allowable
+        slope for Type C is <b>1.5H:1V</b>, or <b>34&deg;</b>. That number is not a guess: it is
+        sand's natural angle of repose. The yellow guide line in the scene is the 1.5H:1V line drawn
+        from the pile crest.</p>
+      <ul>
+        <li><b>0-4 ft</b> deep &mdash; inspect the site; slopes can be temporary.</li>
+        <li><b>&gt;4 ft</b> deep &mdash; <b>egress ladder/ramp required</b> within 25 ft (1926.651).</li>
+        <li><b>&gt;5 ft</b> deep &mdash; <b>protection required</b>: shoring, trench shields,
+          or 1.5H:1V sloping (1926.652). No exceptions for "dry, stable" sand.</li>
+        <li><b>Spoil piles</b> &mdash; keep at least <b>2 ft</b> back from the edge; it's dead load
+          pushing on the trench wall.</li>
+        <li><b>Competent person</b> must inspect daily, before entry, and after rain (1926.651).</li>
+      </ul>
+      <div class="dyn" id="dyn">
+        <div class="row"><span class="k">pile height (trench depth)</span><span class="v" id="dDepth">0.0 ft</span></div>
+        <div class="row"><span class="k">protection required?</span><span class="v good" id="dProt">none &mdash; too shallow</span></div>
+        <div class="row"><span class="k">pile slope vs 1.5H:1V</span><span class="v good" id="dSlope">&le; 34&deg; safe</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Silica &amp; PPE</h3>
+      <p><b>Respirable crystalline silica</b> (29 CFR 1926.1153) is a real killer in this business
+        &mdash; it causes silicosis, COPD, and lung cancer. Cutting, sawing, or dry-grinding
+        sand-rich material (concrete, masonry, sandstone) produces it. The rule: <b>wet methods,
+        local exhaust, or a respirator</b>. This simulation is the only place you should play with
+        dry sand.</p>
+      <p><b>Hard hats, high-vis, and steel toes</b> are the minimum in any active excavation (1926.95).
+        Nobody plans to get crushed by a spoil pile collapse &mdash; they just don't plan for it.</p>
+    </div>
+
+    <div class="card">
+      <h3>Why does it pile?</h3>
+      <p>Dry sand can't stand steeper than its <b>angle of repose</b> &mdash; the steepest slope
+        grains hold without sliding. Drag the slider: <b>loose</b> sand (~30&deg;) slides flat fast,
+        <b>dense</b> sand (~38&deg;) stands steeper and mobilizes strength. Dense sand behaves more
+        like a &ldquo;soil&rdquo; than loose sand &mdash; that's effective stress in action.</p>
+      <p style="margin-top:8px"><b>Try it:</b> pour a pile, then drag the slider from dense to loose.
+        The pile sheds material until it hits the new repose angle &mdash; exactly what a real spoil
+        pile does.</p>
+    </div>
+  </div>
+</div>
+
+<div class="hint">
+  <b>Drag to pour sand.</b> The yellow line is OSHA's 1.5H:1V (34&deg;) slope. &nbsp;•&nbsp;
+  Pile above the line = steeper than OSHA allows for Type C = would need shoring in a real trench. &nbsp;•&nbsp;
+  <b>Dump truck</b> drops a controlled load so you can compare load paths.
+</div>
+
+<div class="disc">
+  <b>Disclaimer:</b> this is an educational toy, not engineering or safety advice.
+  <span class="osha-legal">OSHA requirements above are summarized (29 CFR 1926 Subpart P &amp; 1926.1153);
+  always follow your competent person, project specs, and local/state regulations in the field.</span>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script>
+"use strict";
+const Q = new URLSearchParams(location.search);
+const AUTOSTART = Q.has("autostart");
+
+// ---------- simulation constants ----------
+const D = 0.06;                 // grain diameter (world units)
+const CELL = D * 1.15;          // column cell size (a bit larger so grains don't jam)
+const CAP  = 14000;             // max grains
+const G    = 9.8;               // gravity (m/s^2)
+const GRID = 12;                // grid half-extent (+-GRID units)
+const GN   = Math.ceil(GRID*2/CELL) + 2;   // columns per side
+const FALL_H = 3.4;             // pour drop height
+
+let REPOSE = 34;                // degrees
+const tanRep = () => Math.tan(REPOSE*Math.PI/180);
+const DROP   = () => CELL * tanRep();        // max vertical diff between columns
+
+// ---------- three.js ----------
+const canvas = document.getElementById("c");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// three r128 uses outputEncoding/sRGBEncoding; outputColorSpace is r152+ and is a no-op here
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// 1.1 was tuned against the broken linear output; with correct sRGB + IBL that blows out
+renderer.toneMappingExposure = 0.65;
+const W = canvas.clientWidth, H = canvas.clientHeight;
+renderer.setSize(W, H, false);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0c1013);
+scene.fog = new THREE.Fog(0x0c1013, 26, 60);
+
+const camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 200);
+camera.position.set(7.5, 5.5, 9.5);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.target.set(0, 0.6, 0);
+controls.maxPolarAngle = Math.PI*0.495;
+controls.update();
+
+// Image-based lighting: a procedural sky/ground equirect run through PMREM.
+// Gives every grain real ambient specular instead of one flat directional term.
+// scene.background stays dark on purpose — this only changes lighting.
+function makeSkyTexture(){
+  const cv = document.createElement("canvas");
+  cv.width = 256; cv.height = 128;
+  const g = cv.getContext("2d");
+  const grad = g.createLinearGradient(0, 0, 0, 128);
+  // deliberately a desaturated sky: a saturated blue zenith drags the sand cool
+  // and fights the page's warm palette
+  grad.addColorStop(0.00, "#8fa6bd");   // zenith
+  grad.addColorStop(0.42, "#d3d3cc");   // upper haze
+  grad.addColorStop(0.50, "#eadfc6");   // horizon
+  grad.addColorStop(0.58, "#ab9068");   // sand bounce just below horizon
+  grad.addColorStop(1.00, "#463c30");   // nadir
+  g.fillStyle = grad; g.fillRect(0, 0, 256, 128);
+  // warm sun glow, roughly matching the directional light's elevation
+  const sg = g.createRadialGradient(96, 26, 2, 96, 26, 54);
+  sg.addColorStop(0, "rgba(255,240,205,1)");
+  sg.addColorStop(1, "rgba(255,240,205,0)");
+  g.fillStyle = sg; g.fillRect(0, 0, 256, 128);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.mapping  = THREE.EquirectangularReflectionMapping;
+  tex.encoding = THREE.sRGBEncoding;
+  return tex;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+const skyTex = makeSkyTexture();
+scene.environment = pmrem.fromEquirectangular(skyTex).texture;
+skyTex.dispose();
+pmrem.dispose();
+
+// hemisphere is now only a gentle fill — the env map carries the ambient,
+// and keeping this low is what lets the baked AO stay readable
+scene.add(new THREE.HemisphereLight(0xfff2dd, 0x35322c, 0.25));
+const sun = new THREE.DirectionalLight(0xffe3b3, 1.15);
+sun.position.set(8, 12, 5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = -8; sun.shadow.camera.right = 8;
+sun.shadow.camera.top = 8;   sun.shadow.camera.bottom = -8;
+scene.add(sun);
+
+const M = {
+  ground: new THREE.MeshStandardMaterial({ color:0xb09a6e, roughness:0.92 }),
+  grid:   new THREE.MeshStandardMaterial({ color:0xd8c9a3, roughness:0.92 }),
+  gravel: new THREE.MeshStandardMaterial({ color:0x8f7f5c, roughness:1, transparent:true, opacity:0.9 }),
+  coneY:  new THREE.MeshStandardMaterial({ color:0xff7a1a, roughness:0.8 }),
+  coneW:  new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.8 }),
+  stake:  new THREE.MeshStandardMaterial({ color:0x5a6e7a, roughness:0.9 }),
+  line:   new THREE.LineBasicMaterial({ color:0xffb03a }),
+};
+
+// ground
+const gnd = new THREE.Mesh(new THREE.PlaneGeometry(GRID*6, GRID*6), M.ground);
+gnd.rotation.x = -Math.PI/2;
+gnd.receiveShadow = true;
+scene.add(gnd);
+
+// subtle survey grid in the sand zone
+const gg = new THREE.Mesh(new THREE.PlaneGeometry(GRID*2, GRID*2), M.grid);
+gg.rotation.x = -Math.PI/2; gg.position.y = 0.004;
+scene.add(gg);
+
+// gravel fringe
+for(let i=0;i<240;i++){
+  const a=Math.random()*Math.PI*2, r=GRID+1+Math.random()*3;
+  const g=new THREE.Mesh(new THREE.IcosahedronGeometry(0.05+Math.random()*0.06,0), M.gravel);
+  g.position.set(Math.cos(a)*r, 0.03, Math.sin(a)*r);
+  g.rotation.set(Math.random(),Math.random(),Math.random());
+  scene.add(g);
+}
+
+// --- instanced grains ---
+const grainGeo = new THREE.DodecahedronGeometry(D*0.52, 0);
+// quartz sand is not a perfect diffuser — a little gloss lets the env map read
+const grainMat = new THREE.MeshStandardMaterial({ roughness:0.62, metalness:0 });
+const grains = new THREE.InstancedMesh(grainGeo, grainMat, CAP);
+grains.castShadow = true;
+grains.receiveShadow = false;
+scene.add(grains);
+
+const grainColor = new THREE.Color();
+const baseCol = new THREE.Color(0xd2b67f);
+const GBASE = new Float32Array(CAP*3);   // intrinsic grain colour
+const GCOL  = new Float32Array(CAP*3);   // GBASE * ambient occlusion, uploaded to the GPU
+const GAOY  = new Float32Array(CAP);     // each grain's y, kept for AO refresh
+grains.instanceColor = new THREE.InstancedBufferAttribute(GCOL, 3);
+
+// settled positions (interleaved xyz), count = placed
+const pos = new Float32Array(CAP*3);
+let placed = 0;
+
+// surface heightmap
+const surf = new Float32Array(GN*GN);
+function colX(gx){ return -GRID + gx*CELL + CELL/2; }
+function colZ(gz){ return -GRID + gz*CELL + CELL/2; }
+function col(x, z){
+  return [ Math.max(0, Math.min(GN-1, Math.round((x+GRID)/CELL - 0.5))),
+           Math.max(0, Math.min(GN-1, Math.round((z+GRID)/CELL - 0.5))) ];
+}
+const NBDX = [1,-1,0,0,1,1,-1,-1];
+const NBDZ = [0,0,1,-1,1,-1,1,-1];
+
+// ---------- baked ambient occlusion ----------
+// Horizon-based AO straight off the heightmap we already maintain: march 8 compass
+// directions, find the highest angle the sand rises to, and treat that as blocked sky.
+// This is what makes crevices and the pile toe read as depth instead of flat colour.
+const AO_STEPS = [2, 4, 7];              // cells to march per direction
+const AO_FLOOR = 0.30;                   // never fully black — env light fills the rest
+function aoAt(gx, gz, y){
+  let occl = 0;
+  for(let i=0;i<8;i++){
+    let maxT = 0;
+    const ux = NBDX[i], uz = NBDZ[i];
+    const ulen = (ux && uz) ? 1.4142135 : 1;
+    for(let s=0;s<AO_STEPS.length;s++){
+      const step = AO_STEPS[s];
+      const nx = gx + ux*step, nz = gz + uz*step;
+      if(nx<0||nz<0||nx>=GN||nz>=GN) continue;
+      const dh = surf[nx*GN+nz] - y;
+      if(dh <= 0) continue;
+      const t = dh / (ulen*step*CELL);   // tangent of the elevation angle
+      if(t > maxT) maxT = t;
+    }
+    occl += maxT/Math.sqrt(1+maxT*maxT); // sin(atan(t)) = fraction of that slice blocked
+  }
+  const horizon = 1 - occl/8;
+  // grains below the local surface see almost no sky at all
+  const depth  = surf[gx*GN+gz] - y;
+  const buried = Math.exp(-Math.max(0,depth)/(D*4));
+  return AO_FLOOR + (1-AO_FLOOR) * horizon * (0.35 + 0.65*buried);
+}
+
+// ---------- instance matrices ----------
+// Settled grains never move again, so their matrix is written exactly once, here.
+// Only airborne grains get rewritten per frame. Every grain also gets its own
+// orientation — without it 14k identical dodecahedra all face the same way and
+// the pile reads as a tiled pattern rather than loose material.
+const mtxObj = new THREE.Object3D();
+let matrixDirty = false;         // only re-upload the instance matrices when something moved
+function writeGrainMatrix(i, x, y, z, rx, ry, rz){
+  mtxObj.position.set(x, y, z);
+  mtxObj.rotation.set(rx, ry, rz);
+  mtxObj.updateMatrix();
+  grains.setMatrixAt(i, mtxObj.matrix);
+}
+const TAU = Math.PI*2;
+
+// write grain i's uploaded colour = intrinsic colour * AO
+function shadeGrain(i){
+  const y = GAOY[i];
+  const gx = Math.max(0, Math.min(GN-1, Math.round((pos[i*3]  +GRID)/CELL - 0.5)));
+  const gz = Math.max(0, Math.min(GN-1, Math.round((pos[i*3+2]+GRID)/CELL - 0.5)));
+  const ao = aoAt(gx, gz, y);
+  GCOL[i*3]   = GBASE[i*3]  *ao;
+  GCOL[i*3+1] = GBASE[i*3+1]*ao;
+  GCOL[i*3+2] = GBASE[i*3+2]*ao;
+}
+
+function settle(gx, gz, g){  for(let k=0;k<48;k++){
+    let bx=gx, bz=gz, bh=surf[gx*GN+gz];
+    for(let i=0;i<8;i++){
+      const nx=gx+NBDX[i], nz=gz+NBDZ[i];
+      if(nx<0||nz<0||nx>=GN||nz>=GN) continue;
+      const h=surf[nx*GN+nz];
+      if(h < bh){ bh=h; bx=nx; bz=nz; }
+    }
+    const dist = (bx!==gx && bz!==gz) ? 1.4142135 : 1;
+    if(bh < surf[gx*GN+gz] - DROP()*dist){ gx=bx; gz=bz; }
+    else break;
+  }
+  const h = surf[gx*GN+gz];
+  surf[gx*GN+gz] = h + D;
+  pos[placed*3]   = colX(gx) + (Math.random()-0.5)*CELL*0.55;
+  pos[placed*3+1] = h + D*0.5;
+  pos[placed*3+2] = colZ(gz) + (Math.random()-0.5)*CELL*0.55;
+  grainColor.copy(baseCol).offsetHSL((Math.random()-0.5)*0.03, 0, (Math.random()-0.5)*0.10);
+  GBASE[placed*3]=grainColor.r; GBASE[placed*3+1]=grainColor.g; GBASE[placed*3+2]=grainColor.b;
+  GAOY[placed]=pos[placed*3+1];
+  shadeGrain(placed);
+  // it keeps the orientation it tumbled to on the way down
+  writeGrainMatrix(placed, pos[placed*3], pos[placed*3+1], pos[placed*3+2],
+                   g ? g.rx : Math.random()*TAU,
+                   g ? g.ry : Math.random()*TAU,
+                   g ? g.rz : Math.random()*TAU);
+  matrixDirty = true;
+  placed++;
+}
+
+// --- bootstrap a repose cone instantly (autostart: deterministic pile + OSHA guide) ---
+function bootstrapPile(R){
+  const H = R*tanRep();
+  for(let gz=0;gz<GN;gz++)for(let gx=0;gx<GN;gx++){
+    const x=colX(gx), z=colZ(gz);
+    const d=Math.hypot(x,z);
+    if(d<R) surf[gx*GN+gz] = Math.max(0, H*(1-d/R));
+  }
+  for(let gz=1;gz<GN-1;gz++)for(let gx=1;gx<GN-1;gx++){
+    const h=surf[gx*GN+gz];
+    const n=Math.floor(h/D);
+    for(let k=0;k<n;k++){
+      if(placed>=CAP) return;
+      pos[placed*3]   = colX(gx)+(Math.random()-0.5)*D*0.7;
+      pos[placed*3+1] = k*D + D*0.5 + (Math.random()-0.5)*D*0.5;
+      pos[placed*3+2] = colZ(gz)+(Math.random()-0.5)*D*0.7;
+      grainColor.copy(baseCol).offsetHSL((Math.random()-0.5)*0.03,0,(Math.random()-0.5)*0.10);
+      GBASE[placed*3]=grainColor.r; GBASE[placed*3+1]=grainColor.g; GBASE[placed*3+2]=grainColor.b;
+      GAOY[placed]=pos[placed*3+1];
+      writeGrainMatrix(placed, pos[placed*3], pos[placed*3+1], pos[placed*3+2],
+                       Math.random()*TAU, Math.random()*TAU, Math.random()*TAU);
+      placed++;
+    }
+  }
+  for(let i=0;i<placed;i++) shadeGrain(i);   // surf is final here, so AO is exact
+  matrixDirty = true;
+}
+
+// --- falling grains ---
+const falling = [];
+function spawn(p){
+  if(placed >= CAP) return;
+  const s = CELL*1.3;
+  const g = {
+    x: p.x + (Math.random()-0.5)*s,
+    y: FALL_H + Math.random()*0.4,
+    z: p.z + (Math.random()-0.5)*s,
+    vx: (Math.random()-0.5)*0.7,
+    vy: 0,
+    vz: (Math.random()-0.5)*0.7,
+    // own orientation plus a slow tumble on the way down
+    rx: Math.random()*TAU, ry: Math.random()*TAU, rz: Math.random()*TAU,
+    wx: (Math.random()-0.5)*6, wy: (Math.random()-0.5)*6, wz: (Math.random()-0.5)*6,
+  };
+  falling.push(g);
+}
+function update(dt){
+  for(let i=falling.length-1;i>=0;i--){
+    const g = falling[i];
+    g.vy -= G*dt;
+    g.x += g.vx*dt; g.y += g.vy*dt; g.z += g.vz*dt;
+    g.rx += g.wx*dt; g.ry += g.wy*dt; g.rz += g.wz*dt;
+    const cx = Math.max(0, Math.min(GN-1, Math.round((g.x+GRID)/CELL - 0.5)));
+    const cz = Math.max(0, Math.min(GN-1, Math.round((g.z+GRID)/CELL - 0.5)));
+    const ground = surf[cx*GN+cz] + D*0.5;
+    if(g.y <= ground){
+      falling.splice(i,1);
+      settle(cx,cz,g);
+    }
+  }
+}
+
+// --- OSHA 1.5H:1V guide box from pile crest (visible from any angle) ---
+const guideMat = new THREE.MeshBasicMaterial({ color:0xffb03a, toneMapped:false });
+const guideMesh = new THREE.Mesh(new THREE.BoxGeometry(0.30, 1, 0.30), guideMat);
+guideMesh.visible = false;
+scene.add(guideMesh);
+const guideUp = new THREE.Vector3(0,1,0);
+const guideDir = new THREE.Vector3();
+
+let guideActive = false;
+function updateGuide(){
+  // find pile crest and lowest edge
+  let maxH=0, mgx=0, mgz=0;
+  for(let gz=1;gz<GN-1;gz++)for(let gx=1;gx<GN-1;gx++){
+    const h=surf[gx*GN+gz];
+    if(h>maxH){maxH=h;mgx=gx;mgz=gz;}
+  }
+  if(maxH < D*2){ guideMesh.visible=false; guideActive=false; return; }
+  // steepest direction from crest
+  let bdx=0, bdz=0, bslope=-1;
+  for(let i=0;i<8;i++){
+    const nx=mgx+NBDX[i], nz=mgz+NBDZ[i];
+    if(nx<0||nz<0||nx>=GN||nz>=GN) continue;
+    const dx=colX(nx)-colX(mgx), dz=colZ(nz)-colZ(mgz);
+    const dist=Math.hypot(dx,dz)||1;
+    const s=(maxH-surf[nx*GN+nz])/dist;
+    if(s>bslope){bslope=s;bdx=dx/dist;bdz=dz/dist;}
+  }
+  const px=colX(mgx), pz=colZ(mgz);
+  // 1.5H:1V run to reach ground, drawn floating above the pile surface
+  const run = maxH*1.5;
+  const ex = px+bdx*run, ez = pz+bdz*run;
+  const FLT = 0.16;
+  const ax=px, ay=maxH+FLT, az=pz;
+  const bx2=ex, by=FLT, bz2=ez;
+  guideDir.set(bx2-ax, by-ay, bz2-az);
+  const len = guideDir.length();
+  guideDir.normalize();
+  guideMesh.position.set((ax+bx2)/2, (ay+by)/2, (az+bz2)/2);
+  guideMesh.quaternion.setFromUnitVectors(guideUp, guideDir);
+  guideMesh.scale.set(1, len, 1);
+  guideMesh.visible = true;
+  guideActive = true;
+}
+
+// --- measured pile slope ---
+function measure(){
+  let maxH=0, mgx=0, mgz=0;
+  for(let gz=1;gz<GN-1;gz++)for(let gx=1;gx<GN-1;gx++){
+    const h=surf[gx*GN+gz];
+    if(h>maxH){maxH=h;mgx=gx;mgz=gz;}
+  }
+  if(maxH < D*2) return { h:0, deg:null };
+  let sum=0, n=0;
+  for(let i=0;i<8;i++){
+    const nx=mgx+NBDX[i], nz=mgz+NBDZ[i];
+    const dx=colX(nx)-colX(mgx), dz=colZ(nz)-colZ(mgz);
+    const dist=Math.hypot(dx,dz);
+    const s=(maxH-surf[nx*GN+nz])/dist;
+    if(s>0.15){ sum+=s; n++; }
+  }
+  return { h:maxH, deg: n? Math.atan(sum/n)*180/Math.PI : null };
+}
+
+// --- HUD ---
+const el = id => document.getElementById(id);
+const reposeLbl=el("reposeLbl"), gCount=el("gCount"), pileH=el("pileH"),
+      meas=el("meas"), dDepth=el("dDepth"), dProt=el("dProt"), dSlope=el("dSlope"),
+      trend=el("trend");
+let lastMeasure=0;
+
+function updateHUD(){
+  const m=measure();
+  pileH.textContent = (m.h*3.28).toFixed(2);
+  meas.textContent = m.deg==null ? "—" : m.deg.toFixed(1)+"°";
+  const ft = m.h*3.28;
+  dDepth.textContent = ft.toFixed(1)+" ft";
+  if(ft < 4){ dProt.textContent="none — shallow"; dProt.className="v good"; }
+  else if(ft < 5){ dProt.textContent="egress ladder (≥4 ft)"; dProt.className="v good"; }
+  else { dProt.textContent="SHORING/SLOPE (≥5 ft)"; dProt.className="v bad"; }
+  if(m.deg==null){ dSlope.textContent="—"; dSlope.className="v good"; }
+  else if(m.deg <= 34.5){ dSlope.textContent="≤ 1.5H:1V — OK"; dSlope.className="v good"; }
+  else { dSlope.textContent=m.deg.toFixed(1)+"° steeper than 34°"; dSlope.className="v bad"; }
+  gCount.textContent = placed;
+}
+
+// --- pouring ---
+const pourPt = new THREE.Vector3(0,0,0);
+let pouring = false;
+const plane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
+const ray = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+canvas.addEventListener("pointerdown", e=>{
+  canvas.setPointerCapture(e.pointerId); pouring=true; setPour(e);
+});
+canvas.addEventListener("pointermove", e=>{ if(pouring) setPour(e); });
+function setPour(e){
+  const r=canvas.getBoundingClientRect();
+  mouse.x = ((e.clientX-r.left)/r.width)*2-1;
+  mouse.y = -((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(mouse, camera);
+  const t=ray.ray.intersectPlane(plane, new THREE.Vector3());
+  if(t){ pourPt.x=t.x; pourPt.z=t.z; }
+}
+window.addEventListener("pointerup", ()=>pouring=false);
+
+el("repose").addEventListener("input", e=>{
+  REPOSE = +e.target.value;
+  reposeLbl.textContent = REPOSE==34
+    ? "34° — OSHA Type C (1.5H:1V)"
+    : REPOSE+"° — "+(REPOSE<34?"looser than 1.5H:1V":"steeper than OSHA Type C allows");
+  trend.style.display = REPOSE>34 ? "inline" : "none";
+  dSlope.textContent = REPOSE>34 ? "repose steeper than 34° — shoring needed" : "≤ 1.5H:1V — OK";
+  dSlope.className = "v "+(REPOSE>34?"bad":"good");
+});
+el("dump").addEventListener("click", ()=>{
+  let n=0;
+  const t=setInterval(()=>{
+    for(let i=0;i<8 && placed<CAP;i++){ spawn(pourPt); n++; }
+    if(n>=3000 || placed>=CAP) clearInterval(t);
+  }, 16);
+});
+el("clear").addEventListener("click", ()=>{
+  placed=0; falling.length=0; surf.fill(0);
+  grains.count=0; grains.instanceMatrix.needsUpdate=true;
+  guideMesh.visible=false; guideActive=false;
+  updateHUD();
+});
+
+// --- animate ---
+let aoCursor = 0;
+let last = performance.now();
+let autoT = 0;
+let booted = false;
+
+function frame(now){
+  const dt = Math.min(0.033, (now-last)/1000);
+  last = now;
+
+  if(pouring){
+    let n = Math.min(36, CAP-placed-falling.length);
+    for(let i=0;i<n;i++) spawn(pourPt);
+  }
+
+  // autostart: pre-built repose cone, then a short visible pour so it stays lively
+  if(AUTOSTART){
+    if(!booted){ bootstrapPile(1.3); booted=true; }
+    autoT += dt;
+    if(autoT < 1.0){
+      pourPt.x = 0.3 + Math.sin(autoT*6)*0.3;
+      pourPt.z = 0.1;
+      let n = Math.min(140, CAP-placed-falling.length);
+      for(let i=0;i<n;i++) spawn(pourPt);
+    }
+  }
+
+  update(dt);
+
+  // Settled grains already have their matrix from settle()/bootstrapPile() and never
+  // move, so only the airborne ones are rewritten here — the per-frame matrix cost is
+  // O(falling), not O(placed).
+  grains.count = placed + falling.length;
+  for(let i=0;i<falling.length;i++){
+    const f = falling[i], j = placed+i;
+    if(j >= CAP) break;
+    writeGrainMatrix(j, f.x, f.y, f.z, f.rx, f.ry, f.rz);
+    // airborne grains occupy instance slots past `placed`, which hold no colour yet —
+    // without this they draw black. In free air nothing occludes them, so AO = 1.
+    GCOL[j*3]=baseCol.r; GCOL[j*3+1]=baseCol.g; GCOL[j*3+2]=baseCol.b;
+  }
+  if(falling.length) matrixDirty = true;
+  // AO refresh: the pile keeps changing shape, so re-shade in round-robin slices
+  // rather than re-running every grain every frame.
+  if(placed > 0){
+    const slice = Math.min(placed, 2500);
+    for(let k=0;k<slice;k++){
+      aoCursor = (aoCursor+1) % placed;
+      shadeGrain(aoCursor);
+    }
+  }
+
+  if(matrixDirty){ grains.instanceMatrix.needsUpdate = true; matrixDirty = false; }
+  grains.instanceColor.needsUpdate = true;
+  if(placed>0) updateGuide();
+
+  if(now-lastMeasure>250){ updateHUD(); lastMeasure=now; }
+
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+updateHUD();
+</script>
+</body>
+</html>

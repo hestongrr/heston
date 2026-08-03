@@ -125,6 +125,8 @@
   footer{border-top:1px solid var(--line);padding:26px 0;margin-top:20px}
   footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  /* attribution sits on its own full-width line under the contact row */
+  footer .credits{flex-basis:100%;margin-top:10px;line-height:1.7;opacity:.85}
 
   /* products shelf */
   .prodgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
@@ -301,6 +303,14 @@
           <h3>SoilBox</h3>
           <p>A falling-sand physics toy running real soil behavior: sand piles at its angle of repose,
             cohesive mud stands steeper, water finds its level. With the mechanics explained.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./sand-3d.html">
+          <span class="kind">3D granular physics &middot; OSHA Subpart P</span>
+          <h3>Sand3D: Angle of Repose</h3>
+          <p>Dump sand in 3D and watch it find its own angle of repose &mdash; then see why that angle
+            <i>is</i> OSHA's 1.5H:1V limit for Type C soil. Dial loose to dense, measure the slope,
+            and catch the pile trending steeper than the code allows.</p>
           <span class="go">Open tool &rarr;</span>
         </a>
         <a class="tool" href="./nuke-gauge.html">
@@ -494,6 +504,11 @@
   <div class="wrap">
     <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.)</span>
     <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> &middot; <a href="tel:+17022040407">702-204-0407</a> &middot; <a href="https://github.com/hestongrr" target="_blank" rel="noopener">GitHub</a> &middot; Discord: heston_norcott</span>
+    <span class="credits">The 3D tools are built on
+      <a href="https://github.com/mrdoob/three.js" target="_blank" rel="noopener">three.js</a> (MIT),
+      <a href="https://github.com/jwagner/simplex-noise.js" target="_blank" rel="noopener">simplex-noise.js</a> (MIT) and
+      <a href="https://github.com/ThatOpen/engine_web-ifc" target="_blank" rel="noopener">web-ifc</a> (MPL-2.0)
+      &mdash; thanks to their authors. Full notices: <a href="./THIRD-PARTY.md">THIRD-PARTY.md</a></span>
   </div>
 </footer>
 

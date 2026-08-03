@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IFC / BIM Viewer — Open-Source Web Viewer | Heston Norcott</title>
-<meta name="description" content="Open-source IFC/BIM web viewer built on web-ifc (MIT) and three.js. Load a building model in-browser — no proprietary viewer required. Open any .ifc file locally. Built by Heston Norcott.">
+<meta name="description" content="Open-source IFC/BIM web viewer built on web-ifc (MPL-2.0) and three.js. Load a building model in-browser — no proprietary viewer required. Open any .ifc file locally. Built by Heston Norcott.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://thebigpicture.tech/ifc-viewer.html">
 <meta property="og:type" content="website">
@@ -21,7 +21,7 @@
   "applicationCategory": "EngineeringApplication",
   "operatingSystem": "Any",
   "url": "https://thebigpicture.tech/ifc-viewer.html",
-  "description": "Open-source IFC/BIM web viewer built on web-ifc (MIT) and three.js. Parses and renders IFC building models in the browser, including your own .ifc files, with sectioning and entity statistics.",
+  "description": "Open-source IFC/BIM web viewer built on web-ifc (MPL-2.0) and three.js. Parses and renders IFC building models in the browser, including your own .ifc files, with sectioning and entity statistics.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
 }
@@ -91,7 +91,7 @@
 
 <div class="hud title">
   <div class="brand">IFC / BIM Viewer &middot; <b>Open-Source</b></div>
-  <div class="sub">web-ifc (MIT) + three.js &middot; sample models &middot; <a href="/">thebigpicture.tech</a></div>
+  <div class="sub">web-ifc (MPL-2.0) + three.js &middot; sample models &middot; <a href="/">thebigpicture.tech</a></div>
 </div>
 
 <div class="hud legend">
@@ -104,7 +104,6 @@
   <div class="btnWrap">
     <button class="btn on" id="mGeo">Foundations</button>
     <button class="btn" id="mHouse">Open House</button>
-    <button class="btn" id="mExample">Example Bldg</button>
   </div>
   <div class="fileWrap btn" style="padding:5px 10px" title="Open any .ifc from your computer">open .ifc file
     <input type="file" id="file" accept=".ifc,application/octet-stream">
@@ -308,7 +307,8 @@ function init(){
   resize(); window.addEventListener("resize",resize);
   document.getElementById("mGeo").addEventListener("click",()=>{setBtn("mGeo");loadUrl("models/foundations.ifc","Foundations Geotech Demo",()=>{initModel="geo";});});
   document.getElementById("mHouse").addEventListener("click",()=>{setBtn("mHouse");loadUrl("models/ifcopenhouse.ifc","OpenHouse IFC4",()=>{initModel="house";});});
-  document.getElementById("mExample").addEventListener("click",()=>{setBtn("mExample");loadUrl("models/example.ifc","Example Building",()=>{initModel="example";});});
+  // "Example Bldg" sample removed 2026-08-03 — the model was not licensed for
+  // redistribution. Rationale and provenance kept off the public site.
   document.getElementById("file").addEventListener("change",e=>{
     const f=e.target.files[0];
     if(f)f.arrayBuffer().then(b=>parse(new Uint8Array(b),f.name));
@@ -352,7 +352,7 @@ async function boot(){
 }
 
 function setBtn(id){
-  ["mGeo","mHouse","mExample"].forEach(b=>document.getElementById(b).classList.toggle("on",b===id));
+  ["mGeo","mHouse"].forEach(b=>document.getElementById(b).classList.toggle("on",b===id));
 }
 
 function loadUrl(url,name,cb){

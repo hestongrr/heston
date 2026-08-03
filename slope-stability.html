@@ -194,7 +194,18 @@
 (function(){
   var canvas = document.getElementById('slopeCanvas');
   var ctx = canvas.getContext('2d');
-  var W = canvas.width, H_c = canvas.height;
+  // W/H_c stay the logical drawing space; the backing store is sized to the real
+  // displayed pixels (the canvas is width:100%, so it gets stretched) and the
+  // context is scaled to match. Keeps every coordinate below unchanged.
+  var W = 800, H_c = 500;
+  function fitCanvas(){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var disp = canvas.clientWidth || W;
+    var s = Math.max(1, Math.min(3, (disp / W) * dpr));
+    var bw = Math.round(W * s), bh = Math.round(H_c * s);
+    if(canvas.width !== bw || canvas.height !== bh){ canvas.width = bw; canvas.height = bh; }
+    ctx.setTransform(s, 0, 0, s, 0, 0);   // must follow any width/height write
+  }
 
   function el(id){ return document.getElementById(id); }
   function v(id){ return parseFloat(el(id).value); }
@@ -400,10 +411,11 @@
 
   // ---- drawing ----
   function draw(p, slope, wedgeRes, circRes){
+    fitCanvas();
     ctx.clearRect(0,0,W,H_c);
     var allX=[], allY=[];
     slope.points.forEach(function(pt){allX.push(pt.x);allY.push(pt.y);});
-    allX.push(slope.left-5,slope.right+5); allY.push(0,slope.H+10);
+    allX.push(slope.points[0].x-5,slope.points[slope.points.length-1].x+5); allY.push(0,slope.H+10);
     if(circRes){allX.push(circRes.cx-circRes.r-5,circRes.cx+circRes.r+5);allY.push(circRes.cy-circRes.r-5,circRes.cy+circRes.r+5);}
     var minX=Math.min.apply(null,allX), maxX=Math.max.apply(null,allX);
     var minY=-5, maxY=Math.max.apply(null,allY)+5;
@@ -518,6 +530,10 @@
     el('wtDepth').value=100;
     updateLabels(); run();
   });
+
+  // the canvas is fluid-width, so a resize changes how many real pixels it occupies
+  var rzT;
+  window.addEventListener('resize', function(){ clearTimeout(rzT); rzT = setTimeout(run, 120); });
 
   updateLabels();
   run();
