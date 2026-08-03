@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store">
 <link rel="icon" href="data:,">
 <title>Grade It: Earthworks — Interactive 3D Cut / Fill &amp; Compaction Game | Heston Norcott</title>
 <meta name="description" content="An interactive 3D earthworks simulator: sculpt a building pad to design elevation with cut and fill, compact each lift with a vibratory roller, and pass the nuclear density gauge test at 95% compaction — all within budget. Built by Heston Norcott.">
@@ -64,6 +65,11 @@
   .card .pad b{font-weight:600}
   .card .pad .ok{color:var(--good)} .card .pad .no{color:var(--warn)} .card .pad .bad{color:var(--bad)}
   .card .vol{font-size:11px;color:var(--muted);padding-top:7px;display:flex;justify-content:space-between;border-top:1px solid var(--line)}
+  .card .geo{border-top:1px solid var(--line);margin-top:7px;padding-top:7px}
+  .card .geo .gh{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .card .geo .glo{display:flex;flex-wrap:wrap;gap:3px}
+  .card .geo .gs{width:9px;height:9px;border-radius:2px;border:1px solid rgba(255,255,255,.12);flex:none}
+  .card .geo .gn{font-size:9px;color:var(--ink);white-space:nowrap}
   .tools{left:16px;bottom:16px;background:var(--panel);border:1px solid var(--line);
     border-radius:11px;padding:12px 14px;backdrop-filter:blur(8px);max-width:340px}
   .tools .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
@@ -86,6 +92,11 @@
     border:1px solid var(--line);border-radius:9px;padding:7px 14px;font-size:12px;color:var(--ink);
     opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
   .status.show{opacity:1}
+  .material{left:50%;transform:translateX(-50%);bottom:46px;background:var(--panel);
+    border:1px solid var(--line);border-radius:9px;padding:5px 12px;font-size:11px;
+    font-family:var(--mono);color:var(--muted);pointer-events:none;backdrop-filter:blur(8px);
+    opacity:0;transition:opacity .3s;white-space:nowrap}
+  .material span{color:var(--ink)}
   .overlay{position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
     background:rgba(5,8,12,.72);backdrop-filter:blur(3px)}
   .overlay .box{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line);
@@ -125,6 +136,12 @@
   <div class="obj" id="objTxt"></div>
   <div id="padList"></div>
   <div class="vol"><span id="cutV">cut 0.0 m³</span><span id="fillV">fill 0.0 m³</span></div>
+  <div class="geo">
+    <div class="gh">Soil types</div>
+    <div class="glo" id="soils"></div>
+    <div class="gh" style="margin-top:5px">Rock types (bedrock)</div>
+    <div class="glo" id="rocks"></div>
+  </div>
 </div>
 
 <div class="hud tools" id="tools">
@@ -147,18 +164,20 @@
 
 <div class="hud hint">left-drag paints &middot; right-drag orbits<br>wheel zooms &middot; keys 1-5 tools &middot; T test</div>
 <div class="hud status" id="statusLine"></div>
+<div class="hud material" id="matInfo"></div>
 
 <div id="start" class="overlay">
   <div class="box">
     <div class="big">Grade <b>It.</b></div>
     <div class="sub">Earthworks &amp; compaction simulator — run a pad like a field engineer.</div>
-    <div class="rules">
-      <div><b>Cut</b> — blade high ground toward design elevation (EL).</div>
-      <div><b>Fill</b> — haul in low ground up to EL. Every cubic meter costs money.</div>
-      <div><b>Roller</b> — compact each lift to 95% (unlocks once you're on grade).</div>
-      <div><b>Test</b> — drive the nuclear gauge rod and certify the pad (unlocks at 95%).</div>
-      <div style="color:var(--muted)">Job 1: one pad. Job 2: build the foundations. Job 3: certify the subdivision.</div>
-    </div>
+      <div class="rules">
+        <div><b>Cut</b> — blade high ground toward design elevation (EL).</div>
+        <div><b>Fill</b> — haul in low ground up to EL. Every cubic meter costs money.</div>
+        <div><b>Roller</b> — compact each lift to 95% (unlocks once you're on grade).</div>
+        <div><b>Test</b> — drive the nuclear gauge rod and certify the pad (unlocks at 95%).</div>
+        <div><b>Geology</b> — the subsurface varies: <b>Sand</b> & <b>Clay</b> soil, with <b>Granite</b>, <b>Limestone</b>, <b>Sandstone</b>, <b>Basalt</b>, and <b>Shale</b> bedrock. Hard rock (granite, basalt) can't be cut &mdash; plan around it. <b>Shale</b> and <b>Sandstone</b> break away slowly. <span style="color:var(--muted)">(Rock types shown in the side panel.)</span></div>
+        <div style="color:var(--muted)">Job 1: one pad. Job 2: build the foundations. Job 3: certify the subdivision.</div>
+      </div>
     <button id="startBtn" class="primary">Start Job 1</button>
   </div>
 </div>
@@ -184,10 +203,12 @@
 
 <script src="/lib/three.min.js"></script>
 <script src="/lib/OrbitControls.js"></script>
+<script src="/lib/simplex-noise.js"></script>
 <script>
 "use strict";
 let renderer,scene,camera,controls,terrainGeom,terrainMesh,heights,compaction,cover;
-let V,N,S,cell; const MINH=616,MAXH=622;
+let rockType,soilType,bedrockElev;
+let V,N,S,cell,terrSeed; const MINH=616,MAXH=622;
 let level=1,budget=0,testsRun=0,brushRadius=1.5;
 let mode='orbit',selectedBuild=null;
 let paintDown=false,lastPX=0,lastPY=0;
@@ -196,6 +217,7 @@ let testInProgress=false,testT=0,gaugeGrp=null,gaugeRod=null;
 let buildEnded=false,overlayOpen=false,brokeNotified=false;
 let dozer=null,roller=null,brushRing=null;
 let pads=[],terrainGrp=null,placedGrp=null,targetGrps=[],testOngoing=false,terrainMat=null;
+let rockGrp=null,rockPool=[],rockAssign=null,rockFree=[],rockLabels=null,discovered=[],rockGeos={},rockMats={};
 const tot={cut:0,fill:0};
 
 const TOL=0.10,BRUSH_SPEED=0.7,ROLL_SPEED=30;
@@ -212,6 +234,20 @@ const C={
   ok:0x2fbf71,hiB:0xffb03a,hiH:0xff4d3a,loB:0x4fb0ff,loH:0x3a5dff,
   compB:0x3fae6a,compF:0x7a5f3a
 };
+const SOIL_TYPES={
+  SAND:{id:1,name:"Sand",color:0xd6be78,friction:34,cost:1.0,desc:"Loose, drains fast"},
+  CLAY:{id:2,name:"Clay",color:0x7a5c3a,friction:30,cost:1.3,desc:"Cohesive, holds shape"},
+  GRAVEL:{id:3,name:"Gravel",color:0x8b8577,friction:40,cost:1.1,desc:"Coarse fragment"}
+};
+const ROCK_TYPES={
+  GRANITE:{id:10,name:"Granite",color:0xb9b9b9,hardness:999,cost:5.0,desc:"Hard intrusive — dozer can't cut"},
+  LIMESTONE:{id:11,name:"Limestone",color:0xd4c8a0,hardness:25,cost:3.5,desc:"Sedimentary, breakable"},
+  SANDSTONE:{id:12,name:"Sandstone",color:0xa87c52,hardness:10,cost:2.5,desc:"Weathered, soft"},
+  BASALT:{id:13,name:"Basalt",color:0x4a4a4a,hardness:999,cost:5.0,desc:"Volcanic — dozer can't cut"},
+  SHALE:{id:14,name:"Shale",color:0x6b7a8c,hardness:3,cost:1.5,desc:"Weak, splits easily"}
+};
+const ALL_ROCKS=[ROCK_TYPES.GRANITE,ROCK_TYPES.LIMESTONE,ROCK_TYPES.SANDSTONE,ROCK_TYPES.BASALT,ROCK_TYPES.SHALE];
+const ALL_SOILS=[SOIL_TYPES.SAND,SOIL_TYPES.CLAY,SOIL_TYPES.GRAVEL];
 const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.75,metalness:.05},o||{}));
 const M={
   yel:mat(C.dozer,{roughness:.4,metalness:.12}),
@@ -290,29 +326,56 @@ const lcdMap=makeTex(160,72,(g,w,h)=>{
   g.fillText('pcf',w/2,56);
 });
 
-function hash(x,y){const s=Math.sin(x*127.1+y*311.7)*43758.5453;return(s-Math.floor(s))-0.5;}
+function hash(x,y,s){s=s||0;const v=Math.sin((x+s*57.3)*127.1+(y+s*89.7)*311.7)*43758.5453;return(v-Math.floor(v))-0.5;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+let simNoise;
+function fbm(x,z,oct){
+  let t=0,amp=1,f=1,sum=0;
+  for(let o=0;o<oct;o++){t+=simNoise.noise2D(x*f,z*f)*amp;sum+=amp;amp*=0.5;f*=2;}
+  return t/sum;
+}
 function terH(x,z){
-  let h=619.3;
-  h+=Math.sin(x*0.55)*1.0+Math.cos(z*0.62)*0.85;
-  h+=Math.sin((x+z)*0.31)*0.8+Math.sin((x-z)*0.43)*0.55;
-  h+=hash(Math.floor(x*0.7),Math.floor(z*0.7))*0.5;
+  const u=x/S,v=z/S;
+  let h=619.5;
+  h+=fbm(u*2.2,v*2.2,4)*3.2;        // broad mountain masses
+  h+=Math.abs(fbm(u*3.5,v*3.5,4))*1.5; // ridges/peaks
+  h+=fbm(u*7,v*7,3)*0.7;             // mid detail
+  h+=fbm(u*18,v*18,2)*0.3;           // fine detail
   return Math.max(MINH,Math.min(MAXH,h));
 }
 function padDefs(level){
   const A={name:"Pad A",x:0,z:0,w:10,d:8,el:620.0};
   if(level===3)return[
-    {name:"Pad A",x:-9,z:-4,w:10,d:8,el:620.0},
-    {name:"Pad B",x:0,z:-4,w:10,d:8,el:620.5},
-    {name:"Pad C",x:9,z:4,w:8,d:10,el:619.5}
+    {name:"Pad A",x:-26,z:-15,w:10,d:8,el:620.0},
+    {name:"Pad B",x:0,z:-15,w:10,d:8,el:620.5},
+    {name:"Pad C",x:26,z:15,w:8,d:10,el:619.5}
   ];
   return[A];
 }
 
 function buildHeights(){
+  rockType=new Uint8Array(V*V);
+  soilType=new Uint8Array(V*V);
+  bedrockElev=new Float32Array(V*V);
   for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i;
     const x=-S/2+i*cell,z=-S/2+j*cell;
-    heights[j*V+i]=terH(x,z);
-    compaction[j*V+i]=0;
+    let h=terH(x,z);
+    for(const p of pads){
+      if(Math.abs(x-p.x)<=p.w/2&&Math.abs(z-p.z)<=p.d/2){h=p.el+(h-p.el)*0.35;break;}
+    }
+    heights[k]=h;
+    compaction[k]=0;
+    // surface material: sand / clay / gravel (fine-grained noise)
+    const sv=(hash(Math.floor(x*1.5),Math.floor(z*1.5))+0.5)*3;
+    soilType[k]= sv<1?SOIL_TYPES.SAND.id:sv<2?SOIL_TYPES.CLAY.id:SOIL_TYPES.GRAVEL.id;
+    // bedrock type: zonal patches (coarse noise)
+    const zone=Math.floor((hash(Math.floor(x*0.35),Math.floor(z*0.35))+0.5)*ALL_ROCKS.length);
+    rockType[k]=ALL_ROCKS[zone].id;
+    // bedrock floor: ~8% rock outcrops (barely any soil), rest 1–3 m deep
+    const soilVar=(hash(Math.floor(x*0.9),Math.floor(z*0.9))+0.5);
+    const soilD=soilVar<0.08?0.02+soilVar*0.12:0.8+soilVar*2.2;
+    bedrockElev[k]=heights[k]-soilD;
   }
 }
 function computeCover(){
@@ -357,10 +420,10 @@ function refreshMesh(){
   terrainGeom.computeVertexNormals();
   recolor();
   terrainGeom.attributes.color.needsUpdate=true;
+  syncRocks();
 }
 function recolor(){
   const cols=terrainGeom.attributes.color.array,c=new THREE.Color();
-  const g1=new THREE.Color(C.g1),g2=new THREE.Color(C.g2),g3=new THREE.Color(C.g3);
   const ok=new THREE.Color(C.ok),hiB=new THREE.Color(C.hiB),hiH=new THREE.Color(C.hiH),
     loB=new THREE.Color(C.loB),loH=new THREE.Color(C.loH),
     compB=new THREE.Color(C.compB),compF=new THREE.Color(C.compF);
@@ -378,12 +441,168 @@ function recolor(){
         c.copy(loB).lerp(loH,Math.min(1,(Math.abs(e)-TOL)/1.2));
       }
     }else{
-      const t=Math.max(0,Math.min(1,(h-MINH)/(MAXH-MINH)));
-      c.copy(g1).lerp(g2,Math.min(1,t*1.7)).lerp(g3,Math.max(0,Math.min(1,(t-0.6)/0.4)));
+      const rt=ALL_ROCKS.find(r=>r.id===rockType[k]),st=ALL_SOILS.find(s=>s.id===soilType[k]);
+      if(h<=bedrockElev[k]+0.15){
+        c.setHex(rt.color);
+        c.multiplyScalar(0.88+hash(i*17,j*23)*0.10);
+      }else{
+        c.setHex(st.color);
+        c.multiplyScalar(0.86+hash(i*13,j*19)*0.12);
+      }
     }
+    const dx=(heights[j*V+Math.min(V-1,i+1)]-heights[j*V+Math.max(0,i-1)])/(2*cell);
+    const dz=(heights[Math.min(V-1,j+1)*V+i]-heights[Math.max(0,j-1)*V+i])/(2*cell);
+    const nl=Math.sqrt(dx*dx+dz*dz+1);
+    let sh=(-dx/nl)*0.5+(1/nl)*0.85+(-dz/nl)*0.25;
+    sh=Math.min(1.2,Math.max(0.45,0.6+0.65*sh));
+    c.multiplyScalar(sh);
     cols[k*3]=c.r;cols[k*3+1]=c.g;cols[k*3+2]=c.b;
   }
   terrainGeom.attributes.color.needsUpdate=true;
+}
+function rockTexture(id){
+  const cv=document.createElement('canvas');cv.width=cv.height=128;
+  const g=cv.getContext('2d');
+  const R=ROCK_TYPES;
+  if(id===R.SHALE.id){
+    g.fillStyle='#5d6775';g.fillRect(0,0,128,128);
+    for(let i=0;i<90;i++){
+      g.fillStyle='rgba('+((35+Math.random()*55)|0)+','+((45+Math.random()*55)|0)+','+((60+Math.random()*55)|0)+','+(0.25+Math.random()*0.5)+')';
+      g.fillRect(0,(Math.random()*128)|0,128,1+Math.random()*2);
+    }
+  }else if(id===R.SANDSTONE.id){
+    g.fillStyle='#c9a268';g.fillRect(0,0,128,128);
+    for(let i=0;i<110;i++){
+      g.fillStyle='rgba(70,40,15,'+(0.2+Math.random()*0.4)+')';
+      g.beginPath();g.arc(Math.random()*128,Math.random()*128,Math.random()*1.6+0.4,0,6.29);g.fill();
+    }
+    for(let i=0;i<6;i++){
+      g.fillStyle='rgba(130,95,50,'+(0.18+Math.random()*0.25)+')';
+      g.fillRect(0,(Math.random()*128)|0,128,2+Math.random()*3);
+    }
+  }else if(id===R.GRANITE.id){
+    g.fillStyle='#ece4d2';g.fillRect(0,0,128,128);
+    const spots=['60,60,60','185,120,108','40,40,40','235,235,235'];
+    for(let i=0;i<70;i++){
+      g.fillStyle='rgba('+spots[i%4]+','+(0.5+Math.random()*0.4)+')';
+      g.fillRect(Math.random()*122,Math.random()*122,3+Math.random()*6,3+Math.random()*6);
+    }
+  }else if(id===R.BASALT.id){
+    g.fillStyle='#3b3e43';g.fillRect(0,0,128,128);
+    for(let i=0;i<50;i++){
+      g.fillStyle='rgba('+((45+Math.random()*60)|0)+','+((48+Math.random()*60)|0)+','+((55+Math.random()*65)|0)+',0.6)';
+      g.beginPath();g.arc(Math.random()*128,Math.random()*128,Math.random()*6+1,0,6.29);g.fill();
+    }
+  }else{
+    g.fillStyle='#d8d0c0';g.fillRect(0,0,128,128);
+    for(let i=0;i<30;i++){
+      g.fillStyle='rgba(202,194,176,'+(0.2+Math.random()*0.3)+')';
+      g.beginPath();g.arc(Math.random()*128,Math.random()*128,Math.random()*11+2,0,6.29);g.fill();
+    }
+  }
+  const t=new THREE.CanvasTexture(cv);
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  return t;
+}
+function rockGeom(id,seed){
+  const g=new THREE.DodecahedronGeometry(1,1);
+  const p=g.attributes.position;
+  const P={10:{a:.3,b:.22,f1:2.3,f2:3.1,s:.92},11:{a:.2,b:.17,f1:2.1,f2:2.7,s:1},
+    12:{a:.26,b:.2,f1:2.5,f2:2.9,s:.95},13:{a:.15,b:.13,f1:1.9,f2:2.3,s:1.05},
+    14:{a:.22,b:.18,f1:2.2,f2:2.6,s:.5}};
+  const o=P[id]||P[12];
+  for(let i=0;i<p.count;i++){
+    const x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+    const len=Math.max(1e-4,Math.sqrt(x*x+y*y+z*z));
+    const u=Math.atan2(z,x)/(Math.PI*2);
+    const v=Math.asin(Math.max(-1,Math.min(1,y/len)))/Math.PI;
+    const r=1+o.a*Math.sin(u*6.28*o.f1+seed)+o.b*Math.sin(v*Math.PI*o.f2+seed*2)
+      +o.b*0.6*Math.sin(u*6.28*o.f1*2.5+v*Math.PI*o.f2*2.9+seed*3);
+    p.setXYZ(i,x*r*o.s,y*r*o.s,z*r*o.s);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+function buildRockPool(){
+  while(rockGrp.children.length)rockGrp.remove(rockGrp.children[0]);
+  while(rockLabels.children.length)rockLabels.remove(rockLabels.children[0]);
+  rockPool=[];rockFree=[];discovered=[];rockGeos={};rockMats={};
+  for(const r of ALL_ROCKS){
+    rockGeos[r.id]=[rockGeom(r.id,11),rockGeom(r.id,23)];
+    rockMats[r.id]=new THREE.MeshStandardMaterial({
+      map:rockTexture(r.id),roughness:0.95,metalness:0.02,flatShading:true
+    });
+  }
+  const n=Math.min(400,Math.round(V*V*0.03));
+  for(let i=0;i<n;i++){
+    const m=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshStandardMaterial());
+    const s=0.4+hash(i*1.9,i*3.3)*0.9;
+    m.scale.set(s*1.2,s*0.85,s*1.1);
+    m.rotation.set(hash(i*5.1,i*9.7)*6.28,hash(i*2.3,i*6.1)*6.28,hash(i*8.3,i*4.9)*6.28);
+    m.castShadow=true;m.receiveShadow=true;m.visible=false;
+    rockGrp.add(m);rockPool.push(m);rockFree.push(i);
+  }
+  rockAssign=new Array(V*V).fill(-1);
+}
+function syncRocks(){
+  if(!rockAssign)return;
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){
+    const k=j*V+i;
+    const exposed=heights[k]<=bedrockElev[k]+0.15&&cover[k]<0&&
+      (hash(i*3.7,j*7.3)<0.4);
+    const cur=rockAssign[k];
+    if(exposed&&cur<0){
+      if(!rockFree.length)break;
+      const fi=rockFree.pop(),m=rockPool[fi],tid=rockType[k];
+      m.geometry=rockGeos[tid][(i+j)%2];
+      m.material=rockMats[tid];
+      m.position.set(-S/2+i*cell,heights[k]+m.scale.y*0.5,-S/2+j*cell);
+      m.visible=true;rockAssign[k]=fi;
+      discoverRock(tid,i,j);
+    }else if(!exposed&&cur>=0){
+      rockPool[cur].visible=false;rockAssign[k]=-1;rockFree.push(cur);
+    }
+  }
+}
+function rockLabel(id){
+  const rt=ALL_ROCKS.find(r=>r.id===id);
+  const cv=document.createElement('canvas');cv.width=640;cv.height=176;
+  const g=cv.getContext('2d');
+  g.clearRect(0,0,640,176);
+  g.fillStyle='#f5f0e4';
+  g.beginPath();
+  g.moveTo(10,10);g.lineTo(630,10);g.lineTo(630,132);
+  g.lineTo(330,132);g.lineTo(320,158);g.lineTo(310,132);
+  g.lineTo(10,132);g.closePath();g.fill();
+  g.strokeStyle='#3a4148';g.lineWidth=3;g.stroke();
+  g.fillStyle='#'+rt.color.toString(16).padStart(6,'0');
+  g.beginPath();g.arc(46,66,30,0,6.29);g.fill();
+  g.strokeStyle='#3a4148';g.lineWidth=2;g.beginPath();g.arc(46,66,30,0,6.29);g.stroke();
+  g.fillStyle='#1c2228';g.font='bold 44px Georgia,serif';
+  g.textAlign='left';g.textBaseline='middle';g.fillText(rt.name,96,46);
+  g.fillStyle='#39444e';g.font='italic 24px Georgia,serif';
+  g.fillText(rt.desc,96,96);
+  const t=new THREE.CanvasTexture(cv);
+  t.minFilter=THREE.LinearFilter;t.anisotropy=renderer.capabilities.getMaxAnisotropy();
+  return new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:true}));
+}
+function leaderLine(x0,y0,x1,y1){
+  const g=new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(x0,y0,0),new THREE.Vector3(x1,y1,0)]);
+  return new THREE.Line(g,new THREE.LineBasicMaterial({color:0xf5f0e4,transparent:true,opacity:0.85}));
+}
+function discoverRock(tid,i,j){
+  if(discovered.includes(tid))return;
+  discovered.push(tid);
+  const rt=ALL_ROCKS.find(r=>r.id===tid);
+  if(rt)toast(rt.name+' found!');
+  const bx=-S/2+i*cell,bz=-S/2+j*cell,by=heights[j*V+i];
+  const lbl=rockLabel(tid);
+  lbl.scale.set(6.4,1.76,1);
+  lbl.position.set(bx,by+4.8,bz);
+  rockLabels.add(lbl);
+  const line=leaderLine(bx,by+0.6,bx,by+4.0);
+  rockLabels.add(line);
 }
 function padStats(p){
   let n=0,err=0,comp=0,cut=0,fill=0;
@@ -412,9 +631,27 @@ function applyBrush(i,j,dt){
     const w=Math.exp(-d2/(R*R*0.5)),k=jj*V+ii;
     if(cm==='cut'||cm==='fill'){
       const old=heights[k];
-      const nh=Math.max(MINH,Math.min(MAXH,old+(cm==='cut'?-1:1)*BRUSH_SPEED*w*dt));
-      heights[k]=nh;
-      budget-=Math.abs(nh-old)*cell*cell*(cm==='cut'?COST_CUT:COST_FILL);
+      if(cm==='cut'){
+        const atRock = old <= bedrockElev[k]+0.03;
+        if(atRock){
+          const rt=ALL_ROCKS.find(r=>r.id===rockType[k]);
+          if(rt&&rt.hardness>=999)continue;              // impenetrable bedrock
+          const cut=BRUSH_SPEED*0.4*w*dt;                  // slow rock cutting
+          const nh=Math.max(bedrockElev[k],old-cut);
+          heights[k]=nh;
+          if(nh<old)budget-=(old-nh)*cell*cell*COST_CUT*rt.cost;
+        }else{
+          const st=ALL_SOILS.find(s=>s.id===soilType[k]);
+          const cut=BRUSH_SPEED*w*dt;
+          const nh=Math.max(bedrockElev[k],old-cut);
+          heights[k]=nh;
+          if(nh<old)budget-=(old-nh)*cell*cell*COST_CUT*(st?st.cost:1);
+        }
+      }else{                                              // fill
+        const nh=Math.min(MAXH,old+BRUSH_SPEED*w*dt);
+        heights[k]=nh;
+        budget-=(nh-old)*cell*cell*COST_FILL;
+      }
     }else if(cm==='roller'){
       const pc=cover[k];
       if(pc>=0&&Math.abs(heights[k]-pads[pc].el)<=TOL){
@@ -469,10 +706,25 @@ function brushUpdate(dt){
       brushRing.position.set(wx,groundH(wx,wz)+0.03,wz);
       if(mode==='cut'||mode==='fill')moveVehicle(dozer,wx,wz);
       if(mode==='roller')moveVehicle(roller,wx,wz);
+      if(mode==='cut'||mode==='fill'){
+        const k=j*V+i,h=heights[k];
+        let m='';
+        if(h<=bedrockElev[k]+0.03){
+          const rt=ALL_ROCKS.find(r=>r.id===rockType[k]);
+          m=`<span style="color:#${rt.color.toString(16).padStart(6,'0')}">${rt.name}</span>`;
+          if(rt.hardness>=999)m+=' <span style="color:var(--bad)">impenetrable</span>';
+        }else{
+          const st=ALL_SOILS.find(s=>s.id===soilType[k]);
+          m=`<span style="color:#${st.color.toString(16).padStart(6,'0')}">${st.name}</span>`;
+        }
+        document.getElementById('matInfo').innerHTML=m;
+        document.getElementById('matInfo').style.opacity='1';
+      }
       return;
     }
   }
   brushRing.visible=false;
+  document.getElementById('matInfo').style.opacity='0';
 }
 function moveVehicle(v,x,z){
   if(!v)return;
@@ -911,11 +1163,18 @@ function closeReadout(){
 }
 
 function jobReport(){
+  // count distinct rock types encountered
+  const rc={};
+  for(const t of ALL_ROCKS)rc[t.id]=0;
+  for(let j=0;j<V;j++)for(let i=0;i<V;i++){const t=rockType[j*V+i];if(t)rc[t]=(rc[t]||0)+1;}
+  const rockNames=Object.entries(rc).filter(([,n])=>n>0)
+    .map(([id])=>ALL_ROCKS.find(r=>r.id===+id).name).join(', ');
   const rows=[
     ['Earthwork cut',tot.cut.toFixed(1)+' m³'],
     ['Earthwork fill',tot.fill.toFixed(1)+' m³'],
     ['Avg. compaction',pads._avgComp.toFixed(1)+' %'],
     ['Compaction tests',testsRun+' run(s)'],
+    ['Bedrock types',rockNames],
     ['Budget used','$'+budget.toLocaleString()],
     ['Result','PASS']
   ];
@@ -940,8 +1199,10 @@ function nextLevel(){
 }
 
 function startLevel(n,reuseTerrain){
-  level=n;
-  document.getElementById('jobName').textContent=LEVELS[n].name;
+   level=n;
+   terrSeed=[0,5,3,1][n];
+   simNoise=new SimplexNoise(mulberry32(terrSeed*12345+1));
+   document.getElementById('jobName').textContent=LEVELS[n].name;
   document.getElementById('start').style.display='none';
   overlayOpen=false;
   let S2=S/2;
@@ -950,7 +1211,7 @@ function startLevel(n,reuseTerrain){
     for(const g of targetGrps)terrainGrp.remove(g);
     targetGrps.length=0;
     pads=padDefs(n);
-    S=n===3?40:24;N=n===3?80:48;cell=S/N;V=N+1;
+    S=n===3?100:60;N=n===3?200:120;cell=S/N;V=N+1;
     S2=S/2;
     heights=new Float32Array(V*V);compaction=new Float32Array(V*V);
     buildHeights();computeCover();
@@ -962,6 +1223,7 @@ function startLevel(n,reuseTerrain){
     terrainGrp.add(terrainMesh);
     for(const p of pads)targetGrps.push(makeTargetGrid(p));
     for(const g of targetGrps)terrainGrp.add(g);
+    buildRockPool();
     while(placedGrp.children.length)placedGrp.remove(placedGrp.children[0]);
     if(dozer)moveTo(dozer,pads[0].x-S2*0.34,pads[0].z);
     if(roller)moveTo(roller,pads[0].x-S2*0.34,pads[0].z+2.5);
@@ -977,10 +1239,10 @@ function startLevel(n,reuseTerrain){
   testsRun=0;buildEnded=false;
   updateStats();dirty=true;refreshMesh();
   updateToolUI();
-  const cy=n===3?618:619.5;
-  camera.position.set(n===3?38:26,(pads[0].el||620)+(n===3?30:22),n===3?44:30);
+  const cy=620;
+  camera.position.set(S*0.55,620+S*0.42,S*0.88);
   controls.target.set(0,cy,0);
-  controls.maxDistance=n===3?150:90;
+  controls.maxDistance=S*2.2;
   controls.update();
   document.getElementById('pal').classList.toggle('show',LEVELS[n].build);
   document.getElementById('pal').style.display=LEVELS[n].build?'flex':'none';
@@ -1018,6 +1280,16 @@ function updateHUD(){
     return `<div class="pad"><span>${p.name} · EL ${p.el.toFixed(1)}</span><b class="${g}">${p.gradeOK?'GRADED':p.avgErr.toFixed(2)+' m off'}</b></div>`+
       `<div class="pad"><span>&nbsp;&nbsp;compaction</span><b class="${c}">${p.avgComp.toFixed(0)}%</b></div>`;
   }).join('');
+  // --- soil/rock type legend ---
+  document.getElementById('soils').innerHTML=ALL_SOILS.map(s=>
+    `<span class="gs" style="background:#${s.color.toString(16).padStart(6,'0')}"`
+    +`title="${s.desc}, φ'=${s.friction}°, cost x${s.cost}">`+
+    `</span><span class="gn">${s.name}</span>`).join('');
+  document.getElementById('rocks').innerHTML=ALL_ROCKS.map(r=>
+    `<span class="gs" style="background:#${r.color.toString(16).padStart(6,'0')};`
+    +`${r.hardness>=999?'border:1px solid var(--bad);':''}"`
+    +`title="${r.desc}, hardness ${r.hardness>=999?'infinite':r.hardness}">`+
+    `</span><span class="gn">${r.name}${r.hardness>=999?' <b style="color:var(--bad)">solid</b>':''}</span>`).join('');
   updateToolUI();
   if(level===2&&!buildEnded&&allReqMet()){
     buildEnded=true;
@@ -1071,12 +1343,12 @@ function init(){
   renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,2000);
-  camera.position.set(26,642,30);
+  camera.position.set(33,645,53);
   controls=new THREE.OrbitControls(camera,renderer.domElement);
   controls.enableDamping=true;controls.dampingFactor=.08;
-  controls.target.set(0,619.5,0);
+  controls.target.set(0,620,0);
   controls.maxPolarAngle=Math.PI*0.55;
-  controls.minDistance=8;controls.maxDistance=90;
+  controls.minDistance=8;controls.maxDistance=220;
   scene.add(new THREE.HemisphereLight(0xd8ecff,0x3a2f28,0.8));
   sun=new THREE.DirectionalLight(0xfff1dd,1.1);
   sun.position.set(14,638,10);scene.add(sun);
@@ -1089,6 +1361,8 @@ function init(){
   scene.environment=buildEnv();
 
   terrainGrp=new THREE.Group();scene.add(terrainGrp);
+  rockGrp=new THREE.Group();scene.add(rockGrp);
+  rockLabels=new THREE.Group();scene.add(rockLabels);
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(300,300),mat(0x3d3626,{roughness:1}));
   ground.rotation.x=-Math.PI/2;ground.position.y=614.5;ground.receiveShadow=true;
   scene.add(ground);
@@ -1195,9 +1469,15 @@ function init(){
     ifc:()=>ifcFound?Object.fromEntries(Object.entries(ifcFound).map(([k,v])=>[k,v.length])):null,
     info:()=>{
       updateStats();updateHUD();
+      // count rock types present on this terrain
+      const rc={};
+      for(let t of ALL_ROCKS)rc[t.id]=0;
+      for(let j=0;j<V;j++)for(let i=0;i<V;i++){const t=rockType[j*V+i];rc[t]=(rc[t]||0)+1;}
+      const rocks=Object.entries(rc).filter(([,n])=>n>0)
+        .map(([id,n])=>{const t=ALL_ROCKS.find(r=>r.id===+id);return t?t.name+' '+n:t.id+' '+n;}).join(', ');
       return {level,budget,testsRun,gradeOK:pads._gradeOK,compOK:pads._compOK,
         avgComp:pads._avgComp,pads:pads.map(p=>({name:p.name,el:p.el,err:p.avgErr,comp:p.avgComp,ok:p.gradeOK})),
-        cut:tot.cut,fill:tot.fill,mode,selectedBuild};
+        cut:tot.cut,fill:tot.fill,mode,selectedBuild,rockTypes:rocks};
     },
     start:()=>{document.getElementById('start').style.display='none';overlayOpen=false;},
     reset:()=>{resetGame();document.getElementById('start').style.display='none';overlayOpen=false;}
@@ -1212,6 +1492,7 @@ try{init();}catch(err){
   document.getElementById('loadTxt').textContent='failed';
   document.getElementById('loadErr').textContent=String(err&&err.stack||err);
 }
+if(new URLSearchParams(location.search).get('autostart'))document.getElementById('startBtn').click();
 </script>
 </body>
 </html>
