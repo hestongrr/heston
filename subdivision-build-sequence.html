@@ -871,7 +871,7 @@ function buildRigs(){                                    // phase 0 truck-mounte
   if(cutaway&&x>0) return;
   const g=new THREE.Group(); g.position.set(x,y,z);
   const add=(m,p,c,rot)=>{const mesh=new THREE.Mesh(m,mat(c));
-    mesh.position.copy(p); if(rot) mesh.rotation.copy(rot); g.add(mesh); return mesh;};
+    mesh.position.copy(p); if(rot) mesh.rotation.set(rot.x,rot.y,rot.z); g.add(mesh); return mesh;};
   // wheels: three axles (front / mid / rear)
   for(const zz of [-3.5,0.5,5.5]) for(const s of [-1,1])
     add(new THREE.CylinderGeometry(1.35,1.35,1.1,12), new THREE.Vector3(s*2.3,1.35,zz), 0x2b2f31,
