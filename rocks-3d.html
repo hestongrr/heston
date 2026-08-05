@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rocks3D — Real Scanned Rock Specimens | Heston Norcott</title>
+<meta name="description" content="Interactive 3D photogrammetry scans of real rock specimens from the USGS 3D Science Catalog — orbit a podiform chromite and a garnet-quartz-scheelite skarn, with the geology explained. Built by Heston Norcott.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/rocks-3d.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rocks3D — Real Scanned Rock Specimens | Heston Norcott">
+<meta property="og:description" content="Photogrammetry scans of real rock samples from the USGS 3D Science Catalog — orbit and explore, with the geology explained.">
+<meta property="og:url" content="https://thebigpicture.tech/rocks-3d.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Rocks3D — Real Scanned Rock Specimens",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "url": "https://thebigpicture.tech/rocks-3d.html",
+  "description": "Interactive 3D photogrammetry scans of real rock samples from the USGS 3D Science Catalog.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Heston Norcott", "url": "https://thebigpicture.tech/resume.html" }
+}
+</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script>
+(function(){
+  var KEY='ga-consent', DIS='ga-disable-G-YKDEE0DC2D', c;
+  try { c = localStorage.getItem(KEY); } catch(e) { c = null; }
+  window[DIS] = (c !== 'accepted');
+  if (c === null) {
+    var mk = function(){
+      var b = document.createElement('div');
+      b.id = 'consent-banner';
+      b.setAttribute('role','dialog');
+      b.setAttribute('aria-label','Cookie consent');
+      b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#161A18;color:#E7EAE6;padding:14px 18px;font:14px/1.5 system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #3a403c;box-shadow:0 -4px 12px rgba(0,0,0,.35)';
+      var p = document.createElement('span');
+      p.innerHTML = 'This site uses Google Analytics cookies to measure traffic. <a href="/privacy.html" style="color:#8fd0a8">Privacy policy</a>.';
+      var w = document.createElement('span');
+      w.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      var ok = document.createElement('button'); ok.textContent = 'Accept';
+      var no = document.createElement('button'); no.textContent = 'Decline';
+      var bs = 'cursor:pointer;border:0;padding:6px 14px;font:600 13px/1 system-ui,sans-serif;border-radius:4px';
+      ok.style.cssText = bs; ok.style.background = '#2e7d5b'; ok.style.color = '#fff';
+      no.style.cssText = bs; no.style.background = '#3a403c'; no.style.color = '#E7EAE6';
+      ok.onclick = function(){
+        try { localStorage.setItem(KEY,'accepted'); } catch(e) {}
+        window[DIS] = false;
+        var t = 0;
+        var iv = setInterval(function(){
+          if (window.gtag) { clearInterval(iv); gtag('config','G-YKDEE0DC2D'); }
+          else if ((t+=100) > 5000) clearInterval(iv);
+        }, 100);
+        b.remove();
+      };
+      no.onclick = function(){
+        try { localStorage.setItem(KEY,'declined'); } catch(e) {}
+        window[DIS] = true;
+        b.remove();
+      };
+      w.appendChild(ok); w.appendChild(no);
+      b.appendChild(p); b.appendChild(w);
+      (document.body || document.documentElement).appendChild(b);
+    };
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+  }
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<style>
+  :root{
+    --bg:#0a0e12; --panel:#12181e; --panel-2:#182029; --ink:#e8eef2; --muted:#7f929e;
+    --line:#222c36; --accent:#e8b64f; --accent-ink:#2a1d04; --warn:#ff8a5c; --danger:#ff5c5c;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#1a1410,#0a0e12);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 14px 40px}
+  .top{width:100%;max-width:1120px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .brand b{color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .home{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
+  .home:hover{color:var(--accent)}
+  .stage{width:100%;max-width:1120px;display:grid;grid-template-columns:1.55fr 1fr;gap:12px}
+  @media (max-width:860px){.stage{grid-template-columns:1fr}}
+  .view{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;
+    box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  .viewpos{position:relative}
+  canvas#c{width:100%;height:520px;display:block;border-radius:6px;background:#05080b;cursor:grab;touch-action:none}
+  @media (max-width:860px){canvas#c{height:360px}}
+  .loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(5,8,11,.75);border-radius:6px;color:var(--accent);font-family:var(--mono);
+    font-size:13px;letter-spacing:.05em;z-index:3}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .btn{font-family:var(--mono);font-size:12px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--ink);border-radius:7px;padding:8px 12px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.on{border-color:var(--accent);background:rgba(232,182,79,.12);color:var(--accent)}
+  .spacer{flex:1}
+  .hintline{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:9px}
+  .panel{display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card h3{margin:0 0 8px;font-size:13px;letter-spacing:.02em;text-transform:uppercase;
+    font-family:var(--mono);color:var(--accent)}
+  .card p,.card li{font-size:12.5px;line-height:1.55;color:var(--muted);margin:0 0 6px}
+  .card p b{color:var(--ink)}
+  .spec h2{margin:0 0 4px;font-size:19px}
+  .spec .class{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-bottom:10px}
+  .spec .stat{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);
+    font-size:11.5px;border-top:1px solid var(--line);padding:5px 0}
+  .spec .stat .k{color:var(--muted)}
+  .spec .stat .v{color:var(--ink)}
+  .disc{width:100%;max-width:1120px;margin-top:14px;padding:12px 16px;border:1px dashed var(--line);
+    border-radius:10px;font-size:12px;color:var(--muted);line-height:1.5}
+  .disc b{color:var(--ink)}
+  .disc a{color:var(--accent)}
+</style>
+
+<div class="top">
+  <span class="brand">Rocks<b>3D</b></span>
+  <span class="tag">real scanned specimens &middot; USGS 3D Science Catalog</span>
+  <a class="home" href="/">&larr; thebigpicture.tech</a>
+</div>
+
+<div class="stage">
+  <div class="view">
+    <div class="viewpos">
+      <canvas id="c"></canvas>
+      <div class="loading" id="loading">LOADING SCAN&hellip;</div>
+    </div>
+    <div class="controls">
+      <button class="btn on" data-spec="chromite">Podiform chromite</button>
+      <button class="btn" data-spec="skarn">Garnet-quartz-scheelite skarn</button>
+      <div class="spacer"></div>
+      <button class="btn" id="spin">Auto-rotate: on</button>
+    </div>
+    <div class="hintline">drag to orbit &middot; wheel to zoom &middot; right-drag to pan</div>
+  </div>
+
+  <div class="panel">
+    <div class="card spec" id="info">
+      <h2>Podiform chromite</h2>
+      <div class="class">Igneous &mdash; cumulate (ophiolite)</div>
+      <p>Light olive to brownish black. Cumulate texture: anhedral chromite crystals in a
+        serpentine matrix that weathers to moderate yellowish brown on uncut surfaces. Cut
+        crystals show dull alteration rinds around submetallic cores, with the same alteration
+        tracing the fractures. Chromite is the principal ore of chromium &mdash; the source of
+        stainless steel.</p>
+      <div class="stat"><span class="k">Hardness</span><span class="v">5.5</span></div>
+      <div class="stat"><span class="k">Model</span><span class="v">~7.5 MB GLB &middot; 64k triangles</span></div>
+      <div class="stat"><span class="k">Source</span><span class="v">USGS 3D Science Catalog</span></div>
+    </div>
+    <div class="card">
+      <h3>About these scans</h3>
+      <p>Real hand samples digitized with photogrammetry, pulled from the <b>USGS 3D Science
+        Catalog (3DSC)</b> &mdash; Smithsonian 3D digitization hosted on USGS ScienceBase. The
+        GLB files are loaded and rendered directly in the browser with three.js; no plugin, no
+        server-side rendering.</p>
+      <p>USGS-authored products are in the <b>public domain</b>. Meshes were decimated and
+        textures re-encoded for web delivery.</p>
+    </div>
+  </div>
+</div>
+
+<div class="disc">
+  <b>Source &amp; license:</b> Scans &copy; 2023 USGS (Geology, Minerals, Energy, and Geophysics
+  Science Center), 3D Science Catalog on ScienceBase &mdash;
+  <a href="https://www.sciencebase.gov/catalog/item/64c0178ed34e70357a323216" rel="noopener" target="_blank">podiform chromite</a> and
+  <a href="https://www.sciencebase.gov/catalog/item/64c17c1cd34e70357a329de4" rel="noopener" target="_blank">garnet-quartz-scheelite skarn</a>.
+  USGS-authored content is in the public domain.
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script>
+const SPECIMENS = {
+  chromite: {
+    name: "Podiform chromite",
+    cls: "Igneous &mdash; cumulate (ophiolite)",
+    hardness: "5.5",
+    desc: "Light olive to brownish black. Cumulate texture: anhedral chromite crystals in a serpentine matrix that weathers to moderate yellowish brown on uncut surfaces. Cut crystals show dull alteration rinds around submetallic cores, with the same alteration tracing the fractures. Chromite is the principal ore of chromium &mdash; the source of stainless steel.",
+    file: "rocks3d/chromite.glb",
+    size: "~7.5 MB GLB &middot; 64k triangles"
+  },
+  skarn: {
+    name: "Garnet-quartz-scheelite skarn",
+    cls: "Metasomatic &mdash; contact metamorphic",
+    hardness: "6.5&ndash;7 (garnet)",
+    desc: "Reddish brown garnet (fine-grained, mostly subhedral, crystals to 2 mm), glassy gray quartz, and white scheelite forming massive euhedral porphyroblasts up to 3 cm. Skarns form where hot magmatic fluids react with carbonate wall rock; scheelite is the principal tungsten ore mineral.",
+    file: "rocks3d/skarn.glb",
+    size: "~5.9 MB GLB &middot; 50k triangles"
+  }
+};
+
+const canvas = document.getElementById('c');
+const loading = document.getElementById('loading');
+const info = document.getElementById('info');
+let renderer, scene, camera, controls;
+let current = null;
+
+function init() {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  resize();
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0c1013);
+
+  camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
+  camera.position.set(0, 0, 4);
+
+  controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.2;
+  controls.minDistance = 0.5;
+  controls.maxDistance = 30;
+
+  scene.add(new THREE.HemisphereLight(0xdfe8f2, 0x3a3228, 0.95));
+  const key = new THREE.DirectionalLight(0xffffff, 1.15);
+  key.position.set(3, 5, 4);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffd9a0, 0.45);
+  fill.position.set(-4, 2, -3);
+  scene.add(fill);
+
+  window.addEventListener('resize', resize);
+  renderer.setAnimationLoop(tick);
+}
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  if (camera) {
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+}
+
+function tick() {
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+function loadSpec(key) {
+  const s = SPECIMENS[key];
+  if (current && current.key === key) return;
+  loading.style.display = 'flex';
+  info.innerHTML =
+    '<h2>' + s.name + '</h2>' +
+    '<div class="class">' + s.cls + '</div>' +
+    '<p>' + s.desc + '</p>' +
+    '<div class="stat"><span class="k">Hardness</span><span class="v">' + s.hardness + '</span></div>' +
+    '<div class="stat"><span class="k">Model</span><span class="v">' + s.size + '</span></div>' +
+    '<div class="stat"><span class="k">Source</span><span class="v">USGS 3D Science Catalog</span></div>';
+  document.querySelectorAll('.controls .btn[data-spec]').forEach(b =>
+    b.classList.toggle('on', b.dataset.spec === key));
+
+  new THREE.GLTFLoader().load(s.file, function (gltf) {
+    if (current) disposeObject(current.object);
+    const obj = gltf.scene;
+    obj.traverse(function (n) {
+      if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; }
+    });
+    scene.add(obj);
+
+    const box = new THREE.Box3().setFromObject(obj);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const radius = size.length() / 2;
+    const center = box.getCenter(new THREE.Vector3());
+    obj.position.sub(center);
+    const targetScale = 1.6 / radius;
+    obj.scale.setScalar(targetScale);
+
+    const dist = 3.4;
+    camera.position.set(dist * 0.6, dist * 0.35, dist);
+    controls.target.set(0, 0, 0);
+    controls.update();
+
+    current = { key: key, object: obj };
+    loading.style.display = 'none';
+  }, undefined, function () {
+    loading.style.display = 'none';
+    info.innerHTML = '<h2>Load error</h2><p>Could not load this scan. Check the console and try again.</p>';
+  });
+}
+
+function disposeObject(obj) {
+  obj.traverse(function (n) {
+    if (n.isMesh) {
+      if (n.geometry) n.geometry.dispose();
+      if (n.material) {
+        (Array.isArray(n.material) ? n.material : [n.material]).forEach(function (m) {
+          for (const v in m) if (m[v] && m[v].isTexture) m[v].dispose();
+          m.dispose();
+        });
+      }
+    }
+  });
+  scene.remove(obj);
+}
+
+document.querySelectorAll('.controls .btn[data-spec]').forEach(function (b) {
+  b.addEventListener('click', function () { loadSpec(b.dataset.spec); });
+});
+
+const spinBtn = document.getElementById('spin');
+spinBtn.addEventListener('click', function () {
+  controls.autoRotate = !controls.autoRotate;
+  spinBtn.textContent = 'Auto-rotate: ' + (controls.autoRotate ? 'on' : 'off');
+});
+
+try {
+  init();
+  loadSpec('chromite');
+} catch (e) {
+  document.getElementById('info').innerHTML =
+    '<h2>WebGL required</h2><p>This viewer needs WebGL, which this browser is not providing.</p>';
+}
+</script>

@@ -25,7 +25,7 @@ is included separately. It covers `lib/OrbitControls.js` too — same project,
 same licence.
 
 Used by: `sand-3d`, `redrock-3d`, `nuke-gauge`, `grade-it`, `ifc-viewer`,
-`subdivision-build-sequence`, `rocks-demo`.
+`subdivision-build-sequence`, `rocks-demo`, `rocks-3d`.
 
 ## OrbitControls — three.js r128 examples
 
@@ -39,6 +39,21 @@ Camera orbit/pan/zoom. From `examples/js/controls/OrbitControls.js`.
 The upstream examples build ships without a per-file license header; one was
 added locally identifying the source, copyright, and SPDX identifier. The code
 itself is unmodified.
+
+## GLTFLoader — three.js r128 examples
+
+glTF 2.0 loader for binary `.glb` model files; powers the Rocks 3D specimen
+viewer. From `examples/js/loaders/GLTFLoader.js`.
+
+- **Authors:** Three.js Authors
+- **License:** MIT
+- **Upstream:** https://github.com/mrdoob/three.js
+- **Vendored as:** `lib/GLTFLoader.js`
+
+Same project and licence as `three.min.js` / `OrbitControls.js`, covered by
+`lib/three.LICENSE`. Unmodified from the r128 examples build.
+
+Used by: `rocks-3d`.
 
 ## simplex-noise.js — v2.4.0
 
@@ -91,6 +106,33 @@ purged. Details are recorded off the public site.
 carry explicit redistribution terms. Check the IFC header (`FILE_NAME`,
 `IFCPERSON`, `IFCORGANIZATION`, `IFCPROJECT`) before publishing — a real project
 deliverable will name its author, client, and job number right there.
+
+---
+
+## Rock scans (`rocks3d/`)
+
+Photogrammetry scans of real rock hand samples, used by the Rocks 3D specimen
+viewer (`rocks-3d.html`). Both are **USGS-authored** products. USGS-authored or
+produced data and information are in the U.S. public domain (USGS "Copyrights
+and Credits" policy), so commercial use is permitted; credit to USGS is
+requested and is given on the viewer page and below.
+
+| File | Specimen | Origin | Rights |
+|---|---|---|---|
+| `chromite.glb` | Podiform chromite (hand sample) | USGS 3D Science Catalog (ScienceBase item `64c0178ed34e70357a323216`), scanned by Lucas Evart, USGS GMEG Science Center | Public domain |
+| `skarn.glb` | Garnet-quartz-scheelite skarn (hand sample) | USGS 3D Science Catalog (ScienceBase item `64c17c1cd34e70357a329de4`), scanned by Lucas Evart, USGS GMEG Science Center | Public domain |
+
+Both files were **modified** for web delivery — meshes decimated and textures
+re-encoded to 2048 px JPEG in Blender — which is permitted because USGS works are
+public domain. Full-resolution originals are retained off-site.
+
+**Rule for adding scans:** USGS / Smithsonian 3D-catalog items are public domain
+and safe to publish. Sketchfab models are **NOT** automatically usable: check the
+per-model license badge before downloading. CC-0 and CC-BY (commercial use with
+attribution) are fine; anything with **NC** (non-commercial — `by-nc`,
+`by-nc-sa`, `by-nc-nd`) or **ND** (no derivatives) must not be published on this
+commercial portfolio site. Verified example to avoid: "Geological Rock Sample"
+by Ghasan (Sketchfab uid `2aa45f0f3c1345249dc0ce1828798385`) is `by-nc-sa`.
 
 ---
 

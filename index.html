@@ -105,6 +105,17 @@
   .tool p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55;flex:1}
   .tool .go{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
 
+  .stacks{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+  @media (max-width:760px){.stacks{grid-template-columns:1fr}}
+  .stack{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:20px 22px}
+  .stack h3{font-size:15px;margin:0 0 12px;letter-spacing:-.01em;color:var(--ink);
+    border-bottom:1px solid var(--line);padding-bottom:10px}
+  .stack ul{list-style:none;margin:0;padding:0}
+  .stack li{font-size:13px;color:var(--muted);line-height:1.55;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .stack li:last-child{border-bottom:0}
+  .stack li b{color:var(--ink);font-weight:600}
+  .disclaimer{margin-top:20px;font-size:12px;color:var(--muted);max-width:80ch}
+
   .about{display:grid;grid-template-columns:1.3fr 1fr;gap:36px;align-items:start}
   @media (max-width:760px){.about{grid-template-columns:1fr;gap:22px}}
   .about p{color:var(--ink);font-size:15.5px;line-height:1.62;margin:0 0 14px}
@@ -193,7 +204,51 @@
 </script>
 
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+(function(){
+  var KEY='ga-consent', DIS='ga-disable-G-YKDEE0DC2D', c;
+  try { c = localStorage.getItem(KEY); } catch(e) { c = null; }
+  window[DIS] = (c !== 'accepted');
+  if (c === null) {
+    var mk = function(){
+      var b = document.createElement('div');
+      b.id = 'consent-banner';
+      b.setAttribute('role','dialog');
+      b.setAttribute('aria-label','Cookie consent');
+      b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#161A18;color:#E7EAE6;padding:14px 18px;font:14px/1.5 system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #3a403c;box-shadow:0 -4px 12px rgba(0,0,0,.35)';
+      var p = document.createElement('span');
+      p.innerHTML = 'This site uses Google Analytics cookies to measure traffic. <a href="/privacy.html" style="color:#8fd0a8">Privacy policy</a>.';
+      var w = document.createElement('span');
+      w.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      var ok = document.createElement('button'); ok.textContent = 'Accept';
+      var no = document.createElement('button'); no.textContent = 'Decline';
+      var bs = 'cursor:pointer;border:0;padding:6px 14px;font:600 13px/1 system-ui,sans-serif;border-radius:4px';
+      ok.style.cssText = bs; ok.style.background = '#2e7d5b'; ok.style.color = '#fff';
+      no.style.cssText = bs; no.style.background = '#3a403c'; no.style.color = '#E7EAE6';
+      ok.onclick = function(){
+        try { localStorage.setItem(KEY,'accepted'); } catch(e) {}
+        window[DIS] = false;
+        var t = 0;
+        var iv = setInterval(function(){
+          if (window.gtag) { clearInterval(iv); gtag('config','G-YKDEE0DC2D'); }
+          else if ((t+=100) > 5000) clearInterval(iv);
+        }, 100);
+        b.remove();
+      };
+      no.onclick = function(){
+        try { localStorage.setItem(KEY,'declined'); } catch(e) {}
+        window[DIS] = true;
+        b.remove();
+      };
+      w.appendChild(ok); w.appendChild(no);
+      b.appendChild(p); b.appendChild(w);
+      (document.body || document.documentElement).appendChild(b);
+    };
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+  }
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -207,13 +262,12 @@
   <div class="wrap">
     <span class="name">Heston <b>Norcott</b></span>
     <span class="links">
-      <a href="#tools">Work</a>
+      <a href="#work">Work</a>
+      <a href="#toolbox">Toolbox</a>
       <a href="./learn.html">Learn</a>
-      <a href="./diagrams.html">Diagrams</a>
       <a href="./projects.html">Projects</a>
-      <a href="./slope-stability.html">Slope Tool</a>
+      <a href="./lab.html">Lab</a>
       <a href="#services">Services</a>
-      <a href="#about" class="hideS">About</a>
       <a href="#contact">Hire me</a>
     </span>
   </div>
@@ -270,6 +324,59 @@
     </div>
   </section>
 
+  <section id="toolbox" style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">The professional stack</p>
+      <h2 class="sec">The tools I work in</h2>
+      <p class="sec-intro">Ten years in Nevada practice means fluent across the industry-standard
+        commercial suites and the open-source / Python stack I run on my own hardware. This is the
+        ecosystem I live in &mdash; the vendor products the profession runs on, and the free tools I
+        build workflows around.</p>
+      <div class="stacks">
+        <div class="stack">
+          <h3>Slope stability &amp; seismic</h3>
+          <ul>
+            <li><b><a href="https://www.rocscience.com/" target="_blank" rel="noopener">Rocscience Slide2 / Slide3</a></b> &mdash; limit-equilibrium and 3-D slope analysis</li>
+            <li><b><a href="https://www.seequent.com/products-solutions/geostudio/" target="_blank" rel="noopener">GeoStudio SLOPE/W &middot; QUAKE/W</a></b> &mdash; LE + dynamic analysis</li>
+            <li><b><a href="https://www.itascacg.com/software/flac3d" target="_blank" rel="noopener">Itasca FLAC3D &middot; UDEC</a></b> &mdash; continuum &amp; discrete-element modeling</li>
+            <li><b><a href="https://opensees.berkeley.edu/" target="_blank" rel="noopener">OpenSees</a></b> &mdash; open-source FE for seismic</li>
+          </ul>
+        </div>
+        <div class="stack">
+          <h3>Foundations &amp; earth structures</h3>
+          <ul>
+            <li><b><a href="https://www.ensoftinc.com/" target="_blank" rel="noopener">Ensoft LPILE / GROUP / SHAFT</a></b> &mdash; axial &amp; lateral pile analysis</li>
+            <li><b><a href="https://www.bentley.com/software/plaxis/" target="_blank" rel="noopener">PLAXIS 2D / 3D</a></b> &mdash; finite-element geotechnics</li>
+            <li><b><a href="https://www.rocscience.com/" target="_blank" rel="noopener">RSPile &middot; Settle3</a></b> &mdash; piles &amp; settlement</li>
+            <li><b>FDOT FB-MultiPier</b> &mdash; bridge foundation analysis</li>
+          </ul>
+        </div>
+        <div class="stack">
+          <h3>Site data &amp; lab reporting</h3>
+          <ul>
+            <li><b><a href="https://www.bentley.com/software/openground/" target="_blank" rel="noopener">Bentley gINT / OpenGround</a></b> &mdash; boring logs &amp; geotech data management</li>
+            <li><b><a href="https://www.holebase.com/" target="_blank" rel="noopener">HoleBase</a></b> &mdash; drill log software</li>
+            <li><b><a href="https://www.geologismiki.gr/products/cliq/" target="_blank" rel="noopener">GeoLogismiki CLiq</a></b> &mdash; liquefaction analysis (CPT/SPT)</li>
+            <li><b><a href="https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview" target="_blank" rel="noopener">ArcGIS Pro</a></b> &middot; <b><a href="https://qgis.org/" target="_blank" rel="noopener">QGIS</a></b> &mdash; site &amp; GIS</li>
+          </ul>
+        </div>
+        <div class="stack">
+          <h3>Open-source / Python &mdash; that I run</h3>
+          <ul>
+            <li><b><a href="https://www.geoeq.org/" target="_blank" rel="noopener">GeoEq</a></b> (Apache-2.0) &mdash; 170+ validated geotech functions</li>
+            <li><b><a href="https://github.com/snakesonabrain/groundhog" target="_blank" rel="noopener">Groundhog</a></b> (GPL-3.0) &mdash; general-purpose geotechnical library</li>
+            <li><b><a href="https://github.com/soconnell345-geotech/GeotechStaffEngineer" target="_blank" rel="noopener">GeotechStaffEngineer</a></b> (MIT) &mdash; retaining walls, reliability, LLM agents</li>
+            <li><b><a href="https://github.com/arthurcunha51eng/gabion-reliability-benchmark" target="_blank" rel="noopener">gabion-reliability-benchmark</a></b> (MIT) &mdash; probabilistic gabion wall analysis + LLM red-teaming</li>
+          </ul>
+        </div>
+      </div>
+      <p class="disclaimer">Product names and trademarks are the property of their respective
+        owners; listed for reference, not affiliation or endorsement. Commercial suites cited as the
+        industry standard for which I build workflows, data pipelines, and automation &mdash; not
+        software I redistribute.</p>
+    </div>
+  </section>
+
   <section id="tools" style="background:var(--panel-2);border-block:1px solid var(--line)">
     <div class="wrap">
       <p class="sec-label">What I build</p>
@@ -291,34 +398,12 @@
             Fire a shot, watch P, S, and Rayleigh waves scatter off a buried cavity, read the gather.</p>
           <span class="go">Open tool &rarr;</span>
         </a>
-        <a class="tool" href="./redrock-3d.html">
-          <span class="kind">3D site modeling &middot; real USGS data</span>
-          <h3>Red Rock 3D Site Model</h3>
-          <p>Real elevation data of Red Rock Canyon, Nevada, built into an interactive 3D site block &mdash;
-            terrain surface, subsurface geology in the cut faces, and a graded building pad. Orbit it.</p>
+        <a class="tool" href="./uscs-soil-classification-calculator.html">
+          <span class="kind">Calculator &middot; ASTM D2487</span>
+          <h3>USCS Soil Classification Calculator</h3>
+          <p>Enter sieve data and Atterberg limits &mdash; get the group symbol and name, your sample
+            plotted on the plasticity chart, and every decision step shown.</p>
           <span class="go">Open tool &rarr;</span>
-        </a>
-        <a class="tool" href="./soilbox.html">
-          <span class="kind">Soil mechanics &middot; interactive</span>
-          <h3>SoilBox</h3>
-          <p>A falling-sand physics toy running real soil behavior: sand piles at its angle of repose,
-            cohesive mud stands steeper, water finds its level. With the mechanics explained.</p>
-          <span class="go">Open tool &rarr;</span>
-        </a>
-        <a class="tool" href="./sand-3d.html">
-          <span class="kind">3D granular physics &middot; OSHA Subpart P</span>
-          <h3>Sand3D: Angle of Repose</h3>
-          <p>Dump sand in 3D and watch it find its own angle of repose &mdash; then see why that angle
-            <i>is</i> OSHA's 1.5H:1V limit for Type C soil. Dial loose to dense, measure the slope,
-            and catch the pile trending steeper than the code allows.</p>
-          <span class="go">Open tool &rarr;</span>
-        </a>
-        <a class="tool" href="./nuke-gauge.html">
-          <span class="kind">3D equipment &middot; safe vs. test</span>
-          <h3>Nuclear Density Gauge 3D</h3>
-          <p>A working 3D model of a nuclear density gauge (Cs-137 + Am-241/Be). Drive the source rod into
-            the fill, open the cutaway to see the shielded source and detectors, watch the count climb.</p>
-          <span class="go">Open model &rarr;</span>
         </a>
         <a class="tool" href="./density-test-sheet.html">
           <span class="kind">Field reporting &middot; ASTM D6938</span>
@@ -327,23 +412,9 @@
             % compaction, and color-coded pass/fail out &mdash; printable or PNG.</p>
           <span class="go">Open tool &rarr;</span>
         </a>
-        <a class="tool" href="./ifc-viewer.html">
-          <span class="kind">Open-source BIM &middot; IFC in browser</span>
-          <h3>IFC / BIM Viewer</h3>
-          <p>An open-source building-model viewer built on web-ifc and three.js. Parse and render real IFC
-            files with no proprietary software &mdash; a bundled geotech foundations model (mat footing, retaining
-            wall, fill), section through any model, or open your own .ifc.</p>
-          <span class="go">Open viewer &rarr;</span>
-        </a>
-        <a class="tool" href="./grade-it.html">
-          <span class="kind">Interactive 3D game &middot; earthworks</span>
-          <h3>Grade It: Earthworks</h3>
-          <p>An earthworks simulator you play: blade and haul a building pad to design elevation
-            (watch the cut/fill volumes and your budget), roll the lift to 95% compaction, drive the
-            nuclear gauge to certify it, then build the foundations and grade the whole subdivision.</p>
-          <span class="go">Play the game &rarr;</span>
-        </a>
       </div>
+      <p class="sec-intro" style="margin:26px 0 0"><a href="./lab.html" style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600">More experimental builds in the Lab &rarr;</a>
+        &mdash; 3-D site models, soil physics toys, the earthworks game, and more.</p>
     </div>
   </section>
 
@@ -399,28 +470,6 @@
           <p>Where AI actually helps in AEC &mdash; LLM / RAG / agent systems, evaluated and built by
             someone who has shipped them, not just read about them.</p>
         </div>
-        <a class="tool" href="./diagrams.html">
-          <span class="kind">Technical illustration</span>
-          <h3>Engineering Diagram Gallery</h3>
-          <p>Computed, publication-ready figures for reports, proposals, and expert testimony &mdash;
-            flow nets solved from Laplace, section drawings, comparison charts. Original work.</p>
-          <span class="go">View gallery &rarr;</span>
-        </a>
-        <a class="tool" href="./uscs-soil-classification-calculator.html">
-          <span class="kind">Calculator &middot; ASTM D2487</span>
-          <h3>USCS Soil Classification Calculator</h3>
-          <p>Enter sieve data and Atterberg limits &mdash; get the group symbol and name, your sample
-            plotted on the plasticity chart, and every decision step shown.</p>
-          <span class="go">Open tool &rarr;</span>
-        </a>
-        <a class="tool" href="./subdivision-build-sequence.html">
-          <span class="kind">Interactive 3D &middot; Construction sequence</span>
-          <h3>How a Neighborhood Gets Built</h3>
-          <p>A tract subdivision built step by step in the real order &mdash; grading, overexcavation,
-            utilities, streets, pads, foundations &mdash; with a cutaway showing what ends up under
-            the slab. Cut and fill volumes computed from the model.</p>
-          <span class="go">Open model &rarr;</span>
-        </a>
       </div>
     </div>
   </section>

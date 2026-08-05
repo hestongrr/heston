@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lab &mdash; experimental builds &mdash; Heston Norcott</title>
+<meta name="description" content="Experimental builds by Heston Norcott: 3-D site models, soil physics toys, an earthworks simulator, an IFC/BIM viewer, and more. Research, teaching, and capability demonstrations.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thebigpicture.tech/lab.html">
+<meta property="og:title" content="The Lab &mdash; Heston Norcott">
+<meta property="og:description" content="Experimental builds: 3-D site models, soil physics, an earthworks simulator, and more.">
+<meta property="og:url" content="https://thebigpicture.tech/lab.html">
+<meta property="og:image" content="https://thebigpicture.tech/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#ECEEEB; --panel:#F7F8F5; --panel-2:#EFF1ED; --ink:#171A18; --muted:#586360;
+    --line:#D6DBD6; --line-2:#C6CDC6; --accent:#0E6C77; --accent-ink:#fff;
+    --hero:#0c1a1c; --hero-ink:#e9f1f0; --hero-accent:#4fd0d8;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;--muted:#9AA39D;
+      --line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  }
+  :root[data-theme="light"]{--bg:#ECEEEB;--panel:#F7F8F5;--panel-2:#EFF1ED;--ink:#171A18;
+    --muted:#586360;--line:#D6DBD6;--line-2:#C6CDC6;--accent:#0E6C77;--accent-ink:#fff;}
+  :root[data-theme="dark"]{--bg:#0d100f;--panel:#161A18;--panel-2:#1C211E;--ink:#E7EAE6;
+    --muted:#9AA39D;--line:#262C28;--line-2:#333A35;--accent:#3FB9C1;--accent-ink:#04211f;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(9px);
+    background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .name{font-weight:800;letter-spacing:-.02em;font-size:15px}
+  nav .name b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:20px;font-family:var(--mono);font-size:12px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--ink)}
+  @media (max-width:640px){nav .links a.hideS{display:none}}
+
+  .hero{background:radial-gradient(120% 90% at 85% -10%,rgba(79,208,216,.14),transparent 60%),
+    var(--hero);color:var(--hero-ink);border-bottom:1px solid #16302f}
+  .hero .wrap{padding:58px 22px 52px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--hero-accent);margin:0 0 18px}
+  .hero h1{font-size:clamp(30px,5.2vw,50px);line-height:1.05;letter-spacing:-.03em;margin:0;
+    font-weight:800;text-wrap:balance}
+  .hero p{max-width:62ch;font-size:clamp(15px,2vw,18px);color:#b9cbc9;margin:20px 0 0}
+  .hero p b{color:var(--hero-ink);font-weight:600}
+
+  section{padding:52px 0}
+  .sec-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 8px}
+  h2.sec{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .sec-intro{color:var(--muted);max-width:66ch;margin:0 0 30px;font-size:15.5px}
+
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.tools{grid-template-columns:1fr}}
+  .tool{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+    border-radius:13px;padding:22px;transition:.15s}
+  .tool:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tool .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent)}
+  .tool h3{font-size:20px;margin:9px 0 8px;letter-spacing:-.01em}
+  .tool p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55;flex:1}
+  .tool .go{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;margin-top:20px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  footer .credits{flex-basis:100%;margin-top:10px;line-height:1.7;opacity:.85}
+</style>
+
+  <!-- Google tag (gtag.js) -->
+  <script>
+(function(){
+  var KEY='ga-consent', DIS='ga-disable-G-YKDEE0DC2D', c;
+  try { c = localStorage.getItem(KEY); } catch(e) { c = null; }
+  window[DIS] = (c !== 'accepted');
+  if (c === null) {
+    var mk = function(){
+      var b = document.createElement('div');
+      b.id = 'consent-banner';
+      b.setAttribute('role','dialog');
+      b.setAttribute('aria-label','Cookie consent');
+      b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#161A18;color:#E7EAE6;padding:14px 18px;font:14px/1.5 system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #3a403c;box-shadow:0 -4px 12px rgba(0,0,0,.35)';
+      var p = document.createElement('span');
+      p.innerHTML = 'This site uses Google Analytics cookies to measure traffic. <a href="/privacy.html" style="color:#8fd0a8">Privacy policy</a>.';
+      var w = document.createElement('span');
+      w.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      var ok = document.createElement('button'); ok.textContent = 'Accept';
+      var no = document.createElement('button'); no.textContent = 'Decline';
+      var bs = 'cursor:pointer;border:0;padding:6px 14px;font:600 13px/1 system-ui,sans-serif;border-radius:4px';
+      ok.style.cssText = bs; ok.style.background = '#2e7d5b'; ok.style.color = '#fff';
+      no.style.cssText = bs; no.style.background = '#3a403c'; no.style.color = '#E7EAE6';
+      ok.onclick = function(){
+        try { localStorage.setItem(KEY,'accepted'); } catch(e) {}
+        window[DIS] = false;
+        var t = 0;
+        var iv = setInterval(function(){
+          if (window.gtag) { clearInterval(iv); gtag('config','G-YKDEE0DC2D'); }
+          else if ((t+=100) > 5000) clearInterval(iv);
+        }, 100);
+        b.remove();
+      };
+      no.onclick = function(){
+        try { localStorage.setItem(KEY,'declined'); } catch(e) {}
+        window[DIS] = true;
+        b.remove();
+      };
+      w.appendChild(ok); w.appendChild(no);
+      b.appendChild(p); b.appendChild(w);
+      (document.body || document.documentElement).appendChild(b);
+    };
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+  }
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YKDEE0DC2D');
+  </script>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="name" href="/">Heston <b>Norcott</b></a>
+    <span class="links">
+      <a href="/">Home</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/lab.html" style="color:var(--accent)">Lab</a>
+      <a href="/#contact">Hire me</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">The Lab &middot; experimental builds</p>
+    <h1>Where I try things out.</h1>
+    <p>Research, teaching, and capability demonstrations. These are <b>experiments</b> &mdash; not
+      engineering deliverables. The work I sell is scoped, documented, and delivered under
+      contract; this page is where the ideas get tested first.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <p class="sec-label">Interactive 3-D &amp; physics</p>
+      <h2 class="sec">Site models and soil behavior</h2>
+      <p class="sec-intro">Real data and real mechanics rendered in the browser &mdash; terrain from
+        USGS elevation, rock specimens from the USGS 3-D Science Catalog, granular physics tied to
+        OSHA limits, and equipment models of the tools I ran in the field.</p>
+      <div class="tools">
+        <a class="tool" href="./redrock-3d.html">
+          <span class="kind">3D site modeling &middot; real USGS data</span>
+          <h3>Red Rock 3D Site Model</h3>
+          <p>Real elevation data of Red Rock Canyon, Nevada, built into an interactive 3D site block &mdash;
+            terrain surface, subsurface geology in the cut faces, and a graded building pad. Orbit it.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./soilbox.html">
+          <span class="kind">Soil mechanics &middot; interactive</span>
+          <h3>SoilBox</h3>
+          <p>A falling-sand physics toy running real soil behavior: sand piles at its angle of repose,
+            cohesive mud stands steeper, water finds its level. With the mechanics explained.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./sand-3d.html">
+          <span class="kind">3D granular physics &middot; OSHA Subpart P</span>
+          <h3>Sand3D: Angle of Repose</h3>
+          <p>Dump sand in 3D and watch it find its own angle of repose &mdash; then see why that angle
+            <i>is</i> OSHA's 1.5H:1V limit for Type C soil. Dial loose to dense, measure the slope,
+            and catch the pile trending steeper than the code allows.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./nuke-gauge.html">
+          <span class="kind">3D equipment &middot; safe vs. test</span>
+          <h3>Nuclear Density Gauge 3D</h3>
+          <p>A working 3D model of a nuclear density gauge (Cs-137 + Am-241/Be). Drive the source rod into
+            the fill, open the cutaway to see the shielded source and detectors, watch the count climb.</p>
+          <span class="go">Open model &rarr;</span>
+        </a>
+        <a class="tool" href="./rocks-3d.html">
+          <span class="kind">3D scans &middot; real USGS specimens</span>
+          <h3>Rocks 3D: Scanned Specimens</h3>
+          <p>Photogrammetry scans of real rock hand samples from the USGS 3D Science Catalog &mdash;
+            orbit a podiform chromite and a garnet-quartz-scheelite skarn, with the geology explained.
+            Rendered live in the browser from GLB files.</p>
+          <span class="go">Open viewer &rarr;</span>
+        </a>
+        <a class="tool" href="./subdivision-build-sequence.html">
+          <span class="kind">Interactive 3D &middot; Construction sequence</span>
+          <h3>How a Neighborhood Gets Built</h3>
+          <p>A tract subdivision built step by step in the real order &mdash; grading, overexcavation,
+            utilities, streets, pads, foundations &mdash; with a cutaway showing what ends up under
+            the slab. Cut and fill volumes computed from the model.</p>
+          <span class="go">Open model &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--panel-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <p class="sec-label">Software &amp; games</p>
+      <h2 class="sec">Tooling and simulation builds</h2>
+      <p class="sec-intro">Open-source software experiments and interactive simulators. The slope
+        stability tool is a hand-rolled method-of-slices checker; the BIM viewer is built entirely
+        on open-source IFC tooling.</p>
+      <div class="tools">
+        <a class="tool" href="./grade-it.html">
+          <span class="kind">Interactive 3D game &middot; earthworks</span>
+          <h3>Grade It: Earthworks</h3>
+          <p>An earthworks simulator you play: blade and haul a building pad to design elevation
+            (watch the cut/fill volumes and your budget), roll the lift to 95% compaction, drive the
+            nuclear gauge to certify it, then build the foundations and grade the whole subdivision.</p>
+          <span class="go">Play the game &rarr;</span>
+        </a>
+        <a class="tool" href="./ifc-viewer.html">
+          <span class="kind">Open-source BIM &middot; IFC in browser</span>
+          <h3>IFC / BIM Viewer</h3>
+          <p>An open-source building-model viewer built on web-ifc and three.js. Parse and render real IFC
+            files with no proprietary software &mdash; a bundled geotech foundations model (mat footing, retaining
+            wall, fill), section through any model, or open your own .ifc.</p>
+          <span class="go">Open viewer &rarr;</span>
+        </a>
+        <a class="tool" href="./slope-stability.html">
+          <span class="kind">Calculator &middot; infinite slope &amp; Bishop</span>
+          <h3>Slope Stability Calculator</h3>
+          <p>Three methods for flat-crest cut slopes &mdash; infinite slope, planar wedge (Culmann),
+            and Bishop's simplified circular search &mdash; with water-table effects.</p>
+          <span class="go">Open tool &rarr;</span>
+        </a>
+        <a class="tool" href="./diagrams.html">
+          <span class="kind">Technical illustration</span>
+          <h3>Engineering Diagram Gallery</h3>
+          <p>Computed, publication-ready figures for reports, proposals, and expert testimony &mdash;
+            flow nets solved from Laplace, section drawings, comparison charts. Original work.</p>
+          <span class="go">View gallery &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; Heston Norcott &middot; Geotechnical Engineer (E.I.)</span>
+    <span><a href="mailto:heston.norcott@gmail.com">heston.norcott@gmail.com</a> &middot; <a href="tel:+17022040407">702-204-0407</a> &middot; <a href="https://github.com/hestongrr" target="_blank" rel="noopener">GitHub</a> &middot; <a href="./privacy.html">Privacy</a></span>
+    <span class="credits">The 3D tools are built on
+      <a href="https://github.com/mrdoob/three.js" target="_blank" rel="noopener">three.js</a> (MIT),
+      <a href="https://github.com/jwagner/simplex-noise.js" target="_blank" rel="noopener">simplex-noise.js</a> (MIT) and
+      <a href="https://github.com/ThatOpen/engine_web-ifc" target="_blank" rel="noopener">web-ifc</a> (MPL-2.0)
+      &mdash; thanks to their authors. Full notices: <a href="./THIRD-PARTY.md">THIRD-PARTY.md</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

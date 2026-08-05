@@ -80,7 +80,51 @@
 </style>
 
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
+  <script>
+(function(){
+  var KEY='ga-consent', DIS='ga-disable-G-YKDEE0DC2D', c;
+  try { c = localStorage.getItem(KEY); } catch(e) { c = null; }
+  window[DIS] = (c !== 'accepted');
+  if (c === null) {
+    var mk = function(){
+      var b = document.createElement('div');
+      b.id = 'consent-banner';
+      b.setAttribute('role','dialog');
+      b.setAttribute('aria-label','Cookie consent');
+      b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#161A18;color:#E7EAE6;padding:14px 18px;font:14px/1.5 system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #3a403c;box-shadow:0 -4px 12px rgba(0,0,0,.35)';
+      var p = document.createElement('span');
+      p.innerHTML = 'This site uses Google Analytics cookies to measure traffic. <a href="/privacy.html" style="color:#8fd0a8">Privacy policy</a>.';
+      var w = document.createElement('span');
+      w.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      var ok = document.createElement('button'); ok.textContent = 'Accept';
+      var no = document.createElement('button'); no.textContent = 'Decline';
+      var bs = 'cursor:pointer;border:0;padding:6px 14px;font:600 13px/1 system-ui,sans-serif;border-radius:4px';
+      ok.style.cssText = bs; ok.style.background = '#2e7d5b'; ok.style.color = '#fff';
+      no.style.cssText = bs; no.style.background = '#3a403c'; no.style.color = '#E7EAE6';
+      ok.onclick = function(){
+        try { localStorage.setItem(KEY,'accepted'); } catch(e) {}
+        window[DIS] = false;
+        var t = 0;
+        var iv = setInterval(function(){
+          if (window.gtag) { clearInterval(iv); gtag('config','G-YKDEE0DC2D'); }
+          else if ((t+=100) > 5000) clearInterval(iv);
+        }, 100);
+        b.remove();
+      };
+      no.onclick = function(){
+        try { localStorage.setItem(KEY,'declined'); } catch(e) {}
+        window[DIS] = true;
+        b.remove();
+      };
+      w.appendChild(ok); w.appendChild(no);
+      b.appendChild(p); b.appendChild(w);
+      (document.body || document.documentElement).appendChild(b);
+    };
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+  }
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKDEE0DC2D"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
