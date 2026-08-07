@@ -6,6 +6,13 @@
 <title>Boring Log Generator — USCS Soil Boring Log with SPT Plot | Free</title>
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://thebigpicture.tech/boring-log-generator.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#161A18">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field Day">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="description" content="Free boring log generator. Enter soil strata, SPT values, and groundwater; get a clean, professional USCS boring log with hatch patterns and an SPT plot, exportable to PNG. Built by a geotechnical engineer.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Boring Log Generator — USCS Soil Boring Log with SPT Plot">
@@ -570,6 +577,18 @@ $("dlPng").addEventListener("click",()=>{
 });
 
 buildAll();
+</script>
+<script>
+/* Field Day: offline support. isSecureContext covers https plus
+   localhost/127.0.0.1 for local testing; service workers are unavailable
+   on plain http and registering there throws. */
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (e) {
+      console.warn('SW registration failed:', e);
+    });
+  });
+}
 </script>
 </body>
 </html>

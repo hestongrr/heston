@@ -128,6 +128,19 @@
   #load .bar{width:220px;height:3px;background:#1c262f;border-radius:2px;overflow:hidden}
   #load .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
   #load .err{color:#ff8a8a;max-width:460px;text-align:center;font-size:11px;line-height:1.5}
+  /* Honest "use the better tool" notice. This is a demo, not the best IFC
+     viewer on the web — say so and point people at the ones that are. */
+  /* top-left, under .title — .panel already owns bottom-left */
+  .useinstead{top:78px;left:18px;max-width:330px;background:rgba(14,20,27,.9);
+    border:1px solid var(--line-strong,#39413b);border-radius:9px;padding:11px 13px;
+    font-size:11.5px;line-height:1.55;color:#c9d2cc;backdrop-filter:blur(6px)}
+  .useinstead b{color:#E7EAE6;display:block;margin-bottom:4px;font-size:11px;
+    letter-spacing:.05em;text-transform:uppercase}
+  .useinstead a{color:var(--accent,#39B2BA)}
+  .useinstead .x{position:absolute;top:6px;right:9px;cursor:pointer;color:#7d8a83;
+    font-size:14px;line-height:1;background:none;border:0;padding:2px}
+  .useinstead .x:hover{color:#E7EAE6}
+  @media (max-width:760px){.useinstead{display:none}}
 </style>
 
 <canvas id="c"></canvas>
@@ -136,6 +149,19 @@
 <div class="hud title">
   <div class="brand">IFC / BIM Viewer &middot; <b>Open-Source</b></div>
   <div class="sub">web-ifc (MPL-2.0) + three.js &middot; sample models &middot; <a href="/">thebigpicture.tech</a></div>
+</div>
+
+<div class="hud useinstead" id="useInstead">
+  <button class="x" id="uiClose" aria-label="Dismiss">&times;</button>
+  <b>Want a real IFC viewer?</b>
+  This is a demo I built to learn the format. For actual work, these are better and
+  also free &mdash; all run locally in your browser, no upload:
+  <a href="https://ifcnavigator.com/" target="_blank" rel="noopener">IFC&nbsp;Navigator</a>,
+  <a href="https://viewer.flinker.app/" target="_blank" rel="noopener">Flinker</a>
+  (BCF&nbsp;+&nbsp;IDS validation),
+  <a href="https://ifcfiles.com/" target="_blank" rel="noopener">IFCfiles</a>,
+  or <a href="https://xeokit.github.io/xeokit-bim-viewer/" target="_blank" rel="noopener">xeokit</a>
+  if you want open source you can host yourself.
 </div>
 
 <div class="hud legend">
@@ -422,4 +448,18 @@ function loop(){
 }
 
 init();
+</script>
+
+<script>
+/* Dismissible "use a better viewer" notice; the choice sticks. */
+(function(){
+  var box = document.getElementById('useInstead'),
+      btn = document.getElementById('uiClose'), K = 'ifc-useinstead-dismissed';
+  if (!box || !btn) return;
+  try { if (localStorage.getItem(K) === '1') box.style.display = 'none'; } catch(e) {}
+  btn.addEventListener('click', function(){
+    box.style.display = 'none';
+    try { localStorage.setItem(K, '1'); } catch(e) {}
+  });
+})();
 </script>

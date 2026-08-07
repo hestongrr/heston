@@ -6,6 +6,13 @@
 <title>Density &amp; Compaction Test Sheet — Nuclear Method | Free</title>
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://thebigpicture.tech/density-test-sheet.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#161A18">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field Day">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="description" content="Free nuclear gauge density & compaction test report generator. Enter wet density and moisture readings; get dry density, % compaction, and pass/fail versus the spec — printable. Built by a geotechnical engineer.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Density & Compaction Test Sheet — Nuclear Method">
@@ -491,7 +498,7 @@ function buildMeta(){
 function buildSpec(){
   const g=$("specGrid");g.innerHTML="";
   [["maxDry","Max dry density (pcf)","number",false],["omc","Optimum moisture (%)","number",false],
-   ["req","Required compaction (%)","number",false],["tol","Moisture tolerance (&plusmn;%)","number",false],
+   ["req","Required compaction (%)","number",false],["tol","Moisture tolerance (±%)","number",false],
    ["point","Test point","",false],["station","Station / offset","",false],
    ["layer","Layer / lift","",false],["depth","Depth","",false],
    ["uscs","USCS","",false],["material","Material description","",true]]
@@ -553,6 +560,18 @@ $("dlPng").addEventListener("click",()=>{
 });
 
 buildAll();
+</script>
+<script>
+/* Field Day: offline support. isSecureContext covers https plus
+   localhost/127.0.0.1 for local testing; service workers are unavailable
+   on plain http and registering there throws. */
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (e) {
+      console.warn('SW registration failed:', e);
+    });
+  });
+}
 </script>
 </body>
 </html>

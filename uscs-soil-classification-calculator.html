@@ -16,6 +16,13 @@ third-party analytics tag it loads. See LICENSING.md.
 <meta name="robots" content="index, follow">
 <meta name="description" content="Free USCS soil classification calculator. Enter sieve analysis and Atterberg limits to get the ASTM D2487 group symbol and group name, with the plasticity chart plotted and every decision step shown.">
 <link rel="canonical" href="https://thebigpicture.tech/uscs-soil-classification-calculator.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#161A18">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field Day">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="USCS Soil Classification Calculator (ASTM D2487)">
 <meta property="og:description" content="Enter sieve data and Atterberg limits — get the group symbol, group name, and see exactly which branch of the decision tree you took.">
@@ -396,4 +403,16 @@ function drawChart(LL, PI, isFine){
 IN.forEach(id=>{const e=$(id); e.addEventListener("input",classify); e.addEventListener("change",classify);});
 classify();
 window.addEventListener("resize",classify);
+</script>
+<script>
+/* Field Day: offline support. isSecureContext covers https plus
+   localhost/127.0.0.1 for local testing; service workers are unavailable
+   on plain http and registering there throws. */
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (e) {
+      console.warn('SW registration failed:', e);
+    });
+  });
+}
 </script>
